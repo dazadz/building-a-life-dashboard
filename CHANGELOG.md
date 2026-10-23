@@ -4,6 +4,10 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-24
+
+Tasks, health, the monthly view and your own theme.
+
 ### Added
 - **Appearance:** Settings → Appearance builds the whole theme from one accent. Pick a vibe (Calm, Clear, Focus, Energise, Bold, Fresh) or set hue, vibrancy, brightness or a hex code; choose Dim, Dark or Midnight and how much the surfaces take the accent's hue. Changes preview live across the app, text on the accent switches between dark and white for contrast, and a green accent moves "on track" to blue.
 - **Monthly evolution:** this month against last (days logged, discipline, productivity, energy, consistency, sleep and goal completion), a daily discipline trend, each habit's rate against last month, and Samuel's analysis from the new `monthly-evolution` skill. Weekly and Monthly sit together under Review.
@@ -49,5 +53,6 @@ The core loop: check in each evening, see your scores, and have Samuel write you
 - Protection against DNS rebinding and cross-site writes. Coach runs can only use the `samuel` CLI.
 - A pre-commit hook and a CI check block database files, secrets, local paths and personal email addresses.
 
+[0.3.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.3.0
 [0.2.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.2.0
 [0.1.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.1.0
