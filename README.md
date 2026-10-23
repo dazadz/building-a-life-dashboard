@@ -51,7 +51,7 @@ cd building-a-life-dashboardackend
 .\.venv\Scripts\samuel app
 ```
 
-It starts the server if it isn't already running and opens Samuel in a Microsoft Edge app window (Chrome or Chromium if Edge isn't installed). Closing the window stops the server it started. The window keeps its own small browser profile in `~\.samuelpp-window`, separate from your normal browser.
+It starts the server if it isn't already running and opens Samuel in a Microsoft Edge app window (Chrome or Chromium if Edge isn't installed). A server it started stops by itself a few minutes after you close the window. You don't need a PowerShell window open. The window keeps its own small browser profile in `~\.samuelpp-window`, separate from your normal browser.
 
 To get a **desktop shortcut** that does this with a double-click and no console window, run `.\.venv\Scripts\samuel app --shortcut` once. You can pin the shortcut to the taskbar.
 

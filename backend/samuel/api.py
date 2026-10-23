@@ -1,6 +1,7 @@
 """HTTP API for the web app. Binds to localhost only (see cli.serve)."""
 
 import re
+import time
 from datetime import date
 from pathlib import Path
 from typing import Literal
@@ -109,6 +110,12 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     # No interactive API docs: they load scripts from a CDN.
     app = FastAPI(title="Samuel", docs_url=None, redoc_url=None, openapi_url=None)
     security.protect(app, allowed_hosts)
+    app.state.last_request = time.monotonic()
+
+    @app.middleware("http")
+    async def note_activity(request, call_next):
+        app.state.last_request = time.monotonic()
+        return await call_next(request)
 
     @app.get("/api/status")
     def status(conn=Depends(get_conn)):

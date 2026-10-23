@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { api } from './api'
 import { ServerDown } from './components/States'
 import { useCoachJob, useLoad, useRoute } from './hooks'
@@ -23,6 +24,11 @@ export default function App() {
   // Reload on each screen change, so the Coach page knows about a check-in saved a moment ago.
   const status = useLoad(() => api.status(), [route])
   const coach = useCoachJob()
+  // Check in every 30 seconds: a server started by `samuel app` stops once no window checks in.
+  useEffect(() => {
+    const id = window.setInterval(() => void api.status().catch(() => {}), 30_000)
+    return () => window.clearInterval(id)
+  }, [])
 
   if (status.error) return <ServerDown onRetry={status.reload} />
   if (status.data && !status.data.onboarded) {
