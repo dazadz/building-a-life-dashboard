@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import coach, db, habits, reports, scores
+from . import coach, db, habits, reports, scores, security
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -61,8 +61,10 @@ def _day(day: str) -> str:
         raise HTTPException(422, "date must be YYYY-MM-DD")
 
 
-def create_app() -> FastAPI:
-    app = FastAPI(title="Samuel", docs_url="/api/docs", openapi_url="/api/openapi.json")
+def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
+    # No interactive API docs: they load scripts from a CDN.
+    app = FastAPI(title="Samuel", docs_url=None, redoc_url=None, openapi_url=None)
+    security.protect(app, allowed_hosts)
 
     @app.get("/api/status")
     def status(conn=Depends(get_conn)):

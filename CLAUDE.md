@@ -11,6 +11,8 @@ Privacy is a hard requirement. This repo is public and the author uses the app d
 - Screenshots, tests, fixtures and designs use only the fake demo persona, never the author's real name.
 - Never write absolute local paths (e.g. `C:\Users\...`) into tracked files. Use `~` or paths relative to the repo.
 - Commits use the GitHub noreply email (set in this repo's git config), never a personal address.
+- A pre-commit hook (`scripts/privacy-check.sh`) blocks data files, secrets, local paths, personal email addresses, and private words listed in `.git/info/private-words`. Turn it on once per clone with `git config core.hooksPath scripts/hooks`. Never bypass it with `--no-verify`.
+- Follow the `security-privacy-review` skill before commits, pushes and anything that stores or sends personal data.
 
 ## Commands
 

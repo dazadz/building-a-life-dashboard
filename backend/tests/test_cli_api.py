@@ -12,7 +12,7 @@ from samuel.api import create_app
 
 @pytest.fixture
 def client():
-    return TestClient(create_app())
+    return TestClient(create_app(allowed_hosts={"testserver", "localhost", "127.0.0.1"}))
 
 
 def run_cli(args, capsys, stdin=None, monkeypatch=None):

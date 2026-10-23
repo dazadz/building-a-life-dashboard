@@ -50,9 +50,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Reject database files and large files
-        run: |
-          bad=$(git ls-files | grep -E '\.(db|sqlite)(-wal|-shm)?$|(^|/)\.samuel/' || true)
-          if [ -n "$bad" ]; then echo "Database files are tracked:"; echo "$bad"; exit 1; fi
-          big=$(git ls-files -z | xargs -0 du -k | awk '$1 > 1024 {print $2}' | grep -v 'package-lock.json' || true)
-          if [ -n "$big" ]; then echo "Files over 1 MB:"; echo "$big"; exit 1; fi
+      - name: Reject data files, secrets, local paths and personal emails
+        run: sh scripts/privacy-check.sh --all
