@@ -124,6 +124,23 @@ No flags is **Low**, 1 or 2 is **Moderate**, 3 or more is **High**. The screen l
 
 **Energy curve:** the average tap for each slot over the chosen period. A slot shows once it has taps on at least 3 days; until then it's a dash. Once at least 2 slots show, the highest is your **peak** and the lowest your **dip** (the earlier slot wins a tie).
 
+## What moves your energy and mood
+
+Plain comparisons over the last 30 or 90 days, never a model. Each **link** compares an outcome on days **with** a habit or condition against days **without** it:
+
+| Condition | Compared with | Outcome | When |
+| --- | --- | --- | --- |
+| Slept to target (sleep ≥ target) | nights under target | Energy, Mood, Productivity | the same day |
+| Workout done (Yes) | No | Mood | the same day |
+| Workout done (Yes) | No | Energy | the next day |
+| Deep work hit target | under target | Mood | the same day |
+| Caffeine after 15:00 (health log) | last cup by 15:00 | Sleep, Energy | the next day |
+| Screens after 22:00 for 30 min or more (health log) | under 30 min | Sleep, Energy | the next day |
+
+Mood counts Low 1, Flat 2, Okay 3, Good 4, Great 5; Energy and Productivity are the 1–10 ratings; Sleep is the next check-in's hours. Days missing either side's answer are left out.
+
+A link shows when each side has **at least 3 days** and the difference is big enough to matter: **0.8 points** for Energy and Productivity, **0.4** for Mood, **0.3 h** for Sleep. Links are ranked by the difference as a share of the outcome's range (9 for Energy and Productivity, 4 for Mood, and 3 h for Sleep), and the top 6 show. Each one shows both averages and both day counts, so you can judge it yourself. These are patterns in your own days, not proof of cause.
+
 ## Time leaks
 
 Time leaks come from the check-in's **Biggest distraction** answer over the last 7 or 30 days. For each distraction:

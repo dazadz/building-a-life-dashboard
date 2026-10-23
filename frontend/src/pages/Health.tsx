@@ -6,11 +6,12 @@ import { deltaText, isoDate, scoreText, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
 import { MiniBars } from '../components/MiniBars'
 import { EnergyCurveCard } from '../components/Energy'
+import { LinksCard } from '../components/Links'
 
 const PERIODS = [7, 30, 90] as const
 const LEVELS = ['low', 'moderate', 'high'] as const
 
-export function HealthPage() {
+export function HealthPage({ coachInstalled }: { coachInstalled: boolean }) {
   const today = isoDate(useNow())
   const [days, setDays] = useState<number>(30)
   const loaded = useLoad(() => api.health(today, days), [today, days])
@@ -43,6 +44,9 @@ export function HealthPage() {
           <Recovery health={h} />
           <Burnout health={h} />
         </div>
+      </div>
+      <div className="row">
+        <LinksCard today={today} coachInstalled={coachInstalled} />
       </div>
       <div className="row">
         <EnergyCurveCard curve={h?.energy_curve ?? null} days={days} />

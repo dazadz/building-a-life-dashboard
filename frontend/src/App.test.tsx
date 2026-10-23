@@ -127,6 +127,12 @@ const monthlyBody = {
   trend: [{ date: '2026-10-01', discipline: 70, average: 70 }, { date: '2026-10-02', discipline: 80, average: 75 }],
 }
 
+const linksBody = {
+  days: 90, min_days: 3,
+  links: [{ condition: 'sleep_target', condition_label: 'Slept to target', compared_with: 'nights under target', outcome: 'energy',
+    outcome_label: 'Energy', unit: '/10', when: 'same day', with_avg: 7.2, without_avg: 5.4, difference: 1.8, with_days: 12, without_days: 9 }],
+}
+
 const leaksBody = {
   days: 30, checkins: 20, total_lost: 9.5,
   leaks: [{ name: 'Phone', days: 6, dates: [], deep_work_lost: 5.5, deep_work_avg: 1.6, deep_work_avg_other_days: 2.4, impact: 'high' }],
@@ -149,6 +155,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded }
     else if (url.startsWith('/api/digest')) body = digestBody
     else if (url.startsWith('/api/leaks/')) body = leaksBody
+    else if (url.startsWith('/api/links/')) body = linksBody
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
     else if (url.startsWith('/api/settings')) body = settingsBody
     else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
@@ -324,6 +331,8 @@ describe('App', () => {
     render(<App />)
     expect(await screen.findByText('Caffeine after 15:00 on 4 days')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Burnout risk: moderate' })).toBeInTheDocument()
+    expect(await screen.findByText('Slept to target')).toBeInTheDocument()
+    expect(screen.getByText('+1.8')).toBeInTheDocument()
     expect(screen.getByText('Energy is 1.6 points lower on days with less than 6.5 h of sleep.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }))
     expect(screen.getByRole('columnheader', { name: 'Sleep (h)' })).toBeInTheDocument()
