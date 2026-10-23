@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Added
+- **Energy taps and the energy curve:** an optional "Energy now" card on Today takes a 1–10 tap for the morning, midday, afternoon or evening. Health & energy draws the average for each part of the day, with your peak and dip, once a part has taps on 3 days. Samuel's reports and chat see the curve. The rules are in `docs/scores.md`.
 - **Ctrl+K palette:** press Ctrl+K (or Search in the sidebar) to jump to any screen, search tasks, goals, milestones, check-ins, reports and chats, create a task with quick-add syntax, or ask Samuel. Type `>` for commands only and `?` to ask Samuel. Search results open the exact report, chat or past check-in.
 - **Chat with Samuel:** the prompt's coach mode as a conversation on the Coach page. Ask about your sleep, energy, habits, goals or plans and get an answer built from your own data, then ask follow-ups; Samuel sees the conversation so far. Start from a suggested question, or ask about the report you're reading. Conversations are kept on this computer, and each answer is a locked-down Claude Code run (the new `ask` skill) with the same two `samuel` commands as reports.
 
@@ -14,6 +15,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 - **Dependencies are watched.** CI checks Python and npm packages for known vulnerabilities, Dependabot proposes updates, and CI actions are pinned to exact versions.
 
 ### Fixed
+- **Health:** "1 points lower" now reads "1 point lower".
 - **Docs:** two README lines broken by stray control characters, new issue and PR templates, the coach permissions in CLAUDE.md, the plan and ADR 0001, and the README design rules. The README now warns against saving exports in cloud-synced folders.
 
 ## [0.3.0] - 2026-10-24

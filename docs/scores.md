@@ -120,6 +120,10 @@ No flags is **Low**, 1 or 2 is **Moderate**, 3 or more is **High**. The screen l
 
 **Daily inputs:** 7-day averages of the health log values that were logged.
 
+**Energy taps:** optional 1–10 ratings during the day, one per slot: **Morning** (before 11:00), **Midday** (11:00–13:59), **Afternoon** (14:00–17:59) and **Evening** (18:00 on). The slot comes from your local time when you tap, and a new tap in the same slot replaces the old one. Taps never change the check-in's energy answer or any score.
+
+**Energy curve:** the average tap for each slot over the chosen period. A slot shows once it has taps on at least 3 days; until then it's a dash. Once at least 2 slots show, the highest is your **peak** and the lowest your **dip** (the earlier slot wins a tie).
+
 ## Monthly evolution
 
 A calendar month compared with the month before, straight from the data:

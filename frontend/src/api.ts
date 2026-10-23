@@ -326,6 +326,16 @@ export interface HealthLog {
   screens_late: number | null
 }
 
+export type EnergySlot = 'morning' | 'midday' | 'afternoon' | 'evening'
+export type EnergyTaps = Record<EnergySlot, number | null>
+
+export interface EnergyCurve {
+  points: { slot: EnergySlot; average: number | null; days: number }[]
+  peak: EnergySlot | null
+  dip: EnergySlot | null
+  min_days: number
+}
+
 export interface Health {
   date: string
   days: number
@@ -341,6 +351,8 @@ export interface Health {
   burnout: { level: 'low' | 'moderate' | 'high' | null; reasons: string[] }
   series: { date: string; sleep: number | null; energy: number | null }[]
   energy_gap: number | null
+  energy_curve: EnergyCurve
+  taps_today: EnergyTaps
   inputs: {
     water_l: number | null
     caffeine_cups: number | null
@@ -462,6 +474,9 @@ export const api = {
   dueReminders: (now: string) => request<DueReminder[]>(`/api/reminders/due?now=${now}`),
   markNotified: (now: string, id: number) =>
     request<{ ok: boolean }>(`/api/tasks/${id}/notified?now=${now}`, { method: 'POST', body: '{}' }),
+  energy: (day: string) => request<EnergyTaps>(`/api/energy/${day}`),
+  tapEnergy: (day: string, slot: EnergySlot, value: number | null, at: string) =>
+    request<EnergyTaps>(`/api/energy/${day}/${slot}`, { method: 'PUT', body: JSON.stringify({ value, at }) }),
   health: (day: string, days: number) => request<Health>(`/api/health/${day}?days=${days}`),
   saveHealthLog: (day: string, log: Partial<HealthLog>) =>
     request<Health>(`/api/health-log/${day}`, { method: 'PUT', body: JSON.stringify(log) }),

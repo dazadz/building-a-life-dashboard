@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, chats, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
+from . import backups, chats, coach, db, energy, goals, habits, health, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -159,6 +159,11 @@ class HealthLogIn(BaseModel):
     caffeine_cups: int | None = None
     caffeine_last: str | None = None
     screens_late: int | None = None
+
+
+class EnergyTapIn(BaseModel):
+    value: int | None = Field(None, ge=1, le=10)
+    at: str  # local HH:MM
 
 
 class ChatIn(BaseModel):
@@ -456,6 +461,19 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         if days not in (7, 30, 90):
             raise HTTPException(422, "days must be 7, 30 or 90")
         return health.summary(conn, _day(day), days)
+
+    @app.get("/api/energy/{day}")
+    def get_energy(day: str, conn=Depends(get_conn)):
+        return energy.taps_for(conn, _day(day))
+
+    @app.put("/api/energy/{day}/{slot}")
+    def put_energy(day: str, slot: str, body: EnergyTapIn, conn=Depends(get_conn)):
+        day = _day(day)
+        try:
+            energy.save_tap(conn, day, slot, body.value, body.at)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return energy.taps_for(conn, day)
 
     @app.put("/api/health-log/{day}")
     def put_health_log(day: str, body: HealthLogIn, conn=Depends(get_conn)):

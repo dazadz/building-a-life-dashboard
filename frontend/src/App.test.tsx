@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
@@ -401,6 +401,17 @@ describe('App', () => {
     fireEvent.keyDown(box, { key: 'Enter' })
     await waitFor(() => expect(window.location.hash).toBe('#/coach?report=12'))
     expect(screen.queryByRole('dialog', { name: 'Command palette' })).not.toBeInTheDocument()
+  })
+
+  it('taps energy on Home for the current part of the day', async () => {
+    mockServer(true)
+    render(<App />)
+    const scale = await screen.findByRole('group', { name: /energy \(1–10\)/ })
+    fireEvent.click(within(scale).getByRole('button', { name: '7' }))
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/^\/api\/energy\/\d{4}-\d{2}-\d{2}\/(morning|midday|afternoon|evening)$/),
+      expect.objectContaining({ method: 'PUT', body: expect.stringContaining('"value":7') }),
+    ))
   })
 
   it('walks a new user through setup', async () => {
