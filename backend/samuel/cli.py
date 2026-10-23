@@ -11,7 +11,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, chats, db, health, profile, reports, routines, scores, tasks
+from . import backups, chats, db, energy, health, profile, reports, routines, scores, tasks
 from .checkins import log_habit, save_checkin
 
 
@@ -212,6 +212,17 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
     if not routines.list_routines(conn):
         routines.add_suggested(conn, end.isoformat())
     seed_demo_tasks(conn, end)
+    seed_demo_energy(conn, end)
+
+
+def seed_demo_energy(conn, end: date) -> None:
+    """Jordan's energy taps: strong mornings, a dip after lunch. Its own random stream, so other demo data stays the same."""
+    rng = random.Random(11)
+    for i in range(20, 0, -1):
+        day = (end - timedelta(days=i)).isoformat()
+        for slot, base, at in (("morning", 7, "08:40"), ("midday", 6, "12:20"), ("afternoon", 4, "15:10"), ("evening", 5, "20:30")):
+            if rng.random() < 0.75:
+                energy.save_tap(conn, day, slot, max(1, min(10, base + rng.randint(-1, 2))), at)
 
 
 def seed_demo_tasks(conn, end: date) -> None:

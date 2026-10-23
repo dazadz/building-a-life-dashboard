@@ -5,6 +5,7 @@ import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { deltaText, isoDate, scoreText, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
 import { MiniBars } from '../components/MiniBars'
+import { EnergyCurveCard } from '../components/Energy'
 
 const PERIODS = [7, 30, 90] as const
 const LEVELS = ['low', 'moderate', 'high'] as const
@@ -44,6 +45,7 @@ export function HealthPage() {
         </div>
       </div>
       <div className="row">
+        <EnergyCurveCard curve={h?.energy_curve ?? null} days={days} />
         <Inputs health={h} />
         {h ? <LogToday key={today} today={today} log={h.log_today} onSaved={loaded.reload} />
           : <Card title="Log today" action={<a href="#/checkin">Check-in →</a>}><Loading /></Card>}
@@ -84,7 +86,7 @@ function SleepEnergy({ health: h }: { health: Health | null }) {
           {h.energy_gap != null && (
             <p className="muted" style={{ margin: 0 }}>
               {h.energy_gap > 0
-                ? `Energy is ${h.energy_gap} points lower on days with less than 6.5 h of sleep.`
+                ? `Energy is ${h.energy_gap} ${h.energy_gap === 1 ? 'point' : 'points'} lower on days with less than 6.5 h of sleep.`
                 : `Energy is no lower on days with less than 6.5 h of sleep (${h.energy_gap}).`}
             </p>
           )}
