@@ -310,6 +310,31 @@ export interface Health {
   log_today: (HealthLog & { date: string }) | null
 }
 
+export interface MonthNumbers {
+  days_in_month: number
+  days_so_far: number
+  days_logged: number
+  discipline: number | null
+  productivity: number | null
+  energy: number | null
+  consistency: number | null
+  sleep: number | null
+  milestones_done: number
+  milestones_due: number
+  goal_completion: number | null
+}
+
+export interface Monthly {
+  month: string
+  previous: string
+  is_current: boolean
+  numbers: MonthNumbers
+  previous_numbers: MonthNumbers
+  changes: Record<'discipline' | 'productivity' | 'energy' | 'consistency' | 'sleep' | 'goal_completion', number | null>
+  habits: { key: string; name: string; now: number | null; then: number | null; change: number | null }[]
+  trend: { date: string; discipline: number | null; average: number | null }[]
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -389,6 +414,8 @@ export const api = {
   health: (day: string, days: number) => request<Health>(`/api/health/${day}?days=${days}`),
   saveHealthLog: (day: string, log: Partial<HealthLog>) =>
     request<Health>(`/api/health-log/${day}`, { method: 'PUT', body: JSON.stringify(log) }),
+  monthly: (today: string, month?: string) =>
+    request<Monthly>(`/api/monthly?today=${today}${month ? `&month=${month}` : ''}`),
   profile: () => request<Profile>('/api/profile'),
   saveProfile: (section: string, answers: Record<string, ProfileValue>, done?: boolean) =>
     request<Profile>(`/api/profile/${section}`, { method: 'PUT', body: JSON.stringify({ answers, done }) }),

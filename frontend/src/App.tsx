@@ -10,6 +10,7 @@ import { ProfilePage } from './pages/Profile'
 import { ReviewPage } from './pages/Review'
 import { TasksPage } from './pages/Tasks'
 import { HealthPage } from './pages/Health'
+import { MonthlyPage } from './pages/Monthly'
 import { Reminders } from './components/Reminders'
 import { HomePage } from './pages/Home'
 import { OnboardingPage } from './pages/Onboarding'
@@ -61,7 +62,7 @@ export default function App() {
             key={item.route}
             href={item.href}
             className="nav-link"
-            aria-current={route === item.route ? 'page' : undefined}
+            aria-current={route === item.route || (item.route === '/review' && route === '/monthly') ? 'page' : undefined}
           >
             {item.label}
             {item.route === '/coach' && coach.running && <span className="badge faint">Writing…</span>}
@@ -85,6 +86,8 @@ export default function App() {
           <HealthPage />
         ) : route === '/tasks' ? (
           <TasksPage />
+        ) : route === '/monthly' ? (
+          <MonthlyPage coach={coach} status={status.data} />
         ) : route === '/review' ? (
           <ReviewPage coach={coach} status={status.data} />
         ) : route === '/profile' ? (

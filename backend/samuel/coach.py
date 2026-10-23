@@ -15,8 +15,8 @@ from pathlib import Path
 
 from . import db
 
-SKILLS = {"daily-report": "daily", "onboard-insights": "onboarding", "weekly-review": "weekly"}
-NEEDS_CHECKIN = {"daily-report", "weekly-review"}
+SKILLS = {"daily-report": "daily", "onboard-insights": "onboarding", "weekly-review": "weekly", "monthly-evolution": "monthly"}
+NEEDS_CHECKIN = {"daily-report", "weekly-review", "monthly-evolution"}
 TIMEOUT_SECONDS = 600
 REPO_ROOT = Path(os.environ.get("SAMUEL_REPO", Path(__file__).resolve().parents[2]))
 

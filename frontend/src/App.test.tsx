@@ -115,6 +115,18 @@ const healthBody = {
   log_today: null,
 }
 
+const monthlyBody = {
+  month: '2026-10', previous: '2026-09', is_current: true,
+  numbers: { days_in_month: 31, days_so_far: 24, days_logged: 20, discipline: 71, productivity: 68, energy: 62, consistency: 66, sleep: 6.6, milestones_done: 5, milestones_due: 8, goal_completion: 63 },
+  previous_numbers: { days_in_month: 30, days_so_far: 30, days_logged: 25, discipline: 65, productivity: 64, energy: 65, consistency: 57, sleep: 6.9, milestones_done: 2, milestones_due: 4, goal_completion: 50 },
+  changes: { discipline: 6, productivity: 4, energy: -3, consistency: 9, sleep: -0.3, goal_completion: 13 },
+  habits: [
+    { key: 'reading', name: 'Reading done', now: 41, then: 70, change: -29 },
+    { key: 'wake_on_time', name: 'Wake up on time', now: 86, then: 71, change: 15 },
+  ],
+  trend: [{ date: '2026-10-01', discipline: 70, average: 70 }, { date: '2026-10-02', discipline: 80, average: 75 }],
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -129,6 +141,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/plan/')) body = planBody
     else if (url.startsWith('/api/tasks')) body = tasksBody
     else if (url.startsWith('/api/health')) body = healthBody
+    else if (url.startsWith('/api/monthly')) body = monthlyBody
     else if (url.startsWith('/api/reminders/due')) body = dueReminders
     else if (url.startsWith('/api/routines')) body = planBody.blocks
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
@@ -301,6 +314,17 @@ describe('App', () => {
         method: 'PUT', body: '{"water_l":1.75,"caffeine_cups":null,"caffeine_last":null,"screens_late":null}',
       })),
     )
+  })
+
+  it('compares the month with the last one, habits sorted by change', async () => {
+    mockServer(true)
+    window.location.hash = '#/monthly'
+    render(<App />)
+    expect(await screen.findByText('20 of 24 days logged so far. Compared with September 2026.')).toBeInTheDocument()
+    expect(screen.getByText('5 / 8')).toBeInTheDocument()
+    const rows = screen.getAllByRole('row').map((r) => r.textContent)
+    expect(rows[1]).toContain('Wake up on time') // biggest gain first
+    expect(screen.getByRole('link', { name: 'Weekly' })).toHaveAttribute('href', '#/review')
   })
 
   it('reminds the user to finish the profile on Home', async () => {
