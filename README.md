@@ -6,7 +6,7 @@ Building a life dashboard using Claude Code.
 
 ## Status
 
-**v0.2.0, planning.** Tell Samuel about your life in a 45-question profile, check in each evening, track 10 daily habits, set goals with milestones, follow today's plan from your routine, run a weekly review, and have Samuel (Claude Code) write your daily and weekly reports. It runs on a PC; phone access comes later. See [CHANGELOG.md](CHANGELOG.md) for what's in each release, [docs/PLAN.md](docs/PLAN.md) for the full build plan, [docs/scores.md](docs/scores.md) for how scores work, and [docs/adr/](docs/adr/) for the key decisions.
+**v0.3.0.** Tell Samuel about your life in a 45-question profile, check in each evening, track 10 daily habits, keep a to-do list with reminders, set goals with milestones, follow today's plan from your routine, watch your sleep, energy, recovery and burnout risk, run weekly and monthly reviews, theme the app from any accent, and have Samuel (Claude Code) write your daily, weekly and monthly reports. It runs on a PC; phone access comes later. See [CHANGELOG.md](CHANGELOG.md) for what's in each release, [docs/PLAN.md](docs/PLAN.md) for the full build plan, [docs/scores.md](docs/scores.md) for how scores work, and [docs/adr/](docs/adr/) for the key decisions.
 
 Screenshots use the made-up demo persona Jordan.
 
