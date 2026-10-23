@@ -2,6 +2,11 @@
 
 All notable changes to Samuel are listed here. Versions follow [semantic versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+- **Mission control look:** Chakra Petch uppercase headings, sharp 2px corners, accent corner brackets on cards, LED-style segmented score meters, a faint grid behind the page, and a soft glow on active items.
+
 ## [0.1.0] - 2026-10-24
 
 The core loop: check in each evening, see your scores, and have Samuel write your daily report. Runs on a PC.
