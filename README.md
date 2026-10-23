@@ -111,7 +111,7 @@ UI designs live in `design/` (the source of the canvas at https://claude.ai/arti
 | `design/Settings.dc.html` | Appearance: colour wheel, vibe presets, theme and live preview |
 
 Design rules: dark but bright theme with one vivid accent colour; every card ends in an action;
-no hero KPI cards, emoji, gradients, glass effects, nested cards, or pure black/white.
+no hero KPI cards, emoji, gradients, glass effects, nested cards, or pure white.
 
 ## License
 
