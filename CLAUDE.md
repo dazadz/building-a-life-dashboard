@@ -20,10 +20,11 @@ As you work, commit to Git and push to GitHub regularly, so there is always a sa
 
 ## Design
 
-`design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Onboarding, Home with Needs a reply, Check-in, Habits, Health & energy, Goals, Weekly and Monthly reviews, Coach, Tasks, Ctrl+K palette). Keep the files and the canvas in sync when designs change, and build the app to match them.
+`design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Onboarding, Home with Needs a reply, Check-in, Habits, Health & energy, Goals, Weekly and Monthly reviews, Coach, Tasks, Ctrl+K palette, Settings → Appearance). Keep the files and the canvas in sync when designs change, and build the app to match them.
 
 Design rules:
 - Dark but bright: lifted blue-violet surfaces (page #10121A, sidebar #151823, card #1B1E2B, border #2C3145) and one vivid aqua accent (default #3DDCD0). Status colours: green #8BE77A, amber #FFC766, blue #6CCBFF.
+- Users can re-theme from any accent (see Custom themes in `docs/PLAN.md`), so build every colour from CSS variables and never hard-code the hex values in components.
 - Every card prompts an action and ends with a "→" link.
 - Dense lists of 5–10 rows with "Show more", filter pills, sortable headers, and visible labels.
 - No hero KPI cards, emoji, gradients, glass effects, nested cards, or pure black/white.

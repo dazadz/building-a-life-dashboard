@@ -25,6 +25,7 @@ UI designs live in `design/` (the source of the canvas at https://claude.ai/arti
 | `design/Coach.dc.html` | Samuel's reports and Ask Samuel |
 | `design/Tasks.dc.html` | Tasks and reminders |
 | `design/Palette.dc.html` | Ctrl+K command palette |
+| `design/Settings.dc.html` | Appearance: colour wheel, vibe presets, theme and live preview |
 
 Design rules: dark but bright theme with one vivid accent colour; every card ends in an action;
 no hero KPI cards, emoji, gradients, glass effects, nested cards, or pure black/white.

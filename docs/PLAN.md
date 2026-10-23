@@ -94,7 +94,19 @@ design/    canvas source (kept in sync)
 
 **Kept:** Tasks with reminders, and the Ctrl+K palette.
 
+**Settings → Appearance:** a hue wheel, vibe presets, theme controls and a live preview.
+
 **Palette:** a dark but lifted base (page #10121A, cards #1B1E2B) with a vivid aqua accent (default #3DDCD0; sky, iris, sunrise and pink are alternatives) and bright status colours (green #8BE77A, amber #FFC766, blue #6CCBFF).
+
+**Custom themes (Settings → Appearance):**
+- Aqua stays the default ("Calm" vibe).
+- Users can pick any accent from a hue wheel, with vibrancy and brightness sliders and a hex field, or tap a vibe preset: Calm, Clear, Focus, Energise, Bold or Fresh.
+- The theme comes from one accent. Every colour is a CSS variable, computed in a small `theme.ts`:
+  - surfaces take a light tint of the accent's hue, with a strength the user sets
+  - the darkness level is Dim, Dark or Midnight, and the background always stays dark
+  - text on the accent switches between dark and white, whichever passes WCAG AA
+  - if the accent is green, the success colour switches to blue so the two stay distinct
+- A live preview updates as you pick. The theme is saved in the local settings table and applies to the phone PWA too.
 
 **Charts:** follow the dataviz skill with one accent colour, so the prompt's "Unicode bars" become real meters.
 
