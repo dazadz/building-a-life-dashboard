@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, ApiError, type CoachJob } from './api'
 
-/** The current route from the URL hash, e.g. "#/checkin" gives "/checkin". */
+/** The current route from the URL hash, e.g. "#/checkin?date=2026-10-22" gives "/checkin". */
 export function useRoute(): string {
-  const read = () => window.location.hash.replace(/^#/, '') || '/'
+  const read = () => window.location.hash.replace(/^#/, '').split('?')[0] || '/'
   const [route, setRoute] = useState(read)
   useEffect(() => {
     const onChange = () => setRoute(read())
@@ -11,6 +11,18 @@ export function useRoute(): string {
     return () => window.removeEventListener('hashchange', onChange)
   }, [])
   return route
+}
+
+/** The query part of the URL hash, e.g. "#/coach?chat=3" gives chat=3. */
+export function useQuery(): URLSearchParams {
+  const read = () => window.location.hash.split('?')[1] ?? ''
+  const [query, setQuery] = useState(read)
+  useEffect(() => {
+    const onChange = () => setQuery(read())
+    window.addEventListener('hashchange', onChange)
+    return () => window.removeEventListener('hashchange', onChange)
+  }, [])
+  return new URLSearchParams(query)
 }
 
 /**

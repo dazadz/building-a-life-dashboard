@@ -5,7 +5,7 @@ import { Card } from '../components/Card'
 import { ChatPanel } from '../components/Chat'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { longDate } from '../format'
-import { useLoad, type useCoachJob } from '../hooks'
+import { useLoad, useQuery, type useCoachJob } from '../hooks'
 
 const KINDS = [
   ['', 'All'], ['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly'], ['onboarding', 'Profile'],
@@ -22,10 +22,18 @@ interface Props {
 }
 
 export function CoachPage({ coach, status }: Props) {
-  const [view, setView] = useState<'chat' | 'reports'>('chat')
-  const [openChat, setOpenChat] = useState<number | null>(null)
+  // Ctrl+K search links straight to a chat or a report: "#/coach?chat=3", "#/coach?report=12".
+  const query = useQuery()
+  const linkedChat = Number(query.get('chat')) || null
+  const linkedReport = Number(query.get('report')) || null
+  const [view, setView] = useState<'chat' | 'reports'>(linkedReport ? 'reports' : 'chat')
+  const [openChat, setOpenChat] = useState<number | null>(linkedChat)
   const [kind, setKind] = useState('')
-  const [selected, setSelected] = useState<number | null>(null)
+  const [selected, setSelected] = useState<number | null>(linkedReport)
+  useEffect(() => {
+    if (linkedChat) { setOpenChat(linkedChat); setView('chat') }
+    if (linkedReport) { setSelected(linkedReport); setKind(''); setView('reports') }
+  }, [linkedChat, linkedReport])
   const [showAll, setShowAll] = useState(false)
   const reports = useLoad(() => api.reports(kind || undefined), [kind])
   const { job } = coach
