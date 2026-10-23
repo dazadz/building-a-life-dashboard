@@ -4,6 +4,7 @@ import argparse
 import json
 import random
 import re
+import subprocess
 import sys
 import threading
 from pathlib import Path
@@ -32,12 +33,33 @@ def cmd_serve(args) -> None:
 
     from .api import create_app
 
+    start_background_tasks()
+    print(f"Samuel is running at http://127.0.0.1:{args.port}  (data: {db.data_dir()})")
+    uvicorn.run(create_app(), host="127.0.0.1", port=args.port, log_level="warning")
+
+
+def start_background_tasks() -> None:
+    """Today's backup now, then a check every hour while the server runs."""
     conn = db.connect()
     backups.daily_backup(conn)
     conn.close()
     threading.Thread(target=_backup_hourly, daemon=True).start()
-    print(f"Samuel is running at http://127.0.0.1:{args.port}  (data: {db.data_dir()})")
-    uvicorn.run(create_app(), host="127.0.0.1", port=args.port, log_level="warning")
+
+
+def cmd_app(args) -> None:
+    from . import appwindow
+
+    appwindow.quiet_output_to_log()
+    if args.shortcut:
+        try:
+            print(f"Shortcut created: {appwindow.create_shortcut(args.port)}")
+        except (RuntimeError, OSError, subprocess.CalledProcessError) as exc:
+            sys.exit(f"Couldn't create the shortcut: {exc}")
+        return
+    try:
+        appwindow.run(args.port)
+    except RuntimeError as exc:
+        sys.exit(str(exc))
 
 
 def _backup_hourly() -> None:
@@ -213,6 +235,11 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("serve", help="run the web app on this computer")
     p.add_argument("--port", type=int, default=8765)
     p.set_defaults(func=cmd_serve)
+
+    p = sub.add_parser("app", help="open Samuel in its own window, starting the server if needed")
+    p.add_argument("--port", type=int, default=8765)
+    p.add_argument("--shortcut", action="store_true", help="create a desktop shortcut for this (Windows)")
+    p.set_defaults(func=cmd_app)
 
     p = sub.add_parser("export", help="print recent data as JSON, or everything with --all")
     p.add_argument("--since", type=_days, default=7, help="number of days, e.g. 7d (default 7d)")

@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Added
+- **`samuel app`:** opens Samuel in its own Edge app window with no browser UI, starting the server if needed and stopping it when the window closes. `samuel app --shortcut` makes a desktop shortcut.
 - **Goals:** goals by life area with milestones, progress from milestones done (a dash until a goal has any), area filters and sorting, a priority matrix (impact vs effort), a 6-month roadmap, this week's milestones and your long-term vision. Samuel's export now includes active goals and what's due this week.
 
 ### Changed
