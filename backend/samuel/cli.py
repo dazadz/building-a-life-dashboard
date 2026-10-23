@@ -5,9 +5,11 @@ import json
 import random
 import re
 import sys
+import threading
+from pathlib import Path
 from datetime import date, timedelta
 
-from . import db, reports, scores
+from . import backups, db, reports, scores
 from .checkins import log_habit, save_checkin
 
 
@@ -30,15 +32,56 @@ def cmd_serve(args) -> None:
 
     from .api import create_app
 
-    db.connect().close()
+    conn = db.connect()
+    backups.daily_backup(conn)
+    conn.close()
+    threading.Thread(target=_backup_hourly, daemon=True).start()
     print(f"Samuel is running at http://127.0.0.1:{args.port}  (data: {db.data_dir()})")
     uvicorn.run(create_app(), host="127.0.0.1", port=args.port, log_level="warning")
 
 
+def _backup_hourly() -> None:
+    """While the server runs, take the day's backup once the date changes."""
+    import time
+
+    while True:
+        time.sleep(3600)
+        conn = db.connect()
+        backups.daily_backup(conn)
+        conn.close()
+
+
 def cmd_export(args) -> None:
     conn = db.connect()
-    json.dump(reports.export(conn, args.since, args.until), sys.stdout, indent=1, ensure_ascii=False)
-    print()
+    if not args.all:
+        json.dump(reports.export(conn, args.since, args.until), sys.stdout, indent=1, ensure_ascii=False)
+        print()
+        return
+    data = backups.export_all(conn)
+    if args.out:
+        out = Path(args.out).expanduser()
+        if backups.inside_git_repo(out.parent) and not args.force:
+            sys.exit(
+                f"Refusing to write your data inside a git repository ({out.parent}).\n"
+                "It could be committed and published by mistake. Choose another folder, or pass --force."
+            )
+        out.write_text(json.dumps(data, indent=1, ensure_ascii=False), encoding="utf-8")
+        print(f"Exported everything to {out}. It contains your personal data: keep it private.")
+    else:
+        if backups.inside_git_repo(Path.cwd()):
+            print("Warning: you're inside a git repository. Don't save this export here.", file=sys.stderr)
+        json.dump(data, sys.stdout, indent=1, ensure_ascii=False)
+        print()
+
+
+def cmd_import(args) -> None:
+    conn = db.connect()
+    try:
+        data = json.loads(Path(args.file).expanduser().read_text(encoding="utf-8-sig"))
+        counts = backups.import_all(conn, data)
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        sys.exit(f"Import failed: {exc}")
+    print("Imported " + ", ".join(f"{n} {t}" for t, n in counts.items()))
 
 
 def cmd_report_add(args) -> None:
@@ -121,10 +164,17 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--port", type=int, default=8765)
     p.set_defaults(func=cmd_serve)
 
-    p = sub.add_parser("export", help="print recent data as JSON")
+    p = sub.add_parser("export", help="print recent data as JSON, or everything with --all")
     p.add_argument("--since", type=_days, default=7, help="number of days, e.g. 7d (default 7d)")
     p.add_argument("--until", type=_date, help="last day to include (default today)")
+    p.add_argument("--all", action="store_true", help="export all data, for moving or restoring")
+    p.add_argument("--out", help="with --all: write to this file instead of the screen")
+    p.add_argument("--force", action="store_true", help="allow --out inside a git repository")
     p.set_defaults(func=cmd_export)
+
+    p = sub.add_parser("import", help="restore an export made with export --all into an empty database")
+    p.add_argument("file")
+    p.set_defaults(func=cmd_import)
 
     p = sub.add_parser("report", help="add or list coach reports")
     rsub = p.add_subparsers(dest="report_command", required=True)

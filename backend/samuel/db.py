@@ -51,11 +51,12 @@ def migrate(conn: sqlite3.Connection, path: Path) -> int:
     return len(pending)
 
 
-def backup(conn: sqlite3.Connection, folder: Path | None = None, reason: str = "manual") -> Path:
+def backup(conn: sqlite3.Connection, folder: Path | None = None, reason: str = "manual",
+           when: datetime | None = None) -> Path:
     """Write a dated copy of the database and return its path."""
     folder = folder or data_dir() / "backups"
     folder.mkdir(parents=True, exist_ok=True)
-    target = folder / f"samuel-{datetime.now():%Y%m%d-%H%M%S}-{reason}.db"
+    target = folder / f"samuel-{when or datetime.now():%Y%m%d-%H%M%S}-{reason}.db"
     with sqlite3.connect(target) as dest:
         conn.backup(dest)
     dest.close()

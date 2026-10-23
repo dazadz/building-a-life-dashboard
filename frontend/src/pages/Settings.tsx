@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api, type Settings } from '../api'
+import { api, type DataInfo, type Settings } from '../api'
 import { Card } from '../components/Card'
 import { HabitToggles, NameField, TargetFields } from '../components/SetupFields'
 import { parseTargets, targetsFrom, type Targets } from '../targets'
@@ -81,10 +81,46 @@ function Forms({ today, initial, onSaved }: { today: string; initial: Settings; 
         <TargetFields value={targets} onChange={setTargets} />
         <Status message={goals.message} error={goals.error} />
       </Card>
+      <DataCard />
       <Card title="Habits" meta={`${habits.filter((h) => h.active).length} of ${habits.length} on`} action={<a href="#/habits">Habits →</a>}>
         <HabitToggles habits={habits} onToggle={toggle} />
         <Status message={tracking.message} error={tracking.error} />
       </Card>
     </div>
+  )
+}
+
+function DataCard() {
+  const info = useLoad(() => api.data(), [])
+  const backup = useSave()
+  const [latest, setLatest] = useState<DataInfo | null>(null)
+  const d = latest ?? info.data
+
+  const backUp = () => backup.save(async () => setLatest(await api.backupNow()), 'Backup written.')
+
+  return (
+    <Card
+      title="Your data"
+      meta={d ? `${d.backups} backups` : undefined}
+      action={<button type="button" className="link-btn" style={{ color: 'var(--link)' }} disabled={backup.saving} onClick={backUp}>Back up now →</button>}
+    >
+      {info.error ? <ErrorLine message={info.error} onRetry={info.reload} /> : !d ? <Loading /> : (
+        <ul className="list">
+          <li>
+            <span className="muted" style={{ flex: 1 }}>Stored in</span>
+            <code className="mono faint" style={{ wordBreak: 'break-all', textAlign: 'right' }}>{d.data_dir}</code>
+          </li>
+          <li>
+            <span className="muted" style={{ flex: 1 }}>Last backup</span>
+            <strong>{d.last_backup ? new Date(d.last_backup.at).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : 'None yet'}</strong>
+          </li>
+          <li>
+            <span className="muted" style={{ flex: 1 }}>Automatic</span>
+            <span className="faint">Daily, keeping the last {d.keep_daily}</span>
+          </li>
+        </ul>
+      )}
+      <Status message={backup.message} error={backup.error} />
+    </Card>
   )
 }

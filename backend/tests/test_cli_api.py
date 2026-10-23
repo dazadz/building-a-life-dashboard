@@ -145,3 +145,10 @@ def test_demo_counts_as_onboarded(capsys):
     cli.main(["demo", "--days", "3"])
     from samuel import settings as st
     assert st.public(db.connect(), "2026-10-24")["onboarded"] is True
+
+
+def test_data_and_backup_api(client):
+    before = client.get("/api/data").json()
+    assert before["backups"] == 0 and before["last_backup"] is None
+    after = client.post("/api/backup", json={}).json()
+    assert after["backups"] == 1 and after["last_backup"]["file"].endswith("-manual.db")
