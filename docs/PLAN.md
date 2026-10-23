@@ -17,6 +17,17 @@ Decisions from the user:
 - **Privacy:** no one's data may leak. That includes the author's, who uses the same public repo every day.
 - **Stack:** React + TypeScript + Vite on the frontend, FastAPI on the backend, SQLite in WAL mode for storage. This is eleanorkonik's stack.
 
+Decisions from the plan review (2026-10-24):
+- **v1 scope:** the core loop (short onboarding, daily check-in, habits, Home, Samuel's daily report) plus goals and the weekly review. Health, monthly evolution, tasks, theming, email and calendar come in later releases.
+- **Mobile:** design phone-width (390px) layouts for every screen before building.
+- **Check-in:** all 12 questions every day, as the prompt specifies. To keep it fast:
+  - pre-fill from yesterday
+  - tick habits automatically from the answers
+- **Notifications:** standard web push with generic text only (e.g. "Time for your check-in"). No personal data goes through Apple or Google.
+- **Calendar:** later and optional. It will be a read-only Google or Outlook link, like email; v1 builds "Today's plan" from routine blocks.
+- **Demo persona:** designs, screenshots and demo data use a made-up person, never the author's real name.
+- **Process:** a full professional GitHub workflow (see Process below).
+
 Design sources to build on:
 - The canvas https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj, saved as `design/*.dc.html` in the repo.
 - From eleanorkonik: dense lists, upserts that never overwrite real data with zero, a refresh action per card, and no AI-slop patterns.
@@ -46,6 +57,21 @@ design/    canvas source (kept in sync)
 - The backend calculates Productivity, Discipline, Energy, Focus, Consistency, Stress index and Balance with plain rules from check-ins and habit logs.
 - Missing data stays null and is never counted as 0.
 - The UI shows numbers even before any coach run.
+- Each formula is written down in `docs/scores.md` before it is coded. "How scores work" shows the same text, so every score can be explained.
+
+**Data safety:**
+- Schema changes use versioned migrations from day one.
+- `samuel backup` writes a dated copy of the database, and `samuel export` and `samuel import` move all data as JSON.
+- A backup is taken automatically before every migration.
+
+**Wellbeing:**
+- Samuel is a coach, not a clinician. Onboarding and the Health screen say "not medical advice".
+- Answers about mental health and medical limitations are stored only locally, and are sent to Claude only when a report needs them.
+- If answers suggest serious distress, Samuel gently points to professional support instead of optimising further.
+
+**Untrusted input:**
+- Email subjects and free text are passed to Claude as quoted data, never as instructions.
+- Coach runs have read-and-report tools only.
 
 **Coach = Claude Code:**
 - **CLI:** `samuel export --since 7d` prints JSON. `samuel report add --kind weekly --file -` stores the result.
@@ -68,8 +94,15 @@ design/    canvas source (kept in sync)
 
 **Phone access (opt-in, never public):**
 - By default the app binds to 127.0.0.1.
-- `samuel serve --lan` turns on phone access. It requires a passcode, set at first run and stored as a hash, and issues a session cookie. The README documents Tailscale (`tailscale serve`) as the recommended private HTTPS route.
+- **Tailscale is the main route.** `tailscale serve` gives private HTTPS. Phones can only install the PWA and receive push notifications over HTTPS, so plain-HTTP LAN access can't do either.
+- A passcode is still required for any non-localhost access. It is set at first run, stored as a hash, and issues a session cookie.
+- `samuel serve --lan` (plain HTTP) is a fallback for testing only. It warns that the PWA and push won't work.
 - On the phone, the app works as a responsive PWA you can add to the home screen.
+
+**Notifications:**
+- Web push with VAPID keys generated locally.
+- Payloads carry generic text only (e.g. "Time for your check-in", "Your weekly review is ready"). The app shows the details after it opens.
+- Each notification type can be switched off in Settings.
 
 **Privacy rules (enforced, and written into CLAUDE.md):**
 - No analytics, no CDN calls, and fonts are bundled locally.
@@ -110,31 +143,42 @@ design/    canvas source (kept in sync)
 
 **Charts:** follow the dataviz skill with one accent colour, so the prompt's "Unicode bars" become real meters.
 
-## Milestones (each is one or more commits pushed to origin main)
-1. **Designs:** update the canvas and `design/` with the new screens above.
-2. **Scaffold:**
-   - backend and frontend skeletons
-   - `samuel` CLI with `serve`, `demo` and `export`
-   - data dir outside the repo
-   - pytest and vitest
-   - GitHub Actions CI: lint, tests and a build on demo data
-   - README quickstart: clone, `uv sync`, `npm i`, `samuel demo`, `samuel serve`
-3. **Onboarding:** profile tables, the 4-section flow and rule-based scores.
-4. **Daily use:** daily check-in, habits with streaks, and the Today home with the score strip.
-5. **Planning:** tasks with reminders, goals with milestones, and routines.
-6. **Coach:**
-   - the export and report CLI
-   - `.claude/skills/*`
-   - the `/coach/run` subprocess runner
-   - the Coach screen and Ask Samuel
-7. **Reviews:** weekly and monthly views, plus charts for health and energy.
-8. **Email (optional):** OAuth/IMAP connect, read-only sync, the "Needs a reply" card and Inbox.
-9. **Phone access:** `--lan` with a passcode, the PWA manifest, and the Tailscale guide.
-10. **CLAUDE.md:** update it with run and test commands, the privacy rules, and the coach architecture.
+## Process
+- **GitHub Projects board** with one GitHub milestone per milestone below. Each piece of work is an issue with acceptance criteria.
+- **One feature branch per issue** (e.g. `feat/checkin-form`). Each merges to `main` through a pull request that must pass CI, using squash merge.
+- **Main is protected:** no direct pushes once CI exists.
+- **Releases** are semantic version tags (`v0.1.0`) with a `CHANGELOG.md` entry and GitHub release notes.
+- **Decision records:** each key choice gets a short ADR in `docs/adr/`, such as Claude Code as coach, local-first SQLite, Tailscale for phone access, and generic push text.
+- **Definition of done** for every issue:
+  - the acceptance criteria are met
+  - tests pass, and the change works on Windows and on phone width
+  - no hard-coded colours
+  - no personal data
+  - the docs are updated
+- **Repo hygiene:** `SECURITY.md`, issue and PR templates, and README screenshots from demo data.
+- **Commit identity:** commits use the GitHub noreply email, never a personal address.
+
+## Milestones
+1. **Designs (done):** the 12 desktop screens on the canvas and in `design/`.
+2. **Design gaps:**
+   - 390px mobile layouts for every screen
+   - first-run, empty, loading and error states, including "Claude Code not installed"
+   - swap the real name for the demo persona
+   - write `docs/scores.md`
+3. **Walking skeleton:** one thin end-to-end slice that proves the riskiest parts first.
+   - backend and frontend skeletons, the `samuel` CLI, the data dir outside the repo, migrations and CI
+   - save a check-in, calculate a score, run `claude -p` to write a daily report
+   - show the report on a phone over Tailscale HTTPS with a passcode
+4. **v0.1 (core loop):** short onboarding, the full daily check-in, habits with auto-ticking and streaks, Home with the score strip, the Coach screen and daily reports, backups.
+5. **v0.2 (planning):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and push notifications.
+6. **v0.3:** Health & energy, monthly evolution, tasks with reminders, and Settings → Appearance theming.
+7. **v0.4 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar.
+8. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
 
 ## Verification
 - **Tests:** `pytest` covers scores (nulls aren't treated as 0), the upsert rule, CLI export and import, and the passcode requirement for `--lan`. `npm test` and `npm run build` pass, and CI is green on GitHub.
 - **Fresh-clone test:** clone into a temp dir, then run `samuel demo` and `samuel serve`. Check that every screen renders with the demo data and that no `*.db` file appears inside the repo (`git status` stays clean).
 - **Coach:** run `claude -p "/daily-report"` in the repo and check that the report appears on the Coach screen. Do the same through the in-app button.
-- **Phone:** run `samuel serve --lan` and open the app on a phone through Tailscale. Check that a passcode is required and that it can be added to the home screen.
+- **Phone:** open the app on a phone through Tailscale HTTPS. Check that a passcode is required, that it can be added to the home screen, and that a push notification arrives with generic text.
+- **Data safety:** run a migration on a copy of real-shaped demo data. Check that a backup is created first and that export, then import, round-trips without loss.
 - **Privacy:** watch the browser network tab during use and check that there are no external requests.

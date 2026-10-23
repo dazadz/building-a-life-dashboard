@@ -6,17 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Samuel**: a local personal performance dashboard with Claude Code as its AI coach, built from the "LIFE OS PRIME" prompt. The build plan, architecture and milestones are in `docs/PLAN.md`; follow it. The stack is React + TypeScript + Vite, FastAPI and SQLite. It is in the design stage and no app is scaffolded yet. Add build, run and test commands here once it is.
 
-Privacy is a hard requirement. This repo is public and the author uses the app daily, so personal data must never enter the repo: the database lives in `~/.samuel/` (outside the repo), and screenshots, tests and fixtures use only fake demo data.
+Privacy is a hard requirement. This repo is public and the author uses the app daily, so personal data must never enter the repo:
+- The database lives in `~/.samuel/`, outside the repo.
+- Screenshots, tests, fixtures and designs use only the fake demo persona, never the author's real name.
+- Never write absolute local paths (e.g. `C:\Users\...`) into tracked files. Use `~` or paths relative to the repo.
+- Commits use the GitHub noreply email (set in this repo's git config), never a personal address.
 
 ## Git workflow
 
-As you work, commit to Git and push to GitHub regularly, so there is always a saved version to revert to.
+As you work, commit to Git and push to GitHub regularly, so there is always a saved version to revert to. The full process is under Process in `docs/PLAN.md`.
 
+- **Branches:**
+  - Until CI exists (the walking-skeleton milestone), commit to `main` and push.
+  - After that, create a feature branch per GitHub issue (`feat/…`, `fix/…`, `docs/…`) and open a pull request that must pass CI. Merge with squash.
 - Commit after each logical change; don't batch unrelated work into one commit.
 - Write clean commit messages: an imperative subject of 72 characters or fewer (e.g. "Add task snooze buttons"), then a short body explaining why when it isn't obvious.
-- Push to `origin main` after committing.
-- Never commit secrets, `.env` files or local database files (`.gitignore` covers these).
+- Never commit secrets, `.env` files, local database files or `*.local.json` settings (`.gitignore` covers these).
 - Undo published work with `git revert`, not by rewriting pushed history.
+- Each release gets a semantic version tag and a `CHANGELOG.md` entry. Each key decision gets a short ADR in `docs/adr/`.
 
 ## Design
 
