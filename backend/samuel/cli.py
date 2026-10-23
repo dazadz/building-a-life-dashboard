@@ -10,7 +10,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, db, reports, scores
+from . import backups, db, profile, reports, scores
 from .checkins import log_habit, save_checkin
 
 
@@ -76,7 +76,7 @@ def _backup_hourly() -> None:
 def cmd_export(args) -> None:
     conn = db.connect()
     if not args.all:
-        json.dump(reports.export(conn, args.since, args.until), sys.stdout, indent=1, ensure_ascii=False)
+        json.dump(reports.export(conn, args.since, args.until, args.sensitive), sys.stdout, indent=1, ensure_ascii=False)
         print()
         return
     data = backups.export_all(conn)
@@ -177,6 +177,21 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
             if rng.random() < 0.85:
                 log_habit(conn, day, key, "done" if rng.random() < 0.65 else "missed")
     seed_demo_goals(conn, end)
+    seed_demo_profile(conn)
+
+
+def seed_demo_profile(conn) -> None:
+    """Jordan has finished the first section and is part-way through the second, as in the design."""
+    profile.save(conn, "life", {
+        "age": 29, "occupation": "Analyst at a logistics company", "work_pattern": "Hybrid", "living": "Partner",
+        "care": "No", "satisfaction": 6, "stress": 7, "discipline": 5,
+        "frustrations": "No time for myself, always tired in the evenings",
+        "one_change": "A calm evening routine and real sleep",
+    }, done=True)
+    profile.save(conn, "routine", {
+        "wake_time": "06:45", "sleep_time": "23:30", "work_hours": 9, "exercise": "1–2×", "focus_span": "30–60",
+        "screen_time": 7, "social_media": 2, "time_wasted": 1.5,
+    })
 
 
 def seed_demo_goals(conn, end: date) -> None:
@@ -247,6 +262,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--all", action="store_true", help="export all data, for moving or restoring")
     p.add_argument("--out", help="with --all: write to this file instead of the screen")
     p.add_argument("--force", action="store_true", help="allow --out inside a git repository")
+    p.add_argument("--sensitive", action="store_true",
+                   help="include the health and mental health profile answers (onboarding insights only)")
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("import", help="restore an export made with export --all into an empty database")

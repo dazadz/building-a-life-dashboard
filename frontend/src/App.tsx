@@ -6,6 +6,7 @@ import { CheckinPage } from './pages/Checkin'
 import { CoachPage } from './pages/Coach'
 import { GoalsPage } from './pages/Goals'
 import { HabitsPage } from './pages/Habits'
+import { ProfilePage } from './pages/Profile'
 import { HomePage } from './pages/Home'
 import { OnboardingPage } from './pages/Onboarding'
 import { SettingsPage } from './pages/Settings'
@@ -67,6 +68,8 @@ export default function App() {
           <HabitsPage />
         ) : route === '/goals' ? (
           <GoalsPage />
+        ) : route === '/profile' ? (
+          <ProfilePage coach={coach} status={status.data} />
         ) : route === '/settings' ? (
           <SettingsPage onSaved={status.reload} />
         ) : route === '/coach' ? (

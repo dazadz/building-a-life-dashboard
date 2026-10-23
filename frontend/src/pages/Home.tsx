@@ -24,6 +24,7 @@ export function HomePage({ status }: { status: Status | null }) {
   const yesterday = addDays(today, -1)
   const days = useLoad(() => Promise.all([api.day(today), api.day(yesterday)]), [today])
   const reports = useLoad(() => api.reports('daily'), [])
+  const profile = useLoad(() => api.profile(), [])
   const [todayData, yesterdayData] = days.data ?? [null, null]
 
   const name = status?.name
@@ -47,6 +48,15 @@ export function HomePage({ status }: { status: Status | null }) {
       </header>
 
       {days.error && <ErrorLine message={days.error} onRetry={days.reload} />}
+      {profile.data && profile.data.answered < profile.data.total && (
+        <NeedsSetup>
+          <span style={{ flex: 1 }}>
+            <strong>Samuel knows {profile.data.answered} of {profile.data.total} things about you.</strong>{' '}
+            Finish your profile so every report fits your life.
+          </span>
+          <a href="#/profile">Continue profile →</a>
+        </NeedsSetup>
+      )}
 
       <section className="scores" aria-label={`Scores · ${scoreLabel}`}>
         {STRIP.map(({ key, label }) => {
