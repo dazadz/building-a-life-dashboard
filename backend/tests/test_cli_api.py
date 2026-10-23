@@ -109,3 +109,10 @@ def test_coach_job_fails_without_a_report(client, monkeypatch):
         time.sleep(0.1)
     assert job["status"] == "failed"
     assert "without saving a report" in job["error"]
+
+
+def test_habits_history_api(client):
+    client.put("/api/habits/2026-10-20/reading", json={"status": "done"})
+    body = client.get("/api/habits?end=2026-10-20&days=7").json()
+    assert body["dates"][-1] == "2026-10-20"
+    assert client.get("/api/habits?days=5").status_code == 422

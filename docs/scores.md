@@ -68,6 +68,8 @@ stress = 1 + 9 × strain, rounded to one decimal
 - **Habit rate:** the same calculation for one habit over the period you pick (7, 14, 30 or 90 days).
 - **Streak:** consecutive days a habit was done, counting back from yesterday, or from today if today is already logged. An unlogged day ends a streak and a skipped day (such as a rest day) doesn't. Best is the longest streak ever recorded.
 - **Check-in streak:** consecutive days with a saved check-in.
+- **Weekly consistency:** the Consistency rule applied to each Monday-to-Sunday week, for the Habits chart. A week with logs on fewer than 3 days shows no bar.
+- **Patterns (failure detection):** for each habit and weekday, look at the habit's last 4 logged occurrences on that weekday within the last 8 weeks. If at least 3 were missed, Samuel lists it (for example, "Reading: missed 3 of the last 4 Wednesdays"). Unlogged days don't count either way.
 - **Change vs last week** (the "+6" next to a score): today's score minus the average of the previous 7 days that have that score.
 - **7-day average:** the mean of the days that have a score. Days without one are left out rather than counted as 0.
 
