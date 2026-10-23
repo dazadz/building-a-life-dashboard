@@ -4,6 +4,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Added
+- **Chat with Samuel:** the prompt's coach mode as a conversation on the Coach page. Ask about your sleep, energy, habits, goals or plans and get an answer built from your own data, then ask follow-ups; Samuel sees the conversation so far. Start from a suggested question, or ask about the report you're reading. Conversations are kept on this computer, and each answer is a locked-down Claude Code run (the new `ask` skill) with the same two `samuel` commands as reports.
+
 ### Security
 - **Coach runs are locked down further.** Bash is the only tool, and only `samuel export` and `samuel report add` may run. Runs no longer load your own Claude Code settings or MCP servers. Inside a run, `samuel export` refuses full exports and `report add` won't read files.
 - **Exports can't be committed.** The privacy check stops any Samuel export file.

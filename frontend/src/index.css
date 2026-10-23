@@ -276,6 +276,17 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
 .report-item:hover { background: var(--inset); }
 .report-item[aria-current='true'] { background: var(--accent-soft); color: var(--text); border-left-color: var(--accent); }
 
+/* Chat with Samuel */
+.chat-thread { display: flex; flex-direction: column; gap: 12px; max-height: calc(60vh / var(--ui-scale, 1)); overflow-y: auto; padding-right: 4px; }
+.chat-msg { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: var(--radius-small); border: 1px solid var(--border); }
+.chat-msg p { margin: 0; white-space: pre-wrap; color: var(--text-body); }
+.chat-msg.user { align-self: flex-end; max-width: 80%; background: var(--inset); }
+.chat-msg.samuel { border-left: 2px solid var(--accent); }
+.chat-composer { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.chat-composer .input { flex: 1; min-width: 0; }
+.chat-composer .notice { flex-basis: 100%; }
+.chat-starters { display: flex; flex-direction: column; gap: 12px; }
+
 /* Habits */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .table-scroll { overflow-x: auto; }

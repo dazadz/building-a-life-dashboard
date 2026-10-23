@@ -11,7 +11,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, db, health, profile, reports, routines, scores, tasks
+from . import backups, chats, db, health, profile, reports, routines, scores, tasks
 from .checkins import log_habit, save_checkin
 
 
@@ -84,7 +84,13 @@ def cmd_export(args) -> None:
         sys.exit("Coach runs may only read recent data: --all, --out and --force are off.")
     conn = db.connect()
     if not args.all:
-        json.dump(reports.export(conn, args.since, args.until, args.sensitive, args.month), sys.stdout, indent=1, ensure_ascii=False)
+        data = reports.export(conn, args.since, args.until, args.sensitive, args.month)
+        if args.chat is not None:
+            try:
+                data["chat"] = chats.for_coach(conn, args.chat)
+            except LookupError as exc:
+                sys.exit(f"error: {exc}")
+        json.dump(data, sys.stdout, indent=1, ensure_ascii=False)
         print()
         return
     data = backups.export_all(conn)
@@ -122,6 +128,15 @@ def cmd_report_add(args) -> None:
     else:
         text = open(args.file, encoding="utf-8-sig").read()
     conn = db.connect()
+    if args.chat is not None:
+        if args.kind != "ask":
+            sys.exit("error: --chat is for --kind ask")
+        try:
+            chats.add_reply(conn, args.chat, text)
+        except (LookupError, ValueError) as exc:
+            sys.exit(f"error: {exc}")
+        print(f"Saved Samuel's reply in chat #{args.chat}")
+        return
     try:
         report_id = reports.add_report(conn, args.kind, text, args.date)
     except ValueError as exc:
@@ -308,6 +323,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--sensitive", action="store_true",
                    help="include the health and mental health profile answers (onboarding insights only)")
     p.add_argument("--month", action="store_true", help="include this month compared with last month")
+    p.add_argument("--chat", type=int, help="include this chat's conversation (for the ask skill)")
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("import", help="restore an export made with export --all into an empty database")
@@ -320,6 +336,7 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--kind", required=True, choices=reports.KINDS)
     r.add_argument("--file", default="-", help="markdown file, or - for stdin (default)")
     r.add_argument("--date", type=_date, help="the day the report is about (default today)")
+    r.add_argument("--chat", type=int, help="with --kind ask: save the text as Samuel's reply in this chat")
     r.set_defaults(func=cmd_report_add)
     r = rsub.add_parser("list", help="list recent reports")
     r.add_argument("--kind", choices=reports.KINDS)

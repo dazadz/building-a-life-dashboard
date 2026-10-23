@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, security, settings, tasks, weekly
+from . import backups, chats, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -159,6 +159,15 @@ class HealthLogIn(BaseModel):
     caffeine_cups: int | None = None
     caffeine_last: str | None = None
     screens_late: int | None = None
+
+
+class ChatIn(BaseModel):
+    text: str = Field(max_length=chats.MESSAGE_MAX)
+    report_id: int | None = None
+
+
+class ChatMessageIn(BaseModel):
+    text: str = Field(max_length=chats.MESSAGE_MAX)
 
 
 class CoachRunIn(BaseModel):
@@ -494,6 +503,58 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             raise HTTPException(409, str(exc))
         except RuntimeError as exc:
             raise HTTPException(503, str(exc))
+
+    def chat_answer(conn, chat_id: int) -> dict:
+        """Start Samuel's reply to the chat's latest message and return the chat."""
+        try:
+            coach.start(conn, "ask", chat_id)
+        except RuntimeError as exc:
+            raise HTTPException(503, str(exc))
+        return chats.get(conn, chat_id)
+
+    def chat_write(work):
+        try:
+            return work()
+        except LookupError as exc:
+            raise HTTPException(404, str(exc))
+        except chats.Busy as exc:
+            raise HTTPException(409, str(exc))
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    @app.get("/api/chats")
+    def get_chats(conn=Depends(get_conn)):
+        return chats.list_chats(conn)
+
+    @app.post("/api/chats", status_code=201)
+    def post_chat(body: ChatIn, conn=Depends(get_conn)):
+        if coach.claude_path() is None:
+            raise HTTPException(503, "Claude Code is not installed")
+        chat_id = chat_write(lambda: chats.create(conn, body.text, body.report_id))
+        return chat_answer(conn, chat_id)
+
+    @app.get("/api/chats/{chat_id}")
+    def get_chat(chat_id: int, conn=Depends(get_conn)):
+        return chat_write(lambda: chats.get(conn, chat_id))
+
+    @app.post("/api/chats/{chat_id}/messages")
+    def post_chat_message(chat_id: int, body: ChatMessageIn, conn=Depends(get_conn)):
+        if coach.claude_path() is None:
+            raise HTTPException(503, "Claude Code is not installed")
+        chat_write(lambda: chats.ask(conn, chat_id, body.text))
+        return chat_answer(conn, chat_id)
+
+    @app.post("/api/chats/{chat_id}/retry")
+    def post_chat_retry(chat_id: int, conn=Depends(get_conn)):
+        chat = chat_write(lambda: chats.get(conn, chat_id))
+        if chat["pending"] or not chat["awaiting_reply"]:
+            raise HTTPException(409, "There's no unanswered question to retry.")
+        return chat_answer(conn, chat_id)
+
+    @app.delete("/api/chats/{chat_id}")
+    def delete_chat(chat_id: int, conn=Depends(get_conn)):
+        chat_write(lambda: chats.delete(conn, chat_id))
+        return chats.list_chats(conn)
 
     @app.get("/api/coach/jobs/{job_id}")
     def get_job(job_id: int, conn=Depends(get_conn)):
