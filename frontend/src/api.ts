@@ -46,7 +46,19 @@ export interface Status {
   coach: { installed: boolean; skills: string[]; has_recent_checkin: boolean }
   today: string
   name: string | null
+  onboarded: boolean
 }
+
+export interface Settings {
+  name: string | null
+  onboarded: boolean
+  wake_target: string
+  sleep_target_hours: number
+  deep_work_target_hours: number
+  habits: { key: string; name: string; auto: number; active: boolean }[]
+}
+
+export type SettingsChange = Partial<Pick<Settings, 'name' | 'onboarded' | 'wake_target' | 'sleep_target_hours' | 'deep_work_target_hours'>>
 
 export interface Report {
   id: number
@@ -117,6 +129,11 @@ export const api = {
   logHabit: (date: string, key: string, status: HabitStatus | null) =>
     request<Day>(`/api/habits/${date}/${key}`, { method: 'PUT', body: JSON.stringify({ status }) }),
   habits: (end: string, days: number) => request<HabitHistory>(`/api/habits?end=${end}&days=${days}`),
+  settings: (today: string) => request<Settings>(`/api/settings?today=${today}`),
+  saveSettings: (today: string, changes: SettingsChange) =>
+    request<Settings>(`/api/settings?today=${today}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  setHabitActive: (key: string, active: boolean) =>
+    request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ active }) }),
   reports: (kind?: string) => request<Report[]>(`/api/reports${kind ? `?kind=${kind}` : ''}`),
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),

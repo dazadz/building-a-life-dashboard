@@ -34,7 +34,7 @@ def save_checkin(conn: sqlite3.Connection, day: str, answers: dict) -> dict:
 def auto_tick(conn: sqlite3.Connection, day: str) -> None:
     """Tick the four habits the check-in answers. Manual logs always win."""
     checkin = dict(conn.execute("SELECT * FROM checkins WHERE date = ?", (day,)).fetchone())
-    t = targets(conn)
+    t = targets(conn, day)
     v = inputs(checkin, {}, t)
 
     status = {
@@ -50,7 +50,7 @@ def auto_tick(conn: sqlite3.Connection, day: str) -> None:
             continue
         conn.execute(
             """INSERT INTO habit_logs (habit_id, date, status, source)
-               SELECT id, ?, ?, 'auto' FROM habits WHERE key = ?
+               SELECT id, ?, ?, 'auto' FROM habits WHERE key = ? AND archived = 0
                ON CONFLICT (habit_id, date) DO UPDATE SET status = excluded.status
                WHERE habit_logs.source = 'auto'""",
             (day, st, key),

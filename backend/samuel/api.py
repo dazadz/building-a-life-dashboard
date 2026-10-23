@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import coach, db, habits, reports, scores, security
+from . import coach, db, habits, reports, scores, security, settings
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -36,6 +36,18 @@ class CheckinIn(BaseModel):
         if v and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", v):
             raise ValueError("use HH:MM")
         return v
+
+
+class SettingsIn(BaseModel):
+    name: str | None = Field(None, max_length=40)
+    wake_target: str | None = None
+    sleep_target_hours: float | None = None
+    deep_work_target_hours: float | None = None
+    onboarded: bool | None = None
+
+
+class HabitActiveIn(BaseModel):
+    active: bool
 
 
 class HabitIn(BaseModel):
@@ -72,6 +84,7 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             "coach": {**coach.status(), "has_recent_checkin": coach.has_recent_checkin(conn)},
             "today": date.today().isoformat(),
             "name": db.get_setting(conn, "name"),
+            "onboarded": bool(db.get_setting(conn, "onboarded", False)),
         }
 
     @app.get("/api/days/{day}")
@@ -104,6 +117,27 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         except KeyError:
             raise HTTPException(404, "unknown habit")
         return get_day(day, conn)
+
+    @app.get("/api/settings")
+    def get_settings(today: str | None = None, conn=Depends(get_conn)):
+        return settings.public(conn, _day(today) if today else date.today().isoformat())
+
+    @app.put("/api/settings")
+    def put_settings(body: SettingsIn, today: str | None = None, conn=Depends(get_conn)):
+        day = _day(today) if today else date.today().isoformat()
+        try:
+            settings.update(conn, body.model_dump(exclude_none=True), day)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return settings.public(conn, day)
+
+    @app.put("/api/habit-settings/{key}")
+    def put_habit_setting(key: str, body: HabitActiveIn, conn=Depends(get_conn)):
+        try:
+            settings.set_habit_active(conn, key, body.active)
+        except KeyError:
+            raise HTTPException(404, "unknown habit")
+        return settings.habit_list(conn)
 
     @app.get("/api/reports")
     def get_reports(kind: str | None = None, limit: int = 20, conn=Depends(get_conn)):

@@ -6,7 +6,6 @@ Missing data is None and is never counted as 0.
 import sqlite3
 from datetime import date, timedelta
 
-from . import db
 
 MOOD = {"low": 0.0, "flat": 0.25, "okay": 0.5, "good": 0.75, "great": 1.0}
 SCORE_NAMES = ("productivity", "focus", "energy", "discipline", "balance")
@@ -92,14 +91,17 @@ def daily_scores(checkin: dict | None, habits: dict[str, str], targets: dict) ->
 
 # Reading from the database
 
-def targets(conn: sqlite3.Connection) -> dict:
-    st = db.settings(conn)
-    return {k: st[k] for k in ("sleep_target_hours", "deep_work_target_hours", "wake_target")}
+def targets(conn: sqlite3.Connection, day: str) -> dict:
+    """The targets that applied on `day` (a changed target only applies from the day it changed)."""
+    from .settings import targets_on
+
+    return targets_on(conn, day)
 
 
 def habit_statuses(conn: sqlite3.Connection, day: str) -> dict[str, str]:
     rows = conn.execute(
-        "SELECT h.key, l.status FROM habit_logs l JOIN habits h ON h.id = l.habit_id WHERE l.date = ?",
+        "SELECT h.key, l.status FROM habit_logs l JOIN habits h ON h.id = l.habit_id "
+        "WHERE l.date = ? AND h.archived = 0",
         (day,),
     )
     return {r["key"]: r["status"] for r in rows}
@@ -111,7 +113,7 @@ def checkin_row(conn: sqlite3.Connection, day: str) -> dict | None:
 
 
 def scores_for(conn: sqlite3.Connection, day: str) -> dict:
-    return daily_scores(checkin_row(conn, day), habit_statuses(conn, day), targets(conn))
+    return daily_scores(checkin_row(conn, day), habit_statuses(conn, day), targets(conn, day))
 
 
 def _days_before(day: str, n: int) -> list[str]:
