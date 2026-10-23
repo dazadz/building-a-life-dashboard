@@ -19,7 +19,7 @@ Decisions from the user:
 
 Decisions from the plan review (2026-10-24):
 - **v1 scope:** the core loop (short onboarding, daily check-in, habits, Home, Samuel's daily report) plus goals and the weekly review. Health, monthly evolution, tasks, theming, email and calendar come in later releases.
-- **Mobile:** design phone-width (390px) layouts for every screen before building.
+- **Mobile:** PC first (decided 2026-10-24). Phone-width (390px) layouts and phone access come after the desktop app works.
 - **Check-in:** all 12 questions every day, as the prompt specifies. To keep it fast:
   - pre-fill from yesterday
   - tick habits automatically from the answers
@@ -160,20 +160,17 @@ design/    canvas source (kept in sync)
 
 ## Milestones
 1. **Designs (done):** the 12 desktop screens on the canvas and in `design/`.
-2. **Design gaps:**
-   - 390px mobile layouts for every screen
-   - first-run, empty, loading and error states, including "Claude Code not installed"
-   - swap the real name for the demo persona
-   - write `docs/scores.md`
-3. **Walking skeleton:** one thin end-to-end slice that proves the riskiest parts first.
+2. **Design gaps (done):** swap the real name for the demo persona, and write `docs/scores.md`. First-run, empty, loading and error states are designed alongside the screens that need them.
+3. **Walking skeleton (PC):** one thin end-to-end slice that proves the riskiest parts first.
    - backend and frontend skeletons, the `samuel` CLI, the data dir outside the repo, migrations and CI
    - save a check-in, calculate a score, run `claude -p` to write a daily report
-   - show the report on a phone over Tailscale HTTPS with a passcode
+   - show the report in the browser on the PC
 4. **v0.1 (core loop):** short onboarding, the full daily check-in, habits with auto-ticking and streaks, Home with the score strip, the Coach screen and daily reports, backups.
 5. **v0.2 (planning):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and push notifications.
 6. **v0.3:** Health & energy, monthly evolution, tasks with reminders, and Settings → Appearance theming.
 7. **v0.4 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar.
-8. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
+8. **Phone:** 390px layouts for every screen, then phone access over Tailscale HTTPS with a passcode, the installable PWA and push notifications.
+9. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
 
 ## Verification
 - **Tests:** `pytest` covers scores (nulls aren't treated as 0), the upsert rule, CLI export and import, and the passcode requirement for `--lan`. `npm test` and `npm run build` pass, and CI is green on GitHub.
