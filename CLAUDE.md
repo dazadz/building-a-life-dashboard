@@ -50,7 +50,7 @@ As you work, commit to Git and push to GitHub regularly, so there is always a sa
 
 Design rules:
 - Tech style (since 2026-10-24, this overrides the canvas's colours and fonts; the canvas still defines layout): deep blue-black surfaces (page #0A0D13, sidebar #0D1118, card #11161F, border #1E2633) and one electric cyan accent (default #22E0E6). Status colours: green #5BE38A, amber #FFC24D, blue #5CB8FF. Every text colour passes WCAG AA on every surface.
-- Mission control details (since 2026-10-24): Chakra Petch for uppercase headings, Inter for body text, JetBrains Mono for numbers, times, and small uppercase labels, all bundled locally. Sharp 2px corners, thin 1px borders, accent corner brackets on cards, segmented LED-style meters, a soft accent glow on active items, and a soft accent glow under headings, labels and key numbers (a text-shadow). No background grid. Settings sits at the bottom-left of the sidebar.
+- Mission control details (since 2026-10-24): Sora for uppercase headings (round, not blocky), Inter for body text, JetBrains Mono for numbers, times, and small uppercase labels, all bundled locally. Sharp 2px corners, thin 1px borders, accent corner brackets on cards, segmented LED-style meters, a soft accent glow on active items, and a soft accent glow under headings, labels and key numbers (a text-shadow). No background grid. Settings sits at the bottom-left of the sidebar.
 - Users can re-theme from any accent (see Custom themes in `docs/PLAN.md`), so build every colour from CSS variables and never hard-code the hex values in components.
 - Every card prompts an action and ends with a "→" link.
 - Dense lists of 5–10 rows with "Show more", filter pills, sortable headers, and visible labels.
