@@ -113,6 +113,7 @@ const healthBody = {
   energy_gap: 1.6,
   inputs: { water_l: 1.6, caffeine_cups: 3, caffeine_latest: '16:10', screens_late: 48, workouts: 3, logged_days: 5 },
   log_today: null,
+  week_scores: { lifestyle: 72, lifestyle_change: 5, balance: 64, balance_change: null },
 }
 
 const monthlyBody = {
@@ -332,6 +333,7 @@ describe('App', () => {
     expect(await screen.findByText('Caffeine after 15:00 on 4 days')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Burnout risk: moderate' })).toBeInTheDocument()
     expect(await screen.findByText('Slept to target')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Lifestyle 72 of 100' })).toBeInTheDocument()
     expect(screen.getByText('+1.8')).toBeInTheDocument()
     expect(screen.getByText('Energy is 1.6 points lower on days with less than 6.5 h of sleep.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }))

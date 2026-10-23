@@ -48,3 +48,11 @@ def test_day_score_needs_two_parts():
     s = daily_scores({"productivity": 10}, {}, TARGETS)
     assert s["productivity"] == 100  # the rating is half the weight
     assert s["day"] is None
+
+
+def test_lifestyle_is_sleep_workout_eating_and_water():
+    s = daily_scores(FULL, {"healthy_eating": "done", "water": "missed"}, TARGETS)
+    assert s["lifestyle"] == 75  # sleep 1, workout 1, eating 1, water 0
+    rest_day = daily_scores({**FULL, "workout": "rest", "sleep_hours": 6}, {}, TARGETS)
+    assert rest_day["lifestyle"] == round(100 * (6 / 7.5 + 1) / 2)  # habits not logged: their weight is shared out
+    assert daily_scores({"sleep_hours": 7.5}, {}, TARGETS)["lifestyle"] is None  # a quarter of the weight
