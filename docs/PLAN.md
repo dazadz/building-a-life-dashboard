@@ -166,7 +166,7 @@ design/    canvas source (kept in sync)
    - save a check-in, calculate a score, run `claude -p` to write a daily report
    - show the report in the browser on the PC
 4. **v0.1 (core loop):** short onboarding, the full daily check-in, habits with auto-ticking and streaks, Home with the score strip, the Coach screen and daily reports, backups.
-5. **v0.2 (planning):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and push notifications.
+5. **v0.2 (planning):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and the full 45-question onboarding. Push notifications moved to the Phone milestone, since they need HTTPS on the phone.
 6. **v0.3:** Health & energy, monthly evolution, tasks with reminders, and Settings → Appearance theming.
 7. **v0.4 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar.
 8. **Phone:** 390px layouts for every screen, then phone access over Tailscale HTTPS with a passcode, the installable PWA and push notifications.

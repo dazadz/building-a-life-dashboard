@@ -214,6 +214,24 @@ export interface WeeklyChange {
   status: 'draft' | 'done'
 }
 
+export interface Routine {
+  id: number
+  name: string
+  start: string
+  end: string
+  weekdays: number[]
+  note: string | null
+}
+
+export type RoutineFields = Omit<Routine, 'id'>
+
+export interface Plan {
+  date: string
+  blocks: Routine[]
+  due_today: { id: number; title: string; goal_title: string }[]
+  has_routine: boolean
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -264,6 +282,14 @@ export const api = {
     request<WeeklyReview>(`/api/weekly?today=${today}${week ? `&week=${week}` : ''}`),
   saveWeekly: (today: string, week: string, change: WeeklyChange) =>
     request<WeeklyReview>(`/api/weekly/${week}?today=${today}`, { method: 'PUT', body: JSON.stringify(change) }),
+  routines: () => request<Routine[]>('/api/routines'),
+  addRoutine: (fields: RoutineFields) => request<Routine[]>('/api/routines', { method: 'POST', body: JSON.stringify(fields) }),
+  addSuggestedRoutine: (today: string) =>
+    request<Routine[]>(`/api/routines/suggested?today=${today}`, { method: 'POST', body: '{}' }),
+  updateRoutine: (id: number, changes: Partial<RoutineFields>) =>
+    request<Routine[]>(`/api/routines/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  deleteRoutine: (id: number) => request<Routine[]>(`/api/routines/${id}`, { method: 'DELETE', body: '{}' }),
+  plan: (day: string) => request<Plan>(`/api/plan/${day}`),
   profile: () => request<Profile>('/api/profile'),
   saveProfile: (section: string, answers: Record<string, ProfileValue>, done?: boolean) =>
     request<Profile>(`/api/profile/${section}`, { method: 'PUT', body: JSON.stringify({ answers, done }) }),

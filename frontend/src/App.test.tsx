@@ -83,6 +83,14 @@ const weeklyBody = {
   status: null, updated_at: null,
 }
 
+const planBody = {
+  date: '2026-10-24', has_routine: true, due_today: [{ id: 11, title: '14 km long run', goal_title: 'Half marathon' }],
+  blocks: [
+    { id: 1, name: 'Morning routine', start: '00:00', end: '00:01', weekdays: [5], note: 'Water, light' },
+    { id: 2, name: 'Wind down', start: '23:58', end: '23:59', weekdays: [5], note: null },
+  ],
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -94,6 +102,8 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
     else if (url.startsWith('/api/profile')) body = profileBody
     else if (url.startsWith('/api/weekly')) body = weeklyBody
+    else if (url.startsWith('/api/plan/')) body = planBody
+    else if (url.startsWith('/api/routines')) body = planBody.blocks
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
     return new Response(JSON.stringify(body), { status: 200 })
   }))
@@ -199,6 +209,20 @@ describe('App', () => {
           priorities: ['Ship the budget', '', ''], carry: [5], status: 'done',
         }),
       })),
+    )
+  })
+
+  it("shows today's plan on Home and edits the routine in Settings", async () => {
+    mockServer(true)
+    render(<App />)
+    expect(await screen.findByText('Morning routine')).toBeInTheDocument()
+    expect(screen.getByText('14 km long run')).toBeInTheDocument()
+
+    window.location.hash = '#/settings'
+    fireEvent(window, new HashChangeEvent('hashchange'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Remove Wind down' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/routines/2', expect.objectContaining({ method: 'DELETE' })),
     )
   })
 
