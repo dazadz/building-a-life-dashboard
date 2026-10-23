@@ -59,3 +59,11 @@ def test_turned_off_habit_is_not_auto_ticked(conn):
     assert conn.execute(
         "SELECT COUNT(*) FROM habit_logs l JOIN habits h ON h.id = l.habit_id WHERE h.key = 'workout'"
     ).fetchone()[0] == 0
+
+
+def test_text_size_defaults_to_medium_and_can_change(conn):
+    assert settings.public(conn, "2026-10-24")["text_size"] == "medium"
+    settings.update(conn, {"text_size": "large"}, "2026-10-24")
+    assert settings.public(conn, "2026-10-24")["text_size"] == "large"
+    with pytest.raises(ValueError):
+        settings.update(conn, {"text_size": "huge"}, "2026-10-24")

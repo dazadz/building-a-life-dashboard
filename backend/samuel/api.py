@@ -45,6 +45,7 @@ class SettingsIn(BaseModel):
     sleep_target_hours: float | None = None
     deep_work_target_hours: float | None = None
     onboarded: bool | None = None
+    text_size: str | None = None
 
 
 class HabitActiveIn(BaseModel):
@@ -129,6 +130,7 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             "today": date.today().isoformat(),
             "name": db.get_setting(conn, "name"),
             "onboarded": bool(db.get_setting(conn, "onboarded", False)),
+            "text_size": db.get_setting(conn, "text_size", settings.DEFAULT_TEXT_SIZE),
         }
 
     @app.get("/api/days/{day}")

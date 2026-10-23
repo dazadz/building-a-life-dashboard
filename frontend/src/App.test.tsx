@@ -15,7 +15,7 @@ const emptyDay = (date: string) => ({
 })
 
 const settingsBody = {
-  name: null, onboarded: false, wake_target: '07:00', sleep_target_hours: 7.5, deep_work_target_hours: 3,
+  name: null, onboarded: false, text_size: 'medium', wake_target: '07:00', sleep_target_hours: 7.5, deep_work_target_hours: 3,
   habits: [{ key: 'reading', name: 'Reading done', auto: 0, active: true }],
 }
 

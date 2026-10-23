@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { api } from './api'
+import { api, type TextSize } from './api'
 import { ServerDown } from './components/States'
 import { useCoachJob, useLoad, useRoute } from './hooks'
 import { CheckinPage } from './pages/Checkin'
@@ -19,12 +19,18 @@ const NAV = [
   { href: '#/coach', route: '/coach', label: 'Coach' },
 ]
 const SETTINGS = { href: '#/settings', route: '/settings', label: 'Settings' }
+const TEXT_SCALE: Record<TextSize, number> = { small: 1, medium: 1.1, large: 1.25, xlarge: 1.4 }
 
 export default function App() {
   const route = useRoute()
   // Reload on each screen change, so the Coach page knows about a check-in saved a moment ago.
   const status = useLoad(() => api.status(), [route])
   const coach = useCoachJob()
+  // The text size setting scales the whole interface (see --ui-scale in index.css).
+  const textSize = status.data?.text_size
+  useEffect(() => {
+    if (textSize) document.documentElement.style.setProperty('--ui-scale', String(TEXT_SCALE[textSize]))
+  }, [textSize])
   // Check in every 30 seconds: a server started by `samuel app` stops once no window checks in.
   useEffect(() => {
     const id = window.setInterval(() => void api.status().catch(() => {}), 30_000)
