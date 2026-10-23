@@ -150,7 +150,7 @@ const VISIBLE_HABITS = 6
 function HabitsCard({ day, onChange }: { day: Day | null; onChange: (d: Day) => void }) {
   const [showAll, setShowAll] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  if (!day) return <Card title="Habits today" action={<a href="#/checkin">Check-in →</a>}><Loading /></Card>
+  if (!day) return <Card title="Habits today" action={<a href="#/habits">Habits →</a>}><Loading /></Card>
 
   const done = day.habits.filter((h) => h.status === 'done').length
   const shown = showAll ? day.habits : day.habits.slice(0, VISIBLE_HABITS)
@@ -175,7 +175,7 @@ function HabitsCard({ day, onChange }: { day: Day | null; onChange: (d: Day) => 
           </button>
         )
       }
-      action={<a href="#/checkin">Check-in →</a>}
+      action={<a href="#/habits">Habits →</a>}
     >
       {error && <ErrorLine message={error} />}
       <ul className="list">

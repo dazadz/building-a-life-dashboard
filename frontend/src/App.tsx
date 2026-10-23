@@ -3,11 +3,13 @@ import { ServerDown } from './components/States'
 import { useCoachJob, useLoad, useRoute } from './hooks'
 import { CheckinPage } from './pages/Checkin'
 import { CoachPage } from './pages/Coach'
+import { HabitsPage } from './pages/Habits'
 import { HomePage } from './pages/Home'
 
 const NAV = [
   { href: '#/', route: '/', label: 'Today' },
   { href: '#/checkin', route: '/checkin', label: 'Check-in' },
+  { href: '#/habits', route: '/habits', label: 'Habits' },
   { href: '#/coach', route: '/coach', label: 'Coach' },
 ]
 
@@ -41,6 +43,8 @@ export default function App() {
       <main>
         {route === '/checkin' ? (
           <CheckinPage coach={coach} coachInstalled={status.data?.coach.installed ?? false} />
+        ) : route === '/habits' ? (
+          <HabitsPage />
         ) : route === '/coach' ? (
           <CoachPage coach={coach} status={status.data} />
         ) : (

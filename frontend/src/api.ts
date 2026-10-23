@@ -66,6 +66,23 @@ export interface CoachJob {
   finished_at: string | null
 }
 
+export interface HabitHistory {
+  end: string
+  dates: string[]
+  habits: {
+    key: string
+    name: string
+    auto: number
+    days: (HabitStatus | null)[]
+    streak: number
+    best: number
+    rate: number | null
+  }[]
+  consistency: number | null
+  weekly: { week_start: string; consistency: number | null }[]
+  patterns: { key: string; name: string; weekday: string; missed: number; of: number }[]
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -99,6 +116,7 @@ export const api = {
     request<Day>(`/api/checkins/${date}`, { method: 'PUT', body: JSON.stringify(answers) }),
   logHabit: (date: string, key: string, status: HabitStatus | null) =>
     request<Day>(`/api/habits/${date}/${key}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+  habits: (end: string, days: number) => request<HabitHistory>(`/api/habits?end=${end}&days=${days}`),
   reports: (kind?: string) => request<Report[]>(`/api/reports${kind ? `?kind=${kind}` : ''}`),
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
