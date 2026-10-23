@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import coach, db, habits, reports, scores, security, settings
+from . import backups, coach, db, habits, reports, scores, security, settings
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -138,6 +138,20 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         except KeyError:
             raise HTTPException(404, "unknown habit")
         return settings.habit_list(conn)
+
+    @app.get("/api/data")
+    def get_data(conn=Depends(get_conn)):
+        return {
+            "data_dir": str(db.data_dir()),
+            "last_backup": backups.last_backup(),
+            "backups": len(backups.list_backups()),
+            "keep_daily": backups.KEEP_DAILY,
+        }
+
+    @app.post("/api/backup")
+    def post_backup(conn=Depends(get_conn)):
+        db.backup(conn, backups.folder(), reason="manual")
+        return get_data(conn)
 
     @app.get("/api/reports")
     def get_reports(kind: str | None = None, limit: int = 20, conn=Depends(get_conn)):

@@ -95,6 +95,13 @@ export interface HabitHistory {
   patterns: { key: string; name: string; weekday: string; missed: number; of: number }[]
 }
 
+export interface DataInfo {
+  data_dir: string
+  last_backup: { file: string; at: string } | null
+  backups: number
+  keep_daily: number
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -134,6 +141,8 @@ export const api = {
     request<Settings>(`/api/settings?today=${today}`, { method: 'PUT', body: JSON.stringify(changes) }),
   setHabitActive: (key: string, active: boolean) =>
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ active }) }),
+  data: () => request<DataInfo>('/api/data'),
+  backupNow: () => request<DataInfo>('/api/backup', { method: 'POST', body: '{}' }),
   reports: (kind?: string) => request<Report[]>(`/api/reports${kind ? `?kind=${kind}` : ''}`),
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),

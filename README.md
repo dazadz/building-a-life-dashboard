@@ -63,11 +63,18 @@ Then start Samuel again.
 
 Reports need Claude Code installed and logged in on this computer (run `claude` once in a terminal to log in). Use **Generate daily report** on the Coach page, or **Save and write my report** on the check-in. Scores work without Claude Code.
 
+### Backups and moving your data
+
+- **Automatic:** while Samuel runs, it saves a copy of your database once a day to `~\.samuel\backups`, keeping the last 14. It also saves one before every update to the database.
+- **Now:** Settings → Your data → **Back up now**, or `.\.venv\Scripts\samuel backup`.
+- **Restore a backup:** stop Samuel, then copy the backup file over `~\.samuel\samuel.db`.
+- **Export everything** (to move to another PC): `.\.venv\Scripts\samuel export --all --out "$HOME\Documents\samuel-export.json"`. The file holds all your personal data, so keep it private. Samuel refuses to write it inside a git repository.
+- **Import** into a fresh, empty Samuel: `.\.venv\Scripts\samuel import "$HOME\Documents\samuel-export.json"`.
+
 ### Tips
 
 - **Typing `samuel` without `.\.venv\Scripts\`:** activate the virtualenv with `.\.venv\Scripts\Activate.ps1`. If PowerShell refuses with an "execution policy" error, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.
 - **"Address already in use":** Samuel is already running in another window. Use that one, or start on another port with `samuel serve --port 8766`.
-- **Back up your data:** `.\.venv\Scripts\samuel backup` writes a dated copy to `~\.samuel\backups`.
 - **Working on the frontend:** run `npm run dev` in `frontend` while `samuel serve` is running, and open http://localhost:5173 for live reload.
 
 **Contributing:** turn on the privacy check once with `git config core.hooksPath scripts/hooks`. It stops a commit that contains database files, secrets, local paths or personal email addresses. To block your own name too, add it (one word per line) to `.git/info/private-words`, which is never committed.
