@@ -4,6 +4,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Added
+- **Tasks with reminders:** Today, Upcoming, Overdue, All and Done views with counts, lists, priority, filters and sorting; subtasks, notes and links to goals; quick add that reads dates, times, #lists and !high as you type; Done, +1 hour and Tomorrow on every task. Reminders appear as Windows notifications (when allowed) and as cards in the app while Samuel is open; nothing goes through an outside push service. Samuel's daily report sees tasks that are overdue or due this week.
+
 ## [0.2.0] - 2026-10-24
 
 Planning: goals, the full onboarding, the weekly review and today's plan, plus a new look and a desktop window.
