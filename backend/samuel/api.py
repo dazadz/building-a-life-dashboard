@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, chats, coach, db, energy, goals, habits, health, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
+from . import backups, chats, coach, db, digest, energy, goals, habits, health, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -446,6 +446,10 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     def delete_subtask(subtask_id: int, now: str | None = None, conn=Depends(get_conn)):
         task_write(lambda: tasks.set_subtask(conn, subtask_id, None, delete_it=True))
         return tasks.summary(conn, _now(now))
+
+    @app.get("/api/digest")
+    def get_digest(now: str | None = None, conn=Depends(get_conn)):
+        return digest.digest(conn, _now(now))
 
     @app.get("/api/reminders/due")
     def get_due_reminders(now: str | None = None, conn=Depends(get_conn)):

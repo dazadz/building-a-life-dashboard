@@ -106,6 +106,18 @@ export interface Chat {
   awaiting_reply: boolean
 }
 
+export interface Digest {
+  now: string
+  focus: { text: string; source: string } | null
+  due: {
+    overdue: number
+    today: number
+    items: { kind: 'task' | 'milestone'; id: number; title: string; time: string | null; overdue: boolean; high: boolean }[]
+  }
+  next: { name: string; start: string; end: string; state: 'now' | 'next' } | null
+  yesterday: { date: string; score: number | null; change: number | null }
+}
+
 export interface SearchResults {
   query: string
   groups: {
@@ -434,6 +446,7 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  digest: (now: string) => request<Digest>(`/api/digest?now=${now}`),
   search: (q: string) => request<SearchResults>(`/api/search?q=${encodeURIComponent(q)}`),
   chats: () => request<ChatSummary[]>('/api/chats'),
   chat: (id: number) => request<Chat>(`/api/chats/${id}`),
