@@ -26,7 +26,7 @@ Backend (`backend/`, Python 3.11+, virtualenv in `backend/.venv`):
 Frontend (`frontend/`, Node 22):
 - `npm install`, then `npm run dev` (port 5173, proxies `/api` to 8765), `npm test`, `npm run lint`, `npm run build`
 
-Coach: skills live in `.claude/skills/` (`daily-report`, `onboard-insights`, `weekly-review`, `monthly-evolution`). The onboarding questions live in `backend/samuel/profile.py`; sensitive answers only reach Claude via `samuel export --sensitive`. The backend runs `claude -p "/daily-report" --tools Bash --setting-sources project --strict-mcp-config --allowedTools "Bash(samuel export *)" "Bash(samuel report add *)"` from the repo root, with `SAMUEL_COACH=1` so the CLI refuses full exports (`--all/--out/--force`) and reading report files. Keep coach runs this narrow: check-in text reaches Claude and must not be able to steer it into copying data.
+Coach: skills live in `.claude/skills/` (`daily-report`, `onboard-insights`, `weekly-review`, `monthly-evolution`, and `ask` for chat, run as `/ask <chat id>`). The onboarding questions live in `backend/samuel/profile.py`; sensitive answers only reach Claude via `samuel export --sensitive`. The backend runs `claude -p "/daily-report" --tools Bash --setting-sources project --strict-mcp-config --allowedTools "Bash(samuel export *)" "Bash(samuel report add *)"` from the repo root, with `SAMUEL_COACH=1` so the CLI refuses full exports (`--all/--out/--force`) and reading report files. Keep coach runs this narrow: check-in text reaches Claude and must not be able to steer it into copying data.
 
 Scores follow `docs/scores.md` exactly. Change the doc first, then `backend/samuel/scores.py` and its tests.
 

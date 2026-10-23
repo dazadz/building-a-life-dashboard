@@ -78,6 +78,34 @@ export interface Report {
   created_at: string
 }
 
+export interface ChatMessage {
+  id: number
+  role: 'user' | 'samuel'
+  text: string
+  created_at: string
+}
+
+export interface ChatSummary {
+  id: number
+  title: string
+  report_id: number | null
+  created_at: string
+  updated_at: string | null
+  messages: number
+  pending: boolean
+}
+
+export interface Chat {
+  id: number
+  title: string
+  report_id: number | null
+  created_at: string
+  messages: ChatMessage[]
+  pending: boolean
+  error: string | null
+  awaiting_reply: boolean
+}
+
 export interface CoachJob {
   id: number
   skill: string
@@ -386,6 +414,14 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  chats: () => request<ChatSummary[]>('/api/chats'),
+  chat: (id: number) => request<Chat>(`/api/chats/${id}`),
+  startChat: (text: string, reportId?: number) =>
+    request<Chat>('/api/chats', { method: 'POST', body: JSON.stringify({ text, report_id: reportId ?? null }) }),
+  sendChat: (id: number, text: string) =>
+    request<Chat>(`/api/chats/${id}/messages`, { method: 'POST', body: JSON.stringify({ text }) }),
+  retryChat: (id: number) => request<Chat>(`/api/chats/${id}/retry`, { method: 'POST', body: '{}' }),
+  deleteChat: (id: number) => request<ChatSummary[]>(`/api/chats/${id}`, { method: 'DELETE', body: '{}' }),
   // Goals writes return the whole Goals screen. DELETE sends '{}' because every write must be JSON.
   weekly: (today: string, week?: string) =>
     request<WeeklyReview>(`/api/weekly?today=${today}${week ? `&week=${week}` : ''}`),

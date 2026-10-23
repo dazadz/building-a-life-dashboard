@@ -355,6 +355,30 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: 'Generate daily report' })).not.toBeInTheDocument()
   })
 
+  it('chats with Samuel, starting from a suggested question', async () => {
+    mockServer(true)
+    const base = fetch as (url: string, init?: RequestInit) => Promise<Response>
+    const chat = {
+      id: 3, title: 'What should I focus on tomorrow?', report_id: null, created_at: '2026-10-24T09:00:00Z',
+      messages: [{ id: 1, role: 'user', text: 'What should I focus on tomorrow?', created_at: '2026-10-24T09:00:00Z' }],
+      pending: false, error: null, awaiting_reply: false,
+    }
+    const replied = { ...chat, messages: [...chat.messages, { id: 2, role: 'samuel', text: 'The **budget draft**: due Monday.', created_at: '2026-10-24T09:01:00Z' }] }
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === '/api/chats' && init?.method === 'POST') return new Response(JSON.stringify({ ...chat, pending: true }), { status: 201 })
+      if (url === '/api/chats/3') return new Response(JSON.stringify(replied), { status: 200 })
+      return base(url, init)
+    }))
+    window.location.hash = '#/coach'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'What should I focus on tomorrow?' }))
+    expect(await screen.findByText('budget draft')).toBeInTheDocument()
+    expect(fetch).toHaveBeenCalledWith('/api/chats', expect.objectContaining({
+      method: 'POST', body: '{"text":"What should I focus on tomorrow?","report_id":null}',
+    }))
+    expect(screen.getByLabelText('Ask a follow-up')).toBeInTheDocument()
+  })
+
   it('walks a new user through setup', async () => {
     mockServer(true, true, false)
     render(<App />)
