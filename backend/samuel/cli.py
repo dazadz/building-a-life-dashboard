@@ -154,6 +154,56 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
         for key in ("reading", "healthy_eating", "water", "meditation", "no_procrastination", "no_social_media"):
             if rng.random() < 0.85:
                 log_habit(conn, day, key, "done" if rng.random() < 0.65 else "missed")
+    seed_demo_goals(conn, end)
+
+
+def seed_demo_goals(conn, end: date) -> None:
+    """Jordan's goals, with dates relative to `end` so the demo always looks current."""
+    def on(days: int) -> str:
+        return (end + timedelta(days=days)).isoformat()
+
+    demo = [
+        ("Half marathon in March", "fitness", 4, 4, on(140), [
+            ("10 km in under 60 min", on(-30), True), ("12 km long run", on(-10), True),
+            ("14 km long run", on(1), False), ("16 km long run", on(21), False), ("Race day", on(140), False),
+        ]),
+        ("€15k emergency fund", "financial", 5, 2, on(200), [
+            ("Reach €5k", on(-40), True), ("Reach €10k", on(7), False), ("Reach €15k", on(200), False),
+        ]),
+        ("Promotion to senior analyst", "career", 5, 4, on(120), [
+            ("Ask manager for criteria", on(-25), True), ("Ship Q4 budget proposal", on(2), False),
+            ("Lead the January planning", on(80), False), ("Promotion review", on(120), False),
+        ]),
+        ("Python for data course", "learning", 3, 2, on(15), [
+            ("Modules 1–4", on(-35), True), ("Modules 5–7", on(-5), True), ("Module 8: pandas", on(15), False),
+        ]),
+        ("Launch side-project MVP", "business", 4, 5, on(37), [
+            ("Pick the idea", on(-20), True), ("Landing page live", on(37), False),
+            ("First 10 sign-ups", on(70), False), ("Ship the MVP", on(110), False),
+        ]),
+        ("Dinner with friends weekly", "social", 2, 1, None, [
+            ("Book November dates", on(6), False),
+        ]),
+    ]
+    with conn:
+        for title, area, impact, effort, target, milestones in demo:
+            cur = conn.execute(
+                "INSERT INTO goals (title, area, impact, effort, target_date, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (title, area, impact, effort, target, on(-60)),
+            )
+            for m_title, due, done in milestones:
+                conn.execute(
+                    "INSERT INTO milestones (goal_id, title, due_date, done_date) VALUES (?, ?, ?, ?)",
+                    (cur.lastrowid, m_title, due, due if done else None),
+                )
+        conn.execute(
+            "INSERT INTO goals (title, area, impact, effort, target_date, done_date, created_at) "
+            "VALUES ('Read 12 books', 'learning', 2, 2, ?, ?, ?)", (on(-15), on(-15), on(-200)),
+        )
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES ('vision', ?)",
+            ('"By 2030: financially independent, fit enough to run a marathon, and running my own product studio."',),
+        )
 
 
 def main(argv: list[str] | None = None) -> None:

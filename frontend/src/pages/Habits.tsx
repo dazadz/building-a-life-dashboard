@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api, type HabitHistory, type HabitStatus } from '../api'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { isoDate, scoreText } from '../format'
+import { isoDate, scoreText, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
 
 const PERIODS = [7, 14, 30, 90] as const
@@ -16,10 +16,6 @@ const PATTERNS_SHOWN = 5
 
 function dayLetter(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'narrow' })
-}
-
-function shortDate(iso: string): string {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
 export function HabitsPage() {

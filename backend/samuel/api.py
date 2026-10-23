@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, habits, reports, scores, security, settings
+from . import backups, coach, db, goals, habits, reports, scores, security, settings
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -52,6 +52,38 @@ class HabitActiveIn(BaseModel):
 
 class HabitIn(BaseModel):
     status: Literal["done", "missed", "skipped"] | None
+
+
+class GoalIn(BaseModel):
+    title: str = Field(max_length=120)
+    area: str
+    impact: int = Field(3, ge=1, le=5)
+    effort: int = Field(3, ge=1, le=5)
+    target_date: str | None = None
+
+
+class GoalChange(BaseModel):
+    title: str | None = Field(None, max_length=120)
+    area: str | None = None
+    impact: int | None = Field(None, ge=1, le=5)
+    effort: int | None = Field(None, ge=1, le=5)
+    target_date: str | None = None
+    done: bool | None = None
+
+
+class MilestoneIn(BaseModel):
+    title: str = Field(max_length=120)
+    due_date: str | None = None
+
+
+class MilestoneChange(BaseModel):
+    title: str | None = Field(None, max_length=120)
+    due_date: str | None = None
+    done: bool | None = None
+
+
+class VisionIn(BaseModel):
+    vision: str | None = Field(None, max_length=goals.VISION_MAX)
 
 
 class CoachRunIn(BaseModel):
@@ -138,6 +170,61 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         except KeyError:
             raise HTTPException(404, "unknown habit")
         return settings.habit_list(conn)
+
+    def goals_today(today: str | None) -> str:
+        return _day(today) if today else date.today().isoformat()
+
+    def goal_write(work):
+        try:
+            work()
+        except KeyError:
+            raise HTTPException(404, "no such goal or milestone")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    # Every goals write returns the whole Goals screen, like the check-in routes return the day.
+    @app.get("/api/goals")
+    def get_goals(today: str | None = None, conn=Depends(get_conn)):
+        return goals.summary(conn, goals_today(today))
+
+    @app.post("/api/goals")
+    def post_goal(body: GoalIn, today: str | None = None, conn=Depends(get_conn)):
+        day = goals_today(today)
+        goal_write(lambda: goals.add_goal(conn, body.model_dump(), day))
+        return goals.summary(conn, day)
+
+    @app.put("/api/goals/{goal_id}")
+    def put_goal(goal_id: int, body: GoalChange, today: str | None = None, conn=Depends(get_conn)):
+        # Only the fields sent change, so sending "target_date": null clears it.
+        day = goals_today(today)
+        goal_write(lambda: goals.update_goal(conn, goal_id, body.model_dump(exclude_unset=True), day))
+        return goals.summary(conn, day)
+
+    @app.delete("/api/goals/{goal_id}")
+    def delete_goal(goal_id: int, today: str | None = None, conn=Depends(get_conn)):
+        goal_write(lambda: goals.delete_goal(conn, goal_id))
+        return goals.summary(conn, goals_today(today))
+
+    @app.post("/api/goals/{goal_id}/milestones")
+    def post_milestone(goal_id: int, body: MilestoneIn, today: str | None = None, conn=Depends(get_conn)):
+        goal_write(lambda: goals.add_milestone(conn, goal_id, body.model_dump()))
+        return goals.summary(conn, goals_today(today))
+
+    @app.put("/api/milestones/{milestone_id}")
+    def put_milestone(milestone_id: int, body: MilestoneChange, today: str | None = None, conn=Depends(get_conn)):
+        day = goals_today(today)
+        goal_write(lambda: goals.update_milestone(conn, milestone_id, body.model_dump(exclude_unset=True), day))
+        return goals.summary(conn, day)
+
+    @app.delete("/api/milestones/{milestone_id}")
+    def delete_milestone(milestone_id: int, today: str | None = None, conn=Depends(get_conn)):
+        goal_write(lambda: goals.delete_milestone(conn, milestone_id))
+        return goals.summary(conn, goals_today(today))
+
+    @app.put("/api/vision")
+    def put_vision(body: VisionIn, today: str | None = None, conn=Depends(get_conn)):
+        goal_write(lambda: goals.set_vision(conn, body.vision))
+        return goals.summary(conn, goals_today(today))
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):

@@ -16,6 +16,10 @@ export function addDays(iso: string, n: number): string {
   return isoDate(d)
 }
 
+export function shortDate(iso: string): string {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
 export function longDate(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 }

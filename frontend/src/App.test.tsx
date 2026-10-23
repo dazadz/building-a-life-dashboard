@@ -31,6 +31,24 @@ const habitHistory = {
   patterns: [{ key: 'reading', name: 'Reading done', weekday: 'Wednesday', missed: 3, of: 4 }],
 }
 
+const goalsBody = {
+  goals: [
+    {
+      id: 1, title: 'Half marathon in March', area: 'fitness', impact: 4, effort: 4, target_date: '2027-03-14',
+      done_date: null, created_at: '2026-09-01', progress: 40,
+      milestones: [{ id: 11, goal_id: 1, title: '14 km long run', due_date: '2026-10-25', done_date: null }],
+      next_milestone: { id: 11, goal_id: 1, title: '14 km long run', due_date: '2026-10-25', done_date: null },
+    },
+    {
+      id: 2, title: 'Dinner with friends weekly', area: 'social', impact: 2, effort: 1, target_date: null,
+      done_date: null, created_at: '2026-09-01', progress: null, milestones: [], next_milestone: null,
+    },
+  ],
+  week: [{ id: 11, goal_id: 1, title: '14 km long run', due_date: '2026-10-25', done_date: null, goal_title: 'Half marathon in March', overdue: false }],
+  vision: 'By 2030: fit and free.',
+  completed_this_year: 1,
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -40,6 +58,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
     else if (url.startsWith('/api/habits?')) body = habitHistory
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
+    else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
     return new Response(JSON.stringify(body), { status: 200 })
   }))
 }
@@ -91,6 +110,26 @@ describe('App', () => {
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith('/api/habits/2026-10-24/water', expect.objectContaining({ method: 'PUT', body: '{"status":"done"}' })),
     )
+  })
+
+  it('lists goals, shows a dash for no progress, and ticks a milestone', async () => {
+    mockServer(true)
+    window.location.hash = '#/goals'
+    render(<App />)
+    expect(await screen.findByRole('button', { name: 'Half marathon in March' })).toBeInTheDocument()
+    expect(screen.getByText('2 active goals across 2 areas. 1 milestone due this week.')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'No milestones yet' })).toBeInTheDocument()
+    expect(screen.getByText(/By 2030: fit and free/)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Mark 14 km long run done' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/milestones\/11\?today=/),
+        expect.objectContaining({ method: 'PUT', body: '{"done":true}' })),
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Half marathon in March' }))
+    expect(await screen.findByRole('heading', { name: 'Edit goal' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Goal')).toHaveValue('Half marathon in March')
   })
 
   it('asks for a check-in before offering a report', async () => {
