@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "httpx>=0.27"]
+dev = ["pytest>=8", "httpx>=0.28.1"]
 
 [project.scripts]
 samuel = "samuel.cli:main"
