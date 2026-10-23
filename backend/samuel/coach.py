@@ -15,7 +15,8 @@ from pathlib import Path
 
 from . import db
 
-SKILLS = {"daily-report": "daily"}
+SKILLS = {"daily-report": "daily", "onboard-insights": "onboarding"}
+NEEDS_CHECKIN = {"daily-report"}
 TIMEOUT_SECONDS = 600
 REPO_ROOT = Path(os.environ.get("SAMUEL_REPO", Path(__file__).resolve().parents[2]))
 
@@ -62,7 +63,7 @@ def start(conn: sqlite3.Connection, skill: str) -> int:
         raise ValueError(f"unknown skill {skill}")
     if claude_path() is None:
         raise RuntimeError("Claude Code is not installed")
-    if not has_recent_checkin(conn):
+    if skill in NEEDS_CHECKIN and not has_recent_checkin(conn):
         raise NothingToReport("Save a check-in first. Samuel needs at least one from the last 7 days to write a report.")
     with conn:
         job_id = conn.execute(

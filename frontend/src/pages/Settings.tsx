@@ -3,7 +3,7 @@ import { api, type DataInfo, type Settings } from '../api'
 import { Card } from '../components/Card'
 import { HabitToggles, NameField, TargetFields } from '../components/SetupFields'
 import { parseTargets, targetsFrom, type Targets } from '../targets'
-import { ErrorLine, Loading } from '../components/States'
+import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { isoDate } from '../format'
 import { useLoad } from '../hooks'
 
@@ -17,6 +17,12 @@ export function SettingsPage({ onSaved }: { onSaved: () => void }) {
         <h1>Profile and targets</h1>
         <p>Changes to targets apply from today. Past days keep the targets they were scored against.</p>
       </header>
+      <NeedsSetup>
+        <span style={{ flex: 1 }}>
+          <strong>Your profile.</strong> The 45 onboarding questions that tell Samuel about your life, routine, health and goals.
+        </span>
+        <a href="#/profile">Edit profile →</a>
+      </NeedsSetup>
       {loaded.error ? <ErrorLine message={loaded.error} onRetry={loaded.reload} />
         : !loaded.data ? <Loading lines={4} />
         : <Forms today={today} initial={loaded.data} onSaved={onSaved} />}

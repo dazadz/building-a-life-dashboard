@@ -136,6 +136,42 @@ export interface GoalsSummary {
 
 export type GoalFields = Pick<Goal, 'title' | 'area' | 'impact' | 'effort' | 'target_date'>
 
+export type ProfileValue = string | number | string[] | null
+
+export interface ProfileQuestion {
+  key: string
+  group: string
+  label: string
+  type: 'text' | 'long' | 'number' | 'time' | 'scale' | 'choice' | 'multi'
+  options?: string[]
+  min?: number
+  max?: number
+  step?: number
+  unit?: string
+  placeholder?: string
+  optional?: boolean
+  sensitive?: boolean
+  answer: ProfileValue
+}
+
+export interface ProfileSection {
+  key: string
+  title: string
+  intro: string
+  minutes: number
+  questions: ProfileQuestion[]
+  answered: number
+  total: number
+  done: boolean
+  snapshot: { label: string; value: string | null; note: string | null }[]
+}
+
+export interface Profile {
+  sections: ProfileSection[]
+  answered: number
+  total: number
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -182,6 +218,9 @@ export const api = {
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
   // Goals writes return the whole Goals screen. DELETE sends '{}' because every write must be JSON.
+  profile: () => request<Profile>('/api/profile'),
+  saveProfile: (section: string, answers: Record<string, ProfileValue>, done?: boolean) =>
+    request<Profile>(`/api/profile/${section}`, { method: 'PUT', body: JSON.stringify({ answers, done }) }),
   goals: (today: string) => request<GoalsSummary>(`/api/goals?today=${today}`),
   addGoal: (today: string, fields: GoalFields) =>
     request<GoalsSummary>(`/api/goals?today=${today}`, { method: 'POST', body: JSON.stringify(fields) }),

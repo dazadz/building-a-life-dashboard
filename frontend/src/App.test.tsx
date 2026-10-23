@@ -49,6 +49,24 @@ const goalsBody = {
   completed_this_year: 1,
 }
 
+const profileBody = {
+  answered: 1, total: 45,
+  sections: [
+    {
+      key: 'life', title: 'Life structure', intro: 'Where your life stands today.', minutes: 3, answered: 1, total: 2, done: false,
+      snapshot: [{ label: 'Stress', value: '7 / 10', note: null }],
+      questions: [
+        { key: 'age', group: 'About you', label: 'Age', type: 'number', min: 14, max: 100, answer: 29 },
+        { key: 'stress', group: 'How it feels', label: 'Stress lately', type: 'scale', answer: null },
+      ],
+    },
+    {
+      key: 'routine', title: 'Daily routine', intro: 'A normal weekday.', minutes: 4, answered: 0, total: 1, done: false, snapshot: [],
+      questions: [{ key: 'wake_time', group: 'Your day', label: 'Wake-up time', type: 'time', answer: null }],
+    },
+  ],
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -58,6 +76,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
     else if (url.startsWith('/api/habits?')) body = habitHistory
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
+    else if (url.startsWith('/api/profile')) body = profileBody
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
     return new Response(JSON.stringify(body), { status: 200 })
   }))
@@ -130,6 +149,25 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Half marathon in March' }))
     expect(await screen.findByRole('heading', { name: 'Edit goal' })).toBeInTheDocument()
     expect(screen.getByLabelText('Goal')).toHaveValue('Half marathon in March')
+  })
+
+  it('walks through a profile section and saves only what changed', async () => {
+    mockServer(true)
+    window.location.hash = '#/profile'
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: 'Life structure' })).toBeInTheDocument()
+    expect(screen.getByLabelText(/Age/)).toHaveValue(29)
+    fireEvent.click(screen.getByRole('button', { name: '7' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save and finish later' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/profile/life', expect.objectContaining({ method: 'PUT', body: '{"answers":{"stress":7}}' })),
+    )
+  })
+
+  it('reminds the user to finish the profile on Home', async () => {
+    mockServer(true)
+    render(<App />)
+    expect(await screen.findByText('Samuel knows 1 of 45 things about you.')).toBeInTheDocument()
   })
 
   it('asks for a check-in before offering a report', async () => {

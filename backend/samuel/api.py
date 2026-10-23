@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, reports, scores, security, settings
+from . import backups, coach, db, goals, habits, profile, reports, scores, security, settings
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -85,6 +85,11 @@ class MilestoneChange(BaseModel):
 
 class VisionIn(BaseModel):
     vision: str | None = Field(None, max_length=goals.VISION_MAX)
+
+
+class ProfileIn(BaseModel):
+    answers: dict = {}
+    done: bool | None = None
 
 
 class CoachRunIn(BaseModel):
@@ -232,6 +237,20 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     def put_vision(body: VisionIn, today: str | None = None, conn=Depends(get_conn)):
         goal_write(lambda: goals.set_vision(conn, body.vision))
         return goals.summary(conn, goals_today(today))
+
+    @app.get("/api/profile")
+    def get_profile(conn=Depends(get_conn)):
+        return profile.summary(conn)
+
+    @app.put("/api/profile/{section}")
+    def put_profile(section: str, body: ProfileIn, conn=Depends(get_conn)):
+        try:
+            profile.save(conn, section, body.answers, body.done)
+        except KeyError:
+            raise HTTPException(404, "no such section")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return profile.summary(conn)
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):
