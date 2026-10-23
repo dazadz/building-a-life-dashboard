@@ -73,9 +73,22 @@ stress = 1 + 9 × strain, rounded to one decimal
 - **Change vs last week** (the "+6" next to a score): today's score minus the average of the previous 7 days that have that score.
 - **7-day average:** the mean of the days that have a score. Days without one are left out rather than counted as 0.
 
-## Onboarding baseline
+## Onboarding snapshot
 
-After each onboarding section, Samuel shows starting scores: Productivity, Discipline, Lifestyle, Balance and Stress index. They come from your self-ratings in that section, scaled to 0–100 by the same (rating − 1) ÷ 9 rule, plus the same missing-data rules. The exact question-to-score mapping is fixed when the onboarding questions are finalised in v0.1, and added here at that point.
+After each onboarding section, Samuel shows a snapshot of key answers as they are, with no formula: for example satisfaction and stress out of 10, time in bed (from sleep time to wake-up time), screen time, and time wasted per day and per week (× 7). Samuel's written insights come separately from Claude Code.
+
+## Weekly review
+
+The weekly review covers one Monday-to-Sunday week. Its numbers come straight from that week's data:
+
+- **Day score:** the 7-day average rule above, over that week. The change is that average minus the previous week's.
+- **Check-ins:** days with a saved check-in, out of 7.
+- **Sleep:** the average of the nights with a sleep answer.
+- **Deep work:** the total of the deep work answers.
+- **Habits:** the Habit rate rule over every habit-day in the week.
+- **Workouts:** days with "Workout completed?" answered Yes.
+
+Wins are check-in wins plus milestones done that week. Slips are check-in failures plus milestones due that week whose due date has passed and that are still open. From Friday on, the review opens on the current week; earlier in the week, on the week that just ended.
 
 ## Later
 

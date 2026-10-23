@@ -7,6 +7,7 @@ import { CoachPage } from './pages/Coach'
 import { GoalsPage } from './pages/Goals'
 import { HabitsPage } from './pages/Habits'
 import { ProfilePage } from './pages/Profile'
+import { ReviewPage } from './pages/Review'
 import { HomePage } from './pages/Home'
 import { OnboardingPage } from './pages/Onboarding'
 import { SettingsPage } from './pages/Settings'
@@ -16,6 +17,7 @@ const NAV = [
   { href: '#/checkin', route: '/checkin', label: 'Check-in' },
   { href: '#/habits', route: '/habits', label: 'Habits' },
   { href: '#/goals', route: '/goals', label: 'Goals' },
+  { href: '#/review', route: '/review', label: 'Review' },
   { href: '#/coach', route: '/coach', label: 'Coach' },
 ]
 const SETTINGS = { href: '#/settings', route: '/settings', label: 'Settings' }
@@ -74,6 +76,8 @@ export default function App() {
           <HabitsPage />
         ) : route === '/goals' ? (
           <GoalsPage />
+        ) : route === '/review' ? (
+          <ReviewPage coach={coach} status={status.data} />
         ) : route === '/profile' ? (
           <ProfilePage coach={coach} status={status.data} />
         ) : route === '/settings' ? (

@@ -176,6 +176,44 @@ export interface Profile {
   total: number
 }
 
+export interface WeeklyMilestone {
+  id: number
+  title: string
+  goal_title: string
+  due_date: string | null
+}
+
+export interface WeeklyReview {
+  week_start: string
+  week_end: string
+  week_number: number
+  is_current: boolean
+  numbers: {
+    day_score: number | null
+    day_score_change: number | null
+    checkins: number
+    sleep_avg: number | null
+    deep_work_total: number | null
+    habit_rate: number | null
+    workouts: number
+  }
+  wins: { date: string; text: string }[]
+  slipped: { date: string; text: string }[]
+  questions: { key: string; question: string; answer: string | null }[]
+  priorities: string[]
+  carry_over: (WeeklyMilestone & { carry: boolean })[]
+  coming_up: WeeklyMilestone[]
+  status: 'draft' | 'done' | null
+  updated_at: string | null
+}
+
+export interface WeeklyChange {
+  answers: Record<string, string>
+  priorities: string[]
+  carry: number[]
+  status: 'draft' | 'done'
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -222,6 +260,10 @@ export const api = {
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
   // Goals writes return the whole Goals screen. DELETE sends '{}' because every write must be JSON.
+  weekly: (today: string, week?: string) =>
+    request<WeeklyReview>(`/api/weekly?today=${today}${week ? `&week=${week}` : ''}`),
+  saveWeekly: (today: string, week: string, change: WeeklyChange) =>
+    request<WeeklyReview>(`/api/weekly/${week}?today=${today}`, { method: 'PUT', body: JSON.stringify(change) }),
   profile: () => request<Profile>('/api/profile'),
   saveProfile: (section: string, answers: Record<string, ProfileValue>, done?: boolean) =>
     request<Profile>(`/api/profile/${section}`, { method: 'PUT', body: JSON.stringify({ answers, done }) }),

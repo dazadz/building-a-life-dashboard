@@ -4,7 +4,7 @@ import json
 import sqlite3
 from datetime import date, timedelta
 
-from . import db, goals, profile, scores
+from . import db, goals, profile, scores, weekly
 from .checkins import habits_for
 
 KINDS = ("daily", "weekly", "monthly", "onboarding", "ask")
@@ -55,6 +55,7 @@ def export(conn: sqlite3.Connection, days: int, until: str | None = None, sensit
         ],
         "summary": scores.summary(conn, end.isoformat()),
         "goals": goals.for_coach(conn, end.isoformat()),
+        "weekly_review": weekly.for_coach(conn, end.isoformat()),
         "recent_reports": [
             {k: r[k] for k in ("kind", "date", "markdown")} for r in list_reports(conn, limit=3)
         ],

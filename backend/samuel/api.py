@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, profile, reports, scores, security, settings
+from . import backups, coach, db, goals, habits, profile, reports, scores, security, settings, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -91,6 +91,13 @@ class VisionIn(BaseModel):
 class ProfileIn(BaseModel):
     answers: dict = {}
     done: bool | None = None
+
+
+class WeeklyIn(BaseModel):
+    answers: dict[str, str] = {}
+    priorities: list[str] = []
+    carry: list[int] = []
+    status: Literal["draft", "done"] = "draft"
 
 
 class CoachRunIn(BaseModel):
@@ -253,6 +260,20 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         except ValueError as exc:
             raise HTTPException(422, str(exc))
         return profile.summary(conn)
+
+    @app.get("/api/weekly")
+    def get_weekly(week: str | None = None, today: str | None = None, conn=Depends(get_conn)):
+        day = _day(today) if today else date.today().isoformat()
+        return weekly.review(conn, _day(week) if week else weekly.default_week(day), day)
+
+    @app.put("/api/weekly/{week_start}")
+    def put_weekly(week_start: str, body: WeeklyIn, today: str | None = None, conn=Depends(get_conn)):
+        day = _day(today) if today else date.today().isoformat()
+        try:
+            weekly.save(conn, _day(week_start), body.answers, body.priorities, body.carry, body.status, day)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return weekly.review(conn, week_start, day)
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):
