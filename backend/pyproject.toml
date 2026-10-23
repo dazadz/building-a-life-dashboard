@@ -23,7 +23,7 @@ samuel = "samuel.cli:main"
 include = ["samuel*"]
 
 [tool.setuptools.package-data]
-samuel = ["migrations/*.sql"]
+samuel = ["migrations/*.sql", "assets/*.ico"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
