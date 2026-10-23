@@ -26,7 +26,7 @@ Backend (`backend/`, Python 3.11+, virtualenv in `backend/.venv`):
 Frontend (`frontend/`, Node 22):
 - `npm install`, then `npm run dev` (port 5173, proxies `/api` to 8765), `npm test`, `npm run lint`, `npm run build`
 
-Coach: skills live in `.claude/skills/` (`daily-report`, `onboard-insights`). The onboarding questions live in `backend/samuel/profile.py`; sensitive answers only reach Claude via `samuel export --sensitive`. The backend runs `claude -p "/daily-report" --allowedTools "Bash(samuel *)"` from the repo root.
+Coach: skills live in `.claude/skills/` (`daily-report`, `onboard-insights`, `weekly-review`). The onboarding questions live in `backend/samuel/profile.py`; sensitive answers only reach Claude via `samuel export --sensitive`. The backend runs `claude -p "/daily-report" --allowedTools "Bash(samuel *)"` from the repo root.
 
 Scores follow `docs/scores.md` exactly. Change the doc first, then `backend/samuel/scores.py` and its tests.
 

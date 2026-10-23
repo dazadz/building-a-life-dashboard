@@ -67,6 +67,22 @@ const profileBody = {
   ],
 }
 
+const weeklyBody = {
+  week_start: '2026-10-19', week_end: '2026-10-25', week_number: 43, is_current: true,
+  numbers: { day_score: 61, day_score_change: 4, checkins: 5, sleep_avg: 6.8, deep_work_total: 12.5, habit_rate: 64, workouts: 3 },
+  wins: [{ date: '2026-10-20', text: 'Sent the brief' }],
+  slipped: [{ date: '2026-10-22', text: 'Review the doc (Onboarding doc) is still open' }],
+  questions: [
+    { key: 'best_day', question: 'Wednesday was your best focus day (4.2 h). What made it work?', answer: null },
+    { key: 'slipped', question: 'Review the doc slipped. Keep it, move it, or drop it?', answer: null },
+    { key: 'differently', question: "What's one thing you'd do differently next week?", answer: null },
+  ],
+  priorities: ['', '', ''],
+  carry_over: [{ id: 5, title: 'Review the doc', goal_title: 'Onboarding doc', due_date: '2026-10-22', carry: false }],
+  coming_up: [],
+  status: null, updated_at: null,
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -77,6 +93,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/habits?')) body = habitHistory
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
     else if (url.startsWith('/api/profile')) body = profileBody
+    else if (url.startsWith('/api/weekly')) body = weeklyBody
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
     return new Response(JSON.stringify(body), { status: 200 })
   }))
@@ -161,6 +178,27 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save and finish later' }))
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith('/api/profile/life', expect.objectContaining({ method: 'PUT', body: '{"answers":{"stress":7}}' })),
+    )
+  })
+
+  it('runs a weekly review and saves answers, priorities and carry-over', async () => {
+    mockServer(false)
+    window.location.hash = '#/review'
+    render(<App />)
+    expect(await screen.findByText('Sent the brief')).toBeInTheDocument()
+    expect(screen.getByText('+4 vs last week')).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText(/best focus day/), { target: { value: 'No meetings before 13:00' } })
+    fireEvent.change(screen.getByLabelText('Priority 1'), { target: { value: 'Ship the budget' } })
+    fireEvent.click(screen.getByRole('checkbox', { name: /Review the doc/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save review' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/weekly\/2026-10-19\?today=/), expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify({
+          answers: { best_day: 'No meetings before 13:00', slipped: '', differently: '' },
+          priorities: ['Ship the budget', '', ''], carry: [5], status: 'done',
+        }),
+      })),
     )
   })
 
