@@ -127,10 +127,22 @@ const monthlyBody = {
   trend: [{ date: '2026-10-01', discipline: 70, average: 70 }, { date: '2026-10-02', discipline: 80, average: 75 }],
 }
 
+const digestBody = {
+  now: '2026-10-24T10:37',
+  focus: { text: 'Phone out of the bedroom', source: "Your improvement from last night's check-in" },
+  due: { overdue: 1, today: 1, items: [
+    { kind: 'task', id: 4, title: 'Send invoice', time: null, overdue: true, high: false },
+    { kind: 'task', id: 5, title: 'Call the bank', time: '16:00', overdue: false, high: false },
+  ] },
+  next: { name: 'Deep work', start: '11:00', end: '13:00', state: 'next' },
+  yesterday: { date: '2026-10-23', score: 65, change: 4 },
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
     if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded }
+    else if (url.startsWith('/api/digest')) body = digestBody
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
     else if (url.startsWith('/api/settings')) body = settingsBody
     else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
@@ -339,6 +351,15 @@ describe('App', () => {
         method: 'PUT', body: '{"theme":{"accent":"#ff9f43","darkness":"midnight","tint":0.3}}',
       })),
     )
+  })
+
+  it('shows today at a glance on Home', async () => {
+    mockServer(true)
+    render(<App />)
+    expect(await screen.findByText('Phone out of the bedroom')).toBeInTheDocument()
+    expect(screen.getByText('Send invoice')).toBeInTheDocument()
+    expect(screen.getByText(/1 overdue/)).toBeInTheDocument()
+    expect(screen.getByText('Deep work')).toBeInTheDocument()
   })
 
   it('reminds the user to finish the profile on Home', async () => {

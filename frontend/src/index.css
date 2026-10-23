@@ -117,6 +117,21 @@ button, input, textarea, select { font: inherit; color: inherit; }
   box-shadow: 0 0 8px var(--green);
 }
 
+/* Today at a glance */
+.digest-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: 12px; }
+.digest-cell {
+  display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; min-width: 0;
+  background: var(--inset); border: 1px solid var(--border); border-radius: var(--radius-small);
+}
+.digest-cell .meter-label { flex: 0 0 auto; }
+.digest-focus { border-left: 2px solid var(--accent); }
+.digest-text { color: var(--text); font-weight: 600; line-height: 1.35; }
+.digest-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.digest-list li { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+.digest-list .mono { flex: 0 0 40px; font-size: 11px; }
+.digest-item { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-body); }
+@media (max-width: 900px) { .digest-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
 /* Ctrl+K palette */
 kbd {
   font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); background: var(--inset);

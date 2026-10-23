@@ -4,8 +4,9 @@ import { api, type Day, type HabitStatus, type Report, type Status } from '../ap
 import { Card } from '../components/Card'
 import { TodaysPlan } from '../components/Routine'
 import { EnergyTapCard } from '../components/Energy'
+import { DigestCard } from '../components/Digest'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, longDate, scoreText } from '../format'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localStamp, localTime, longDate, scoreText } from '../format'
 import { useLoad, useNow } from '../hooks'
 
 const STRIP = [
@@ -49,6 +50,8 @@ export function HomePage({ status }: { status: Status | null }) {
             : 'Check in tonight to get your first day score.'}
         </p>
       </header>
+
+      <DigestCard stamp={localStamp(now)} />
 
       {days.error && <ErrorLine message={days.error} onRetry={days.reload} />}
       {profile.data && profile.data.answered < profile.data.total && (
