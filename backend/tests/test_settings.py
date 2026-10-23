@@ -67,3 +67,15 @@ def test_text_size_defaults_to_medium_and_can_change(conn):
     assert settings.public(conn, "2026-10-24")["text_size"] == "large"
     with pytest.raises(ValueError):
         settings.update(conn, {"text_size": "huge"}, "2026-10-24")
+
+
+def test_theme_is_optional_validated_and_resettable(conn):
+    assert settings.public(conn, "2026-10-24")["theme"] is None
+    settings.update(conn, {"theme": {"accent": "#FF9F43", "darkness": "dim", "tint": 0.5}}, "2026-10-24")
+    assert settings.public(conn, "2026-10-24")["theme"] == {"accent": "#ff9f43", "darkness": "dim", "tint": 0.5}
+    for bad in ({"accent": "orange", "darkness": "dim", "tint": 0.5}, {"accent": "#ff9f43", "darkness": "light", "tint": 0.5},
+                {"accent": "#ff9f43", "darkness": "dim", "tint": 2}, {"accent": "#ff9f43"}):
+        with pytest.raises(ValueError):
+            settings.update(conn, {"theme": bad}, "2026-10-24")
+    settings.update(conn, {"theme": {}}, "2026-10-24")
+    assert settings.public(conn, "2026-10-24")["theme"] is None

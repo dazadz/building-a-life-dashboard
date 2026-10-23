@@ -15,7 +15,7 @@ const emptyDay = (date: string) => ({
 })
 
 const settingsBody = {
-  name: null, onboarded: false, text_size: 'medium', wake_target: '07:00', sleep_target_hours: 7.5, deep_work_target_hours: 3,
+  name: null, onboarded: false, text_size: 'medium', theme: null, wake_target: '07:00', sleep_target_hours: 7.5, deep_work_target_hours: 3,
   habits: [{ key: 'reading', name: 'Reading done', auto: 0, active: true }],
 }
 
@@ -325,6 +325,20 @@ describe('App', () => {
     const rows = screen.getAllByRole('row').map((r) => r.textContent)
     expect(rows[1]).toContain('Wake up on time') // biggest gain first
     expect(screen.getByRole('link', { name: 'Weekly' })).toHaveAttribute('href', '#/review')
+  })
+
+  it('previews a vibe live and saves the theme', async () => {
+    mockServer(true)
+    window.location.hash = '#/settings'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Energise' }))
+    expect(document.documentElement.style.getPropertyValue('--accent')).toBe('#ff9f43')
+    fireEvent.click(screen.getByRole('button', { name: 'Save theme →' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/settings?today='), expect.objectContaining({
+        method: 'PUT', body: '{"theme":{"accent":"#ff9f43","darkness":"midnight","tint":0.3}}',
+      })),
+    )
   })
 
   it('reminds the user to finish the profile on Home', async () => {

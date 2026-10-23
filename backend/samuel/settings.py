@@ -27,6 +27,16 @@ def validate(key: str, value):
         if not isinstance(value, (int, float)) or not 0.5 <= value <= 12:
             raise ValueError("deep work target must be between 0.5 and 12 hours")
         return float(value)
+    if key == "theme":
+        # {"accent": "#rrggbb", "darkness": "dim" | "dark" | "midnight", "tint": 0..1}, or {} for the default look
+        if value == {}:
+            return {}
+        if (not isinstance(value, dict) or set(value) != {"accent", "darkness", "tint"}
+                or not isinstance(value["accent"], str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", value["accent"])
+                or value["darkness"] not in ("dim", "dark", "midnight")
+                or isinstance(value["tint"], bool) or not isinstance(value["tint"], (int, float)) or not 0 <= value["tint"] <= 1):
+            raise ValueError("theme needs a #rrggbb accent, a darkness of dim, dark or midnight, and a tint from 0 to 1")
+        return {"accent": value["accent"].lower(), "darkness": value["darkness"], "tint": float(value["tint"])}
     if key == "text_size":
         if value not in TEXT_SIZES:
             raise ValueError(f"text_size must be one of {', '.join(TEXT_SIZES)}")
@@ -91,6 +101,7 @@ def public(conn: sqlite3.Connection, today: str) -> dict:
         "name": stored.get("name"),
         "onboarded": bool(stored.get("onboarded", False)),
         "text_size": stored.get("text_size", DEFAULT_TEXT_SIZE),
+        "theme": stored.get("theme") or None,
         **targets_on(conn, today),
         "habits": habit_list(conn),
     }

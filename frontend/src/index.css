@@ -444,6 +444,20 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
 .pill-link { display: inline-flex; align-items: center; color: var(--text-muted); font-weight: 500; }
 .pill-link[aria-current='page'] { background: var(--accent-soft); border-color: var(--accent); color: var(--text); font-weight: 600; box-shadow: var(--glow); }
 
+/* Appearance */
+.appearance { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(240px, 1fr); gap: 24px; }
+.vibe { display: inline-flex; align-items: center; gap: 8px; }
+.swatch { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 12px; }
+input[type='range'] { width: 100%; accent-color: var(--accent); }
+/* The hue slider shows the colour wheel as its track: a picker control, not decoration. */
+.hue-range { appearance: none; height: 10px; border-radius: 5px; background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); }
+.hue-range::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--text); border: 2px solid var(--page); }
+.preview { display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--page); border: 1px solid var(--border); }
+.preview-head { display: flex; align-items: center; gap: 10px; }
+.preview-head .eyebrow { font-size: 11px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+.preview-title { font-family: var(--font-display); font-weight: 400; font-size: 16px; text-transform: uppercase; text-shadow: var(--text-glow); }
+.preview-notes { font-size: 12px; }
+
 /* Onboarding */
 .onboarding { min-height: calc(100vh / var(--ui-scale)); display: flex; justify-content: center; padding: 48px 16px; }
 .onboarding-inner { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 20px; }
@@ -468,4 +482,5 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
   .sidebar-foot { display: none; }
   .sidebar-bottom { margin: 0 0 0 auto; }
   .coach-layout { grid-template-columns: 1fr; }
+  .appearance { grid-template-columns: 1fr; }
 }
