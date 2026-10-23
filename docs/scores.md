@@ -82,7 +82,7 @@ These scores are planned with their screens and will be added here before they a
 - **Recovery** and **Burnout risk** (Health & energy, v0.3). They need inputs the check-in doesn't collect yet: water, caffeine and screen time.
 - **Monthly evolution** (v0.3).
 
-## Open questions
+## Decisions
 
-- **Stress:** add an optional 13th "Stress (1–10)" question to replace the estimate above? That would go beyond the 12 questions in the prompt.
-- **Workout targets:** should a missed workout count only on planned workout days, using the routine from v0.2?
+- **Stress stays estimated.** The check-in keeps the prompt's 12 questions, with no separate stress question.
+- **Workouts count every day.** "No" is a miss on any day, whatever the routine. Answer "Rest day" to skip a day.
