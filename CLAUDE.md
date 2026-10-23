@@ -4,13 +4,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Samuel**: a local personal performance dashboard with Claude Code as its AI coach, built from the "LIFE OS PRIME" prompt. The build plan, architecture and milestones are in `docs/PLAN.md`; follow it. The stack is React + TypeScript + Vite, FastAPI and SQLite. It is in the design stage and no app is scaffolded yet. Add build, run and test commands here once it is.
+**Samuel**: a local personal performance dashboard with Claude Code as its AI coach, built from the "LIFE OS PRIME" prompt. The build plan, architecture and milestones are in `docs/PLAN.md`; follow it. The stack is React + TypeScript + Vite, FastAPI and SQLite. The walking skeleton is built: Home, daily check-in and Coach. The app runs on the PC first; phone work comes later.
 
 Privacy is a hard requirement. This repo is public and the author uses the app daily, so personal data must never enter the repo:
 - The database lives in `~/.samuel/`, outside the repo.
 - Screenshots, tests, fixtures and designs use only the fake demo persona, never the author's real name.
 - Never write absolute local paths (e.g. `C:\Users\...`) into tracked files. Use `~` or paths relative to the repo.
 - Commits use the GitHub noreply email (set in this repo's git config), never a personal address.
+
+## Commands
+
+Backend (`backend/`, Python 3.11+, virtualenv in `backend/.venv`):
+- Set up: `python -m venv .venv` then `.venv/Scripts/python -m pip install -e ".[dev]"` (Windows path; `.venv/bin` elsewhere)
+- Test: `.venv/Scripts/python -m pytest -q`
+- Run the app: `samuel serve` (http://127.0.0.1:8765, serves `frontend/dist` once built)
+- Demo data: `SAMUEL_DATA_DIR=<some temp folder> samuel demo`. Always use a temp data dir for demos and screenshots, never `~/.samuel`.
+- Coach CLI: `samuel export --since 7d`, `samuel report add --kind daily --file -`, `samuel scores`, `samuel backup`
+
+Frontend (`frontend/`, Node 22):
+- `npm install`, then `npm run dev` (port 5173, proxies `/api` to 8765), `npm test`, `npm run lint`, `npm run build`
+
+Coach: skills live in `.claude/skills/` (`daily-report`). The backend runs `claude -p "/daily-report" --allowedTools "Bash(samuel *)"` from the repo root.
+
+Scores follow `docs/scores.md` exactly. Change the doc first, then `backend/samuel/scores.py` and its tests.
 
 ## Git workflow
 

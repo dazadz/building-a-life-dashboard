@@ -6,7 +6,32 @@ Building a life dashboard using Claude Code.
 
 ## Status
 
-Design phase. The app has not been scaffolded yet. See [docs/PLAN.md](docs/PLAN.md) for the full build plan.
+Walking skeleton: you can save a daily check-in, see your scores, and have Samuel (Claude Code) write a daily report. It runs on a PC; phone access comes later. See [docs/PLAN.md](docs/PLAN.md) for the full build plan and [docs/scores.md](docs/scores.md) for how scores work.
+
+## Run it
+
+You need Python 3.11+, Node 22 and, for Samuel's reports, [Claude Code](https://claude.com/claude-code) logged in on the same computer.
+
+```sh
+# Backend
+cd backend
+python -m venv .venv
+.venv/Scripts/activate          # Windows; use: source .venv/bin/activate on macOS/Linux
+pip install -e ".[dev]"
+
+# Frontend (build once)
+cd ../frontend
+npm install
+npm run build
+
+# Start
+cd ../backend
+samuel serve                    # open http://127.0.0.1:8765
+```
+
+Your data lives in `~/.samuel/samuel.db`, outside this repo (set `SAMUEL_DATA_DIR` to move it). To try the app with made-up data, point `SAMUEL_DATA_DIR` at an empty folder and run `samuel demo`.
+
+**Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask for a report.
 
 ## Design
 
