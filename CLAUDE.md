@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-A personal productivity dashboard (daily brief, tasks, replies, habits, working set, weekly review) replacing a Notion dashboard. It is in the design stage: no stack has been chosen and no app is scaffolded yet. Add build, run and test commands here once it is.
+**Samuel**: a local personal performance dashboard with Claude Code as its AI coach, built from the "LIFE OS PRIME" prompt. The build plan, architecture and milestones are in `docs/PLAN.md`; follow it. The stack is React + TypeScript + Vite, FastAPI and SQLite. It is in the design stage and no app is scaffolded yet. Add build, run and test commands here once it is.
+
+Privacy is a hard requirement. This repo is public and the author uses the app daily, so personal data must never enter the repo: the database lives in `~/.samuel/` (outside the repo), and screenshots, tests and fixtures use only fake demo data.
 
 ## Git workflow
 
@@ -18,7 +20,7 @@ As you work, commit to Git and push to GitHub regularly, so there is always a sa
 
 ## Design
 
-`design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Home, Tasks, Weekly review, Ctrl+K palette). Keep the files and the canvas in sync when designs change, and build the app to match them.
+`design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Onboarding, Home, Check-in, Habits, Health & energy, Goals, Weekly and Monthly reviews, Coach, Tasks, Ctrl+K palette). Keep the files and the canvas in sync when designs change, and build the app to match them.
 
 Design rules:
 - Dark theme with a single accent colour.
