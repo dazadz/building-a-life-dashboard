@@ -24,7 +24,7 @@
   --amber: #ffc24d;
   --blue: #5cb8ff;
 
-  --font-display: 'Chakra Petch', system-ui, sans-serif;
+  --font-display: 'Sora', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
@@ -117,7 +117,7 @@ main { flex: 1; min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 48px; }
   font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
 }
 .page-head h1 {
-  margin: 8px 0 6px; font-size: clamp(26px, 2.6vw, 32px); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  margin: 8px 0 6px; font-size: clamp(26px, 2.6vw, 32px); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase;
 }
 .page-head p { margin: 0; color: var(--text-muted); font-size: 14px; }
 .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch; }
@@ -136,7 +136,7 @@ main { flex: 1; min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 48px; }
 .card::before, .scores::before { top: -1px; left: -1px; border-top: 1px solid var(--bracket); border-left: 1px solid var(--bracket); }
 .card::after, .scores::after { bottom: -1px; right: -1px; border-bottom: 1px solid var(--bracket); border-right: 1px solid var(--bracket); }
 .card-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--divider); }
-.card-head h2 { font-size: 14px; font-weight: 600; flex: 1; text-transform: uppercase; letter-spacing: 0.08em; }
+.card-head h2 { font-size: 13px; font-weight: 600; flex: 1; text-transform: uppercase; letter-spacing: 0.06em; }
 .card-meta { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
 .card-foot {
   margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px;
