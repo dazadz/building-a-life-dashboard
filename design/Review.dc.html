@@ -11,66 +11,70 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#0E0F13}
-a{color:#C4B5FD;text-decoration:none}a:hover{color:#DDD6FE}
-input::placeholder,textarea::placeholder{color:#8E8C9B}
+body{margin:0;background:#10121A}
+a{color:#BDB2FF;text-decoration:none}a:hover{color:#DCD6FF}
+input::placeholder,textarea::placeholder{color:#9D9BB3}
 </style>
 </helmet>
-<div style="min-height: 100vh; background: #0E0F13; color: #ECEAF2; font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.45; display: flex; flex-wrap: wrap; align-items: stretch;">
+<div style="min-height: 100vh; background: #10121A; color: #F6F5FC; font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.45; display: flex; flex-wrap: wrap; align-items: stretch;">
 
   <!-- Sidebar -->
-  <nav aria-label="Main" style="flex: 1 1 232px; box-sizing: border-box; background: #121318; border-right: 1px solid #22242D; padding: 20px 14px; display: flex; flex-direction: column; gap: 6px;">
+  <nav aria-label="Main" style="flex: 1 1 232px; box-sizing: border-box; background: #151823; border-right: 1px solid #272C3D; padding: 20px 14px; display: flex; flex-direction: column; gap: 6px;">
     <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 14px;">
       <div style="width: 34px; height: 34px; border-radius: 10px; background: {{accent}}; color: #15121F; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 17px;">S</div>
       <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.01em;">Samuel</span>
     </div>
-    <button type="button" style="display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px 0 12px; margin-bottom: 10px; background: #17181E; border: 1px solid #262833; border-radius: 12px; color: #A09EAD; font: inherit; cursor: pointer; text-align: left;">
+    <button type="button" style="display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px 0 12px; margin-bottom: 10px; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 12px; color: #B3B1C7; font: inherit; cursor: pointer; text-align: left;">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <span style="flex: 1;">Search or jump to…</span>
-      <kbd style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #A09EAD; background: #22242D; border: 1px solid #2E303B; border-radius: 6px; padding: 2px 6px;">Ctrl K</kbd>
+      <kbd style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #B3B1C7; background: #272C3D; border: 1px solid #383F57; border-radius: 6px; padding: 2px 6px;">Ctrl K</kbd>
     </button>
-    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
       <span style="flex: 1;">Today</span>
     </a>
-    <a href="Checkin.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="#inbox" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13l2.5 8v6H3v-6z"/></svg>
+      <span style="flex: 1;">Inbox</span><span style="font-size: 12px; font-weight: 600; color: #15121F; background: {{accent}}; border-radius: 999px; padding: 1px 8px;">5</span>
+    </a>
+    <a href="Checkin.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="m9 13 2 2 4-4"/></svg>
       <span style="flex: 1;">Check-in</span><span style="font-size: 11px; font-weight: 600; color: {{accent}};">Due</span>
     </a>
-    <a href="Tasks.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="Tasks.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg>
-      <span style="flex: 1;">Tasks</span><span style="font-size: 12px; color: #A09EAD;">7</span>
+      <span style="flex: 1;">Tasks</span><span style="font-size: 12px; color: #B3B1C7;">7</span>
     </a>
-    <a href="Habits.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="Habits.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>
       <span style="flex: 1;">Habits</span>
     </a>
-    <a href="Goals.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="Goals.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
       <span style="flex: 1;">Goals</span>
     </a>
-    <a href="Health.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="Health.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>
       <span style="flex: 1;">Health & energy</span>
     </a>
-    <a href="Review.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; background: {{accentSoft}}; color: #ECEAF2; font-weight: 600;">
+    <a href="Review.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; background: {{accentSoft}}; color: #F6F5FC; font-weight: 600;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/></svg>
       <span style="flex: 1;">Reviews</span>
     </a>
-    <a href="Coach.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="Coach.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>
       <span style="flex: 1;">Coach</span>
     </a>
     <div style="flex: 1; min-height: 24px;"></div>
-    <a href="#settings" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #C9C7D3;">
+    <a href="#settings" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
       <span style="flex: 1;">Settings</span>
     </a>
-    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 10px; background: #17181E; border: 1px solid #262833; border-radius: 12px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 10px; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 12px;">
       <div style="width: 36px; height: 36px; border-radius: 50%; background: {{accentSoft}}; color: {{accent}}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">JA</div>
       <div style="flex: 1; min-width: 0;">
         <div style="font-weight: 600;">Jordan</div>
-        <div style="font-size: 12px; color: #A09EAD; display: flex; align-items: center; gap: 5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Local · private</div>
+        <div style="font-size: 12px; color: #B3B1C7; display: flex; align-items: center; gap: 5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Local · private</div>
       </div>
     </div>
   </nav>
@@ -83,37 +87,37 @@ input::placeholder,textarea::placeholder{color:#8E8C9B}
         <div style="min-width: 0;">
           <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: {{accent}};">Week 43 · 19–25 October</div>
           <h1 style="margin: 6px 0 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(28px, 3vw, 34px); line-height: 1.15; font-weight: 800; letter-spacing: -0.02em;">Weekly review</h1>
-          <p style="margin: 0; color: #A09EAD; font-size: 15px;">About 10 minutes. Samuel uses your answers to plan next week.</p>
+          <p style="margin: 0; color: #B3B1C7; font-size: 15px;">About 10 minutes. Samuel uses your answers to plan next week.</p>
         </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;"><nav aria-label="Review type" style="display: flex; gap: 4px; padding: 4px; background: #17181E; border: 1px solid #262833; border-radius: 14px;"><a href="Review.dc.html" aria-current="page" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 10px; background: {{accentSoft}}; color: #ECEAF2; font-weight: 600; font-size: 14px;">Weekly</a><a href="Monthly.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 10px; color: #A09EAD; font-size: 14px;">Monthly</a></nav>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;"><nav aria-label="Review type" style="display: flex; gap: 4px; padding: 4px; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 14px;"><a href="Review.dc.html" aria-current="page" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 10px; background: {{accentSoft}}; color: #F6F5FC; font-weight: 600; font-size: 14px;">Weekly</a><a href="Monthly.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 10px; color: #B3B1C7; font-size: 14px;">Monthly</a></nav>
         <ol aria-label="Review steps" style="list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap;">
           <li style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; background: {{accentSoft}}; font-weight: 600; font-size: 13px;"><span style="width: 24px; height: 24px; border-radius: 50%; background: {{accent}}; color: #15121F; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">1</span>Look back</li>
-          <li style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; border: 1px solid #2E303B; color: #A09EAD; font-size: 13px;"><span style="width: 24px; height: 24px; border-radius: 50%; background: #22242D; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">2</span>Reflect</li>
-          <li style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; border: 1px solid #2E303B; color: #A09EAD; font-size: 13px;"><span style="width: 24px; height: 24px; border-radius: 50%; background: #22242D; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">3</span>Plan next week</li>
+          <li style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; border: 1px solid #383F57; color: #B3B1C7; font-size: 13px;"><span style="width: 24px; height: 24px; border-radius: 50%; background: #272C3D; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">2</span>Reflect</li>
+          <li style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; border: 1px solid #383F57; color: #B3B1C7; font-size: 13px;"><span style="width: 24px; height: 24px; border-radius: 50%; background: #272C3D; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">3</span>Plan next week</li>
         </ol></div>
       </header>
 
       <!-- Look back -->
       <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
-        <section aria-labelledby="back-h" style="flex: 2 1 560px; min-width: 0; box-sizing: border-box; background: #17181E; border: 1px solid #262833; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
+        <section aria-labelledby="back-h" style="flex: 2 1 560px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>
             <h2 id="back-h" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Your week in brief</h2>
-            <span style="font-size: 12px; color: #8E8C9B;">Written by Samuel · Claude Code</span>
+            <span style="font-size: 12px; color: #9D9BB3;">Written by Samuel · Claude Code</span>
           </div>
-          <p style="margin: 0; font-size: 15px; color: #C9C7D3; max-width: 68ch;">A strong week for shipping: the website brief went to review and the invoice backlog is cleared. Focus time dipped on Thursday after three back-to-back meetings, and the onboarding doc review has now slipped twice.</p>
+          <p style="margin: 0; font-size: 15px; color: #D8D6E6; max-width: 68ch;">A strong week for shipping: the website brief went to review and the invoice backlog is cleared. Focus time dipped on Thursday after three back-to-back meetings, and the onboarding doc review has now slipped twice.</p>
           <div style="display: flex; flex-wrap: wrap; gap: 24px;">
             <div style="flex: 1 1 240px; min-width: 0;">
-              <h3 style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6FD6A0;">Wins</h3>
-              <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: #ECEAF2;">
+              <h3 style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5CE8A4;">Wins</h3>
+              <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: #F6F5FC;">
                 <li>Website refresh brief sent for review</li>
                 <li>All October invoices sent</li>
                 <li>Checked in every weekday</li>
               </ul>
             </div>
             <div style="flex: 1 1 240px; min-width: 0;">
-              <h3 style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #F2B35B;">Slipped</h3>
-              <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: #ECEAF2;">
+              <h3 style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #FFC766;">Slipped</h3>
+              <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: #F6F5FC;">
                 <li>Marcus's onboarding doc review (moved twice)</li>
                 <li>Reading — 2 of 5 days</li>
               </ul>
@@ -121,16 +125,16 @@ input::placeholder,textarea::placeholder{color:#8E8C9B}
           </div>
         </section>
 
-        <section aria-labelledby="nums-h" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #17181E; border: 1px solid #262833; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <section aria-labelledby="nums-h" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px;">
           <h2 id="nums-h" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700;">By the numbers</h2>
           <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
             <sc-for list="{{stats}}" as="s" hint-placeholder-count="5">
-              <li style="padding: 10px 0; border-top: 1px solid #22242D; display: flex; flex-direction: column; gap: 6px;">
+              <li style="padding: 10px 0; border-top: 1px solid #272C3D; display: flex; flex-direction: column; gap: 6px;">
                 <div style="display: flex; justify-content: space-between; gap: 12px;">
-                  <span style="color: #A09EAD;">{{s.label}}</span>
-                  <span style="font-weight: 600;">{{s.value}} <span style="color: #8E8C9B; font-weight: 400;">{{s.of}}</span></span>
+                  <span style="color: #B3B1C7;">{{s.label}}</span>
+                  <span style="font-weight: 600;">{{s.value}} <span style="color: #9D9BB3; font-weight: 400;">{{s.of}}</span></span>
                 </div>
-                <div style="height: 6px; border-radius: 999px; background: #22242D;"><div style="{{s.bar}}"></div></div>
+                <div style="height: 6px; border-radius: 999px; background: #272C3D;"><div style="{{s.bar}}"></div></div>
               </li>
             </sc-for>
           </ul>
@@ -138,62 +142,62 @@ input::placeholder,textarea::placeholder{color:#8E8C9B}
       </div>
 
       <!-- Reflect -->
-      <section aria-labelledby="reflect-h" style="box-sizing: border-box; background: #17181E; border: 1px solid #262833; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 16px;">
+      <section aria-labelledby="reflect-h" style="box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 16px;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
           <h2 id="reflect-h" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Reflect</h2>
-          <span style="font-size: 12px; color: #8E8C9B;">3 questions from your week</span>
+          <span style="font-size: 12px; color: #9D9BB3;">3 questions from your week</span>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 16px;">
           <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
             <label for="q1" style="font-weight: 600;">Wednesday was your best focus day (4.2 h). What made it work?</label>
-            <textarea id="q1" rows="4" placeholder="Write a few lines…" style="box-sizing: border-box; width: 100%; padding: 12px 14px; background: #121318; border: 1px solid #2E303B; border-radius: 12px; color: #ECEAF2; font: inherit; resize: vertical;">No meetings before 13:00, and I blocked Slack for the morning.</textarea>
+            <textarea id="q1" rows="4" placeholder="Write a few lines…" style="box-sizing: border-box; width: 100%; padding: 12px 14px; background: #151823; border: 1px solid #383F57; border-radius: 12px; color: #F6F5FC; font: inherit; resize: vertical;">No meetings before 13:00, and I blocked Slack for the morning.</textarea>
           </div>
           <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
             <span id="q2" style="font-weight: 600;">The onboarding doc review slipped twice. What should happen to it?</span>
             <div role="radiogroup" aria-labelledby="q2" style="display: flex; flex-direction: column; gap: 8px;">
-              <button type="button" role="radio" aria-checked="true" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid {{accent}}; background: {{accentSoft}}; color: #ECEAF2; font: inherit; text-align: left; cursor: pointer;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 4px solid {{accent}}; box-sizing: border-box;"></span>Keep it — schedule it Monday 10:00</button>
-              <button type="button" role="radio" aria-checked="false" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #2E303B; background: transparent; color: #C9C7D3; font: inherit; text-align: left; cursor: pointer;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #8E8C9B; box-sizing: border-box;"></span>Delegate it</button>
-              <button type="button" role="radio" aria-checked="false" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #2E303B; background: transparent; color: #C9C7D3; font: inherit; text-align: left; cursor: pointer;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #8E8C9B; box-sizing: border-box;"></span>Drop it</button>
+              <button type="button" role="radio" aria-checked="true" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid {{accent}}; background: {{accentSoft}}; color: #F6F5FC; font: inherit; text-align: left; cursor: pointer;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 4px solid {{accent}}; box-sizing: border-box;"></span>Keep it — schedule it Monday 10:00</button>
+              <button type="button" role="radio" aria-checked="false" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #383F57; background: transparent; color: #D8D6E6; font: inherit; text-align: left; cursor: pointer;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #9D9BB3; box-sizing: border-box;"></span>Delegate it</button>
+              <button type="button" role="radio" aria-checked="false" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #383F57; background: transparent; color: #D8D6E6; font: inherit; text-align: left; cursor: pointer;"><span style="width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #9D9BB3; box-sizing: border-box;"></span>Drop it</button>
             </div>
           </div>
           <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
             <label for="q3" style="font-weight: 600;">What's one thing you'd do differently next week?</label>
-            <textarea id="q3" rows="4" placeholder="Write a few lines…" style="box-sizing: border-box; width: 100%; padding: 12px 14px; background: #121318; border: 1px solid #2E303B; border-radius: 12px; color: #ECEAF2; font: inherit; resize: vertical;"></textarea>
+            <textarea id="q3" rows="4" placeholder="Write a few lines…" style="box-sizing: border-box; width: 100%; padding: 12px 14px; background: #151823; border: 1px solid #383F57; border-radius: 12px; color: #F6F5FC; font: inherit; resize: vertical;"></textarea>
           </div>
         </div>
       </section>
 
       <!-- Plan -->
       <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
-        <section aria-labelledby="plan-h" style="flex: 2 1 560px; min-width: 0; box-sizing: border-box; background: #17181E; border: 1px solid #262833; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
+        <section aria-labelledby="plan-h" style="flex: 2 1 560px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
             <h2 id="plan-h" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Top 3 for next week</h2>
           </div>
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: {{accent}}; width: 18px;">1</span><label for="p1" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Priority 1</label><input id="p1" type="text" value="Ship the Q4 budget proposal by Monday" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; padding: 0 14px; background: #121318; border: 1px solid #2E303B; border-radius: 10px; color: #ECEAF2; font: inherit;"></div>
-            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: {{accent}}; width: 18px;">2</span><label for="p2" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Priority 2</label><input id="p2" type="text" value="Finish onboarding playbook v2 draft" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; padding: 0 14px; background: #121318; border: 1px solid #2E303B; border-radius: 10px; color: #ECEAF2; font: inherit;"></div>
-            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: {{accent}}; width: 18px;">3</span><label for="p3" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Priority 3</label><input id="p3" type="text" placeholder="Add a third priority" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; padding: 0 14px; background: #121318; border: 1px solid #2E303B; border-radius: 10px; color: #ECEAF2; font: inherit;"></div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: {{accent}}; width: 18px;">1</span><label for="p1" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Priority 1</label><input id="p1" type="text" value="Ship the Q4 budget proposal by Monday" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; padding: 0 14px; background: #151823; border: 1px solid #383F57; border-radius: 10px; color: #F6F5FC; font: inherit;"></div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: {{accent}}; width: 18px;">2</span><label for="p2" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Priority 2</label><input id="p2" type="text" value="Finish onboarding playbook v2 draft" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; padding: 0 14px; background: #151823; border: 1px solid #383F57; border-radius: 10px; color: #F6F5FC; font: inherit;"></div>
+            <div style="display: flex; align-items: center; gap: 12px;"><span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: {{accent}}; width: 18px;">3</span><label for="p3" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Priority 3</label><input id="p3" type="text" placeholder="Add a third priority" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; padding: 0 14px; background: #151823; border: 1px solid #383F57; border-radius: 10px; color: #F6F5FC; font: inherit;"></div>
           </div>
-          <h3 style="margin: 6px 0 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #A09EAD;">Carry over to next week</h3>
+          <h3 style="margin: 6px 0 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #B3B1C7;">Carry over to next week</h3>
           <ul style="list-style: none; margin: 0; padding: 0;">
-            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid #22242D;"><input id="c1" type="checkbox" checked style="width: 18px; height: 18px; margin: 0; accent-color: {{accent}};"><label for="c1" style="flex: 1;">Review Marcus's onboarding doc</label><span style="font-size: 12px; color: #A09EAD;">Mon 10:00</span></li>
-            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid #22242D;"><input id="c2" type="checkbox" checked style="width: 18px; height: 18px; margin: 0; accent-color: {{accent}};"><label for="c2" style="flex: 1;">Outline section 3 of onboarding playbook</label><span style="font-size: 12px; color: #A09EAD;">Tue</span></li>
-            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid #22242D; border-bottom: 1px solid #22242D;"><input id="c3" type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: {{accent}};"><label for="c3" style="flex: 1; color: #A09EAD;">Conference talk abstract</label><span style="font-size: 12px; color: #8E8C9B;">Back to backlog</span></li>
+            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid #272C3D;"><input id="c1" type="checkbox" checked style="width: 18px; height: 18px; margin: 0; accent-color: {{accent}};"><label for="c1" style="flex: 1;">Review Marcus's onboarding doc</label><span style="font-size: 12px; color: #B3B1C7;">Mon 10:00</span></li>
+            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid #272C3D;"><input id="c2" type="checkbox" checked style="width: 18px; height: 18px; margin: 0; accent-color: {{accent}};"><label for="c2" style="flex: 1;">Outline section 3 of onboarding playbook</label><span style="font-size: 12px; color: #B3B1C7;">Tue</span></li>
+            <li style="display: flex; align-items: center; gap: 12px; min-height: 44px; border-top: 1px solid #272C3D; border-bottom: 1px solid #272C3D;"><input id="c3" type="checkbox" style="width: 18px; height: 18px; margin: 0; accent-color: {{accent}};"><label for="c3" style="flex: 1; color: #B3B1C7;">Conference talk abstract</label><span style="font-size: 12px; color: #9D9BB3;">Back to backlog</span></li>
           </ul>
         </section>
 
-        <section aria-labelledby="ahead-h" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #17181E; border: 1px solid #262833; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <section aria-labelledby="ahead-h" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px;">
           <h2 id="ahead-h" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700;">Coming up</h2>
           <ul style="list-style: none; margin: 0; padding: 0;">
-            <li style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #22242D;"><span style="width: 40px; font-size: 12px; font-weight: 700; color: #F2B35B;">Mon</span><span style="flex: 1;">Q4 budget proposal due</span></li>
-            <li style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #22242D;"><span style="width: 40px; font-size: 12px; font-weight: 700; color: #A09EAD;">Wed</span><span style="flex: 1;">Team offsite — all day, no focus time</span></li>
-            <li style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #22242D; border-bottom: 1px solid #22242D;"><span style="width: 40px; font-size: 12px; font-weight: 700; color: #A09EAD;">Fri</span><span style="flex: 1;">Mia's birthday</span></li>
+            <li style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #272C3D;"><span style="width: 40px; font-size: 12px; font-weight: 700; color: #FFC766;">Mon</span><span style="flex: 1;">Q4 budget proposal due</span></li>
+            <li style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #272C3D;"><span style="width: 40px; font-size: 12px; font-weight: 700; color: #B3B1C7;">Wed</span><span style="flex: 1;">Team offsite — all day, no focus time</span></li>
+            <li style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #272C3D; border-bottom: 1px solid #272C3D;"><span style="width: 40px; font-size: 12px; font-weight: 700; color: #B3B1C7;">Fri</span><span style="flex: 1;">Mia's birthday</span></li>
           </ul>
           <div style="flex: 1;"></div>
           <button type="button" style="height: 44px; border: 0; border-radius: 12px; background: {{accent}}; color: #15121F; font: inherit; font-weight: 700; cursor: pointer;">Save review</button>
-          <button type="button" style="height: 40px; border: 1px solid #2E303B; border-radius: 12px; background: transparent; color: #C9C7D3; font: inherit; font-weight: 600; cursor: pointer;">Save draft</button>
+          <button type="button" style="height: 40px; border: 1px solid #383F57; border-radius: 12px; background: transparent; color: #D8D6E6; font: inherit; font-weight: 600; cursor: pointer;">Save draft</button>
         </section>
       </div>
 
@@ -201,15 +205,15 @@ input::placeholder,textarea::placeholder{color:#8E8C9B}
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#A78BFA","options":["#A78BFA","#7CC4F2","#6FD6A0","#F2B35B"]},"$preview":{"width":1440,"height":1340}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#9B87FF","options":["#9B87FF","#5CC8FF","#45E0B4","#FFB35C","#FF7EB3"]},"$preview":{"width":1440,"height":1340}}'>
 class Component extends DCLogic {
   renderVals() {
-    const accent = this.props.accent ?? '#A78BFA';
+    const accent = this.props.accent ?? '#9B87FF';
     const n = parseInt(accent.slice(1), 16);
     const accentSoft = 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',0.16)';
     const stat = (label, value, of, pct, warn) => ({
       label, value, of,
-      bar: { height: '6px', borderRadius: '999px', width: Math.min(100, pct) + '%', background: warn ? '#F2B35B' : accent }
+      bar: { height: '6px', borderRadius: '999px', width: Math.min(100, pct) + '%', background: warn ? '#FFC766' : accent }
     });
     const stats = [
       stat('Tasks done', '18', 'vs 14 last week', 90),
