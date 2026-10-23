@@ -5,6 +5,7 @@ import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, deltaText, isoDate, scoreText, shortDate } from '../format'
 import { useLoad, useNow, type useCoachJob } from '../hooks'
+import { ReviewTabs } from './Monthly'
 
 interface Props {
   coach: ReturnType<typeof useCoachJob>
@@ -34,10 +35,13 @@ export function ReviewPage({ coach, status }: Props) {
         <p>About 10 minutes. Look back, answer three questions, and set next week's top 3. Samuel uses your answers to plan next week.</p>
       </header>
 
+      <div className="review-bar">
+      <ReviewTabs current="weekly" />
       <div className="pills" role="group" aria-label="Week">
         <button type="button" className="pill" disabled={!r} onClick={() => r && setWeek(addDays(r.week_start, -7))}>← Previous week</button>
         <button type="button" className="pill" disabled={!r || r.is_current} onClick={() => r && setWeek(addDays(r.week_start, 7))}>Next week →</button>
         {r?.status && <span className="tag" style={{ alignSelf: 'center' }}>{r.status === 'done' ? 'Saved' : 'Draft'}</span>}
+      </div>
       </div>
 
       {loaded.error && <ErrorLine message={loaded.error} onRetry={loaded.reload} />}

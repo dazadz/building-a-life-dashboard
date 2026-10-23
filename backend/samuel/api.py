@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, health, profile, reports, routines, scores, security, settings, tasks, weekly
+from . import backups, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -455,6 +455,14 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         except ValueError as exc:
             raise HTTPException(422, str(exc))
         return health.summary(conn, day, 30)
+
+    @app.get("/api/monthly")
+    def get_monthly(month: str | None = None, today: str | None = None, conn=Depends(get_conn)):
+        day = _day(today) if today else date.today().isoformat()
+        try:
+            return monthly.summary(conn, month or day[:7], day)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):

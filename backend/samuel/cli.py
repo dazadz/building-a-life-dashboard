@@ -76,7 +76,7 @@ def _backup_hourly() -> None:
 def cmd_export(args) -> None:
     conn = db.connect()
     if not args.all:
-        json.dump(reports.export(conn, args.since, args.until, args.sensitive), sys.stdout, indent=1, ensure_ascii=False)
+        json.dump(reports.export(conn, args.since, args.until, args.sensitive, args.month), sys.stdout, indent=1, ensure_ascii=False)
         print()
         return
     data = backups.export_all(conn)
@@ -297,6 +297,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--force", action="store_true", help="allow --out inside a git repository")
     p.add_argument("--sensitive", action="store_true",
                    help="include the health and mental health profile answers (onboarding insights only)")
+    p.add_argument("--month", action="store_true", help="include this month compared with last month")
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("import", help="restore an export made with export --all into an empty database")

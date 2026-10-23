@@ -120,9 +120,19 @@ No flags is **Low**, 1 or 2 is **Moderate**, 3 or more is **High**. The screen l
 
 **Daily inputs:** 7-day averages of the health log values that were logged.
 
-## Later
+## Monthly evolution
 
-- **Monthly evolution** (v0.3).
+A calendar month compared with the month before, straight from the data:
+
+- **Days logged:** days with a saved check-in, out of the days in the month (so far, for the current month).
+- **Discipline, Productivity and Energy:** the average of that daily score over the days that have it.
+- **Consistency:** the Habit rate rule over every habit-day in the month.
+- **Sleep:** the average of the nights with a sleep answer.
+- **Goal completion:** milestones due in the month that are done, out of all milestones due in the month.
+- **Habit evolution:** each habit's rate this month and last month, and the change in points.
+- **Discipline trend:** the daily Discipline score, with its 7-day average (the mean of the days that have one, up to and including that day).
+
+A change shows only when both months have a value.
 
 ## Decisions
 
