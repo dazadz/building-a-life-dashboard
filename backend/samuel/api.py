@@ -65,8 +65,12 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Samuel", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
     @app.get("/api/status")
-    def status():
-        return {"coach": coach.status(), "today": date.today().isoformat()}
+    def status(conn=Depends(get_conn)):
+        return {
+            "coach": coach.status(),
+            "today": date.today().isoformat(),
+            "name": db.get_setting(conn, "name"),
+        }
 
     @app.get("/api/days/{day}")
     def get_day(day: str, conn=Depends(get_conn)):
