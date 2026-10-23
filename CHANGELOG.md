@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Added
+- **Health & energy:** sleep and energy charts (with a table view), how much lower your energy is after short nights, a Recovery score, Burnout risk with its reasons, 7-day daily inputs, and an optional quick health log for water, caffeine and late screens. The rules are in `docs/scores.md`. Not medical advice.
 - **Tasks with reminders:** Today, Upcoming, Overdue, All and Done views with counts, lists, priority, filters and sorting; subtasks, notes and links to goals; quick add that reads dates, times, #lists and !high as you type; Done, +1 hour and Tomorrow on every task. Reminders appear as Windows notifications (when allowed) and as cards in the app while Samuel is open; nothing goes through an outside push service. Samuel's daily report sees tasks that are overdue or due this week.
 
 ## [0.2.0] - 2026-10-24

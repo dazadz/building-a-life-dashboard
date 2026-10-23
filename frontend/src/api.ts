@@ -277,6 +277,39 @@ export interface DueReminder {
   remind_at: string
 }
 
+export interface HealthLog {
+  water_l: number | null
+  caffeine_cups: number | null
+  caffeine_last: string | null
+  screens_late: number | null
+}
+
+export interface Health {
+  date: string
+  days: number
+  sleep_target: number
+  recovery: {
+    score: number | null
+    change: number | null
+    sleep_avg: number | null
+    rest_days: number
+    stress_avg: number | null
+    workouts: number
+  }
+  burnout: { level: 'low' | 'moderate' | 'high' | null; reasons: string[] }
+  series: { date: string; sleep: number | null; energy: number | null }[]
+  energy_gap: number | null
+  inputs: {
+    water_l: number | null
+    caffeine_cups: number | null
+    caffeine_latest: string | null
+    screens_late: number | null
+    workouts: number
+    logged_days: number
+  }
+  log_today: (HealthLog & { date: string }) | null
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -353,6 +386,9 @@ export const api = {
   dueReminders: (now: string) => request<DueReminder[]>(`/api/reminders/due?now=${now}`),
   markNotified: (now: string, id: number) =>
     request<{ ok: boolean }>(`/api/tasks/${id}/notified?now=${now}`, { method: 'POST', body: '{}' }),
+  health: (day: string, days: number) => request<Health>(`/api/health/${day}?days=${days}`),
+  saveHealthLog: (day: string, log: Partial<HealthLog>) =>
+    request<Health>(`/api/health-log/${day}`, { method: 'PUT', body: JSON.stringify(log) }),
   profile: () => request<Profile>('/api/profile'),
   saveProfile: (section: string, answers: Record<string, ProfileValue>, done?: boolean) =>
     request<Profile>(`/api/profile/${section}`, { method: 'PUT', body: JSON.stringify({ answers, done }) }),

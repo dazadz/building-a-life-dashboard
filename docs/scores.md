@@ -90,11 +90,38 @@ The weekly review covers one Monday-to-Sunday week. Its numbers come straight fr
 
 Wins are check-in wins plus milestones done that week. Slips are check-in failures plus milestones due that week whose due date has passed and that are still open. From Friday on, the review opens on the current week; earlier in the week, on the week that just ended.
 
+## Health & energy
+
+These use the check-in plus an optional quick health log: water (litres), coffee or energy drinks (cups), the time of the last one, and minutes of screens after 22:00. The log is never required; anything not logged counts as unknown.
+
+**Recovery (0–100)** for a day, from that day and the two before it, plus the last 7 days for rest:
+
+| Part | Value from 0 to 1 | Weight |
+| --- | --- | --- |
+| Sleep | the average Sleep value of the last 3 nights | 40% |
+| Stress | 1 − (average Stress index of the last 3 days − 1) ÷ 9 | 25% |
+| Energy | the average Energy value of the last 3 days | 15% |
+| Rest | rest days in the last 7 (Workout answered "Rest day"), ÷ 2, capped at 1 | 20% |
+
+Rest needs at least 3 check-ins in the 7 days; the ground rules above apply to the rest.
+
+**Burnout risk** looks at the last 7 days. It needs at least 3 check-ins in that time, and raises a flag for each of these:
+
+- **Short nights:** 3 or more nights in a row more than 1 h under your sleep target.
+- **No rest:** 7 or more check-in days in a row without a rest day.
+- **High stress:** the average Stress index is 6 or more.
+- **Falling energy:** the average energy rating is at least 1.5 points below the 7 days before.
+- **Late caffeine:** the last coffee or energy drink was after 15:00 on 3 or more logged days.
+- **Long days:** deep work more than 2 h over target on 3 or more days.
+
+No flags is **Low**, 1 or 2 is **Moderate**, 3 or more is **High**. The screen lists the flags as the reasons.
+
+**Sleep and energy:** the average energy rating on days with less than 6.5 h of sleep, compared with days with 6.5 h or more, over the chosen period. It shows once each side has at least 2 days.
+
+**Daily inputs:** 7-day averages of the health log values that were logged.
+
 ## Later
 
-These scores are planned with their screens and will be added here before they are built:
-
-- **Recovery** and **Burnout risk** (Health & energy, v0.3). They need inputs the check-in doesn't collect yet: water, caffeine and screen time.
 - **Monthly evolution** (v0.3).
 
 ## Decisions

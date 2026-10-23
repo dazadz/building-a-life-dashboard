@@ -105,6 +105,16 @@ const tasksBody = {
 
 let dueReminders: unknown[] = []
 
+const healthBody = {
+  date: '2026-10-24', days: 30, sleep_target: 7.5,
+  recovery: { score: 68, change: -7, sleep_avg: 6.6, rest_days: 1, stress_avg: 6, workouts: 3 },
+  burnout: { level: 'moderate', reasons: ['3 short nights in a row', 'Caffeine after 15:00 on 4 days'] },
+  series: [{ date: '2026-10-23', sleep: 6.2, energy: 4 }, { date: '2026-10-24', sleep: 7.4, energy: 7 }],
+  energy_gap: 1.6,
+  inputs: { water_l: 1.6, caffeine_cups: 3, caffeine_latest: '16:10', screens_late: 48, workouts: 3, logged_days: 5 },
+  log_today: null,
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -118,6 +128,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/weekly')) body = weeklyBody
     else if (url.startsWith('/api/plan/')) body = planBody
     else if (url.startsWith('/api/tasks')) body = tasksBody
+    else if (url.startsWith('/api/health')) body = healthBody
     else if (url.startsWith('/api/reminders/due')) body = dueReminders
     else if (url.startsWith('/api/routines')) body = planBody.blocks
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
@@ -272,6 +283,24 @@ describe('App', () => {
     expect(region).toHaveTextContent('Add hiring costs')
     expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\/1\/notified/), expect.objectContaining({ method: 'POST' }))
     dueReminders = []
+  })
+
+  it('shows recovery, burnout reasons and the sleep-energy link, and logs today', async () => {
+    mockServer(true)
+    window.location.hash = '#/health'
+    render(<App />)
+    expect(await screen.findByText('Caffeine after 15:00 on 4 days')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Burnout risk: moderate' })).toBeInTheDocument()
+    expect(screen.getByText('Energy is 1.6 points lower on days with less than 6.5 h of sleep.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }))
+    expect(screen.getByRole('columnheader', { name: 'Sleep (h)' })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Water (litres)'), { target: { value: '1.75' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save log →' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/health-log\/\d{4}-\d{2}-\d{2}$/), expect.objectContaining({
+        method: 'PUT', body: '{"water_l":1.75,"caffeine_cups":null,"caffeine_last":null,"screens_late":null}',
+      })),
+    )
   })
 
   it('reminds the user to finish the profile on Home', async () => {
