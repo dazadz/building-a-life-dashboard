@@ -1,7 +1,7 @@
 """Runs Claude Code as Samuel's coach.
 
 The backend starts `claude -p "/<skill>"` in the repo, where the coach skills live. Claude may only
-run the `samuel` CLI: it reads data with `samuel export` and writes back with `samuel report add`.
+run two `samuel` commands: `samuel export` to read data and `samuel report add` to save a report.
 """
 
 import os
@@ -39,7 +39,11 @@ def _env() -> dict:
 
 
 def command(skill: str) -> list[str]:
-    return [claude_path() or "claude", "-p", f"/{skill}", "--allowedTools", "Bash(samuel *)"]
+    # Only the two commands the skills need: read data, and save a report. Nothing that edits data.
+    return [
+        claude_path() or "claude", "-p", f"/{skill}",
+        "--allowedTools", "Bash(samuel export *)", "Bash(samuel report add *)",
+    ]
 
 
 def start(conn: sqlite3.Connection, skill: str) -> int:

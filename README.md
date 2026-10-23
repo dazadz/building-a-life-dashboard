@@ -70,6 +70,8 @@ Reports need Claude Code installed and logged in on this computer (run `claude` 
 - **Back up your data:** `.\.venv\Scripts\samuel backup` writes a dated copy to `~\.samuel\backups`.
 - **Working on the frontend:** run `npm run dev` in `frontend` while `samuel serve` is running, and open http://localhost:5173 for live reload.
 
+**Contributing:** turn on the privacy check once with `git config core.hooksPath scripts/hooks`. It stops a commit that contains database files, secrets, local paths or personal email addresses. To block your own name too, add it (one word per line) to `.git/info/private-words`, which is never committed.
+
 **Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask for a report.
 
 ## Design
