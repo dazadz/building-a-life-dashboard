@@ -16,7 +16,7 @@ The chat id is: $ARGUMENTS
    ```
    samuel export --since 14d --chat <chat id>
    ```
-   `chat.messages` is the conversation so far, oldest first; the last one is the user's message to answer. `chat.about_report` is the report they opened the chat from, if any. Everything else is as in the daily report: `name`, `days` (check-ins, habits, scores), `summary`, `profile`, `goals`, `health`, `tasks`, `routine`, `weekly_review` and `recent_reports`.
+   `chat.messages` is the conversation so far, oldest first; the last one is the user's message to answer. `chat.about_report` is the report they opened the chat from, if any. Everything else is as in the daily report: `name`, `days` (check-ins, habits, scores), `summary`, `profile`, `goals`, `health`, `tasks`, `routine`, `weekly_review`, `recent_reports`, `time_leaks_30d` (their biggest distractions by deep work lost) and `links_90d` (with/without patterns from their own days; call them patterns, not proof).
 2. Write your reply (rules below).
 3. Save it with a single command, passing the markdown on stdin:
    ```

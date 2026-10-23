@@ -95,7 +95,7 @@ export default function App() {
         ) : route === '/goals' ? (
           <GoalsPage />
         ) : route === '/health' ? (
-          <HealthPage />
+          <HealthPage coachInstalled={status.data?.coach.installed ?? false} />
         ) : route === '/tasks' ? (
           <TasksPage />
         ) : route === '/monthly' ? (

@@ -106,6 +106,25 @@ export interface Chat {
   awaiting_reply: boolean
 }
 
+export interface Links {
+  days: number
+  min_days: number
+  links: {
+    condition: string
+    condition_label: string
+    compared_with: string
+    outcome: string
+    outcome_label: string
+    unit: string
+    when: 'same day' | 'next day'
+    with_avg: number
+    without_avg: number
+    difference: number
+    with_days: number
+    without_days: number
+  }[]
+}
+
 export interface TimeLeaks {
   days: number
   checkins: number
@@ -461,6 +480,7 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  links: (day: string, days: number) => request<Links>(`/api/links/${day}?days=${days}`),
   leaks: (day: string, days: number) => request<TimeLeaks>(`/api/leaks/${day}?days=${days}`),
   digest: (now: string) => request<Digest>(`/api/digest?now=${now}`),
   search: (q: string) => request<SearchResults>(`/api/search?q=${encodeURIComponent(q)}`),
