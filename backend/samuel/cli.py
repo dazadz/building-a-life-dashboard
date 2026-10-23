@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import random
 import re
 import subprocess
@@ -73,7 +74,14 @@ def _backup_hourly() -> None:
         conn.close()
 
 
+def _coach_run() -> bool:
+    """True inside a coach run, where check-in text could try to steer Claude (see coach._env)."""
+    return os.environ.get("SAMUEL_COACH") == "1"
+
+
 def cmd_export(args) -> None:
+    if _coach_run() and (args.all or args.out or args.force):
+        sys.exit("Coach runs may only read recent data: --all, --out and --force are off.")
     conn = db.connect()
     if not args.all:
         json.dump(reports.export(conn, args.since, args.until, args.sensitive, args.month), sys.stdout, indent=1, ensure_ascii=False)
@@ -107,6 +115,8 @@ def cmd_import(args) -> None:
 
 
 def cmd_report_add(args) -> None:
+    if _coach_run() and args.file != "-":
+        sys.exit("Coach runs pass reports on stdin (--file -), not from files.")
     if args.file == "-":
         text = sys.stdin.buffer.read().decode("utf-8-sig") if hasattr(sys.stdin, "buffer") else sys.stdin.read()
     else:

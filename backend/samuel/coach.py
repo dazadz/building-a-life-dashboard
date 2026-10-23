@@ -46,13 +46,17 @@ def _env() -> dict:
     env["PATH"] = os.pathsep.join([str(scripts), str(scripts / "Scripts"), env.get("PATH", "")])
     env["SAMUEL_DATA_DIR"] = str(db.data_dir())
     env["PYTHONIOENCODING"] = "utf-8"
+    env["SAMUEL_COACH"] = "1"  # the CLI then refuses full exports and reading report files
     return env
 
 
 def command(skill: str) -> list[str]:
     # Only the two commands the skills need: read data, and save a report. Nothing that edits data.
+    # Bash is the only tool, and the user's own settings and MCP servers aren't loaded, so a run
+    # can't inherit wider permissions (or connected services) from the person's Claude Code setup.
     return [
         claude_path() or "claude", "-p", f"/{skill}",
+        "--tools", "Bash", "--setting-sources", "project", "--strict-mcp-config",
         "--allowedTools", "Bash(samuel export *)", "Bash(samuel report add *)",
     ]
 

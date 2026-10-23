@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from samuel import cli
 from samuel.api import create_app
 from samuel.coach import command
 from samuel.security import hostname
@@ -62,3 +63,22 @@ def test_coach_may_only_read_and_save_reports():
     cmd = command("daily-report")
     allowed = cmd[cmd.index("--allowedTools") + 1:]
     assert allowed == ["Bash(samuel export *)", "Bash(samuel report add *)"]
+
+
+def test_coach_runs_without_the_users_own_settings_or_tools():
+    cmd = command("daily-report")
+    assert cmd[cmd.index("--tools") + 1] == "Bash"
+    assert cmd[cmd.index("--setting-sources") + 1] == "project"
+    assert "--strict-mcp-config" in cmd
+
+
+def test_coach_runs_cannot_export_everything_or_read_files(conn, tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("SAMUEL_COACH", "1")
+    for argv in (["export", "--all"], ["export", "--all", "--out", str(tmp_path / "x.json"), "--force"],
+                 ["report", "add", "--kind", "daily", "--file", str(tmp_path / "secret.txt")]):
+        with pytest.raises(SystemExit) as exc:
+            cli.main(argv)
+        assert "Coach runs" in str(exc.value)
+    assert not (tmp_path / "x.json").exists()
+    cli.main(["export", "--since", "7d"])  # the normal coach read still works
+    assert '"days"' in capsys.readouterr().out
