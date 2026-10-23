@@ -68,7 +68,7 @@ function Steps({ today, initial, onDone }: { today: string; initial: Settings; o
           <div className="page-head">
             <div className="eyebrow">Step {step + 1} of {STEPS.length}</div>
             <h1 style={{ fontSize: 26 }}>{STEPS[step].title}</h1>
-            <p>{STEPS[step].intro}</p>
+            <p>{step > 0 && name.trim() ? `Nice to meet you, ${name.trim()}. ${STEPS[step].intro}` : STEPS[step].intro}</p>
           </div>
         </div>
 

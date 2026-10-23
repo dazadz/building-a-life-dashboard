@@ -111,6 +111,7 @@ describe('App', () => {
     fireEvent.change(screen.getByLabelText('First name'), { target: { value: 'Jordan' } })
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(await screen.findByRole('heading', { name: 'Your day' })).toBeInTheDocument()
+    expect(screen.getByText(/Nice to meet you, Jordan\./)).toBeInTheDocument()
     expect(screen.getByLabelText('Sleep target (hours)')).toHaveValue(7.5)
 
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
