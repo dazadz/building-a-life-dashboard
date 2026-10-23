@@ -47,11 +47,11 @@ Open **http://127.0.0.1:8765**. Leave the PowerShell window open while you use t
 To use Samuel like a desktop app, with no browser tabs, address bar or toolbar:
 
 ```powershell
-cd building-a-life-dashboardackend
+cd building-a-life-dashboard\backend
 .\.venv\Scripts\samuel app
 ```
 
-It starts the server if it isn't already running and opens Samuel in a Microsoft Edge app window (Chrome or Chromium if Edge isn't installed). A server it started stops by itself a few minutes after you close the window. You don't need a PowerShell window open. The window keeps its own small browser profile in `~\.samuelpp-window`, separate from your normal browser.
+It starts the server if it isn't already running and opens Samuel in a Microsoft Edge app window (Chrome or Chromium if Edge isn't installed). A server it started stops by itself a few minutes after you close the window. You don't need a PowerShell window open. The window keeps its own small browser profile in `~\.samuel\app-window`, separate from your normal browser.
 
 To get a **desktop shortcut** that does this with a double-click and no console window, run `.\.venv\Scripts\samuel app --shortcut` once. You can pin the shortcut to the taskbar.
 
@@ -93,8 +93,9 @@ Reports need Claude Code installed and logged in on this computer (run `claude` 
 - **Automatic:** while Samuel runs, it saves a copy of your database once a day to `~\.samuel\backups`, keeping the last 14. It also saves one before every update to the database.
 - **Now:** Settings → Your data → **Back up now**, or `.\.venv\Scripts\samuel backup`.
 - **Restore a backup:** stop Samuel, then copy the backup file over `~\.samuel\samuel.db`.
-- **Export everything** (to move to another PC): `.\.venv\Scripts\samuel export --all --out "$HOME\Documents\samuel-export.json"`. The file holds all your personal data, so keep it private. Samuel refuses to write it inside a git repository.
-- **Import** into a fresh, empty Samuel: `.\.venv\Scripts\samuel import "$HOME\Documents\samuel-export.json"`.
+- **Export everything** (to move to another PC): `.\.venv\Scripts\samuel export --all --out "$HOME\samuel-export.json"`. The file holds all your personal data, so keep it private. Samuel refuses to write it inside a git repository, and the privacy check stops it from being committed.
+- **Import** into a fresh, empty Samuel: `.\.venv\Scripts\samuel import "$HOME\samuel-export.json"`.
+- **Keep it off the cloud:** don't save exports or copy `~\.samuel` into a folder that OneDrive, Dropbox or Google Drive syncs. On Windows 11, OneDrive often syncs `Documents`, `Desktop` and `Pictures`, which would upload your data. The database and backups aren't encrypted, so turn on BitLocker or Device encryption (Settings → Privacy & security) to protect them if the PC is lost.
 
 ### Tips
 
@@ -125,8 +126,7 @@ UI designs live in `design/` (the source of the canvas at https://claude.ai/arti
 | `design/Palette.dc.html` | Ctrl+K command palette |
 | `design/Settings.dc.html` | Appearance: colour wheel, vibe presets, theme and live preview |
 
-Design rules: dark but bright theme with one vivid accent colour; every card ends in an action;
-no hero KPI cards, emoji, gradients, glass effects, nested cards, or pure white.
+Design rules: a tech, mission-control look with a pure black page, cards a hair above it and one electric accent (cyan by default, re-themable in Settings → Appearance); Michroma headings, Inter body text and JetBrains Mono numbers; every card ends in an action; no hero KPI cards, emoji, gradients, glass effects, nested cards, or pure white. The canvas sets the layout; the app's styles are the reference for colour and type.
 
 ## License
 
