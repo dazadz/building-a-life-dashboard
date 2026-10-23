@@ -94,7 +94,7 @@ design/    canvas source (kept in sync)
 
 **Kept:** Tasks with reminders, and the Ctrl+K palette.
 
-**Palette:** a dark but lifted base (page #10121A, cards #1B1E2B) with a vivid accent (default iris #9B87FF; sky, mint, sunrise and pink are alternatives) and bright status colours (green #5CE8A4, amber #FFC766, blue #6CCBFF).
+**Palette:** a dark but lifted base (page #10121A, cards #1B1E2B) with a vivid aqua accent (default #3DDCD0; sky, iris, sunrise and pink are alternatives) and bright status colours (green #8BE77A, amber #FFC766, blue #6CCBFF).
 
 **Charts:** follow the dataviz skill with one accent colour, so the prompt's "Unicode bars" become real meters.
 

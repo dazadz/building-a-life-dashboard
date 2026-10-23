@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#10121A}
-a{color:#BDB2FF;text-decoration:none}a:hover{color:#DCD6FF}
+a{color:#8EEFE6;text-decoration:none}a:hover{color:#C4F7F2}
 input::placeholder,textarea::placeholder{color:#9D9BB3}
 </style>
 </helmet>
@@ -81,7 +81,7 @@ input::placeholder,textarea::placeholder{color:#9D9BB3}
     <div style="max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
 <header style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between;">
 <div style="flex: 1 1 380px; min-width: 0;"><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: {{accent}};">Coach</div><h1 style="margin: 6px 0 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(28px, 3vw, 34px); line-height: 1.15; font-weight: 800; letter-spacing: -0.02em;">Samuel</h1><p style="margin: 0; color: #B3B1C7; font-size: 15px;">Samuel reads your logs with Claude Code on this computer and writes reports here. Nothing leaves your machine except to Claude.</p></div>
-<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;"><span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 10px; background: #1B1E2B; border: 1px solid #2C3145; font-size: 13px; color: #D8D6E6;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #5CE8A4;"></span>Claude Code ready on this PC</span><button type="button" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: {{accent}}; color: #15121F; font: inherit; font-weight: 700; cursor: pointer; height: 40px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>Generate report</button></div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;"><span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 10px; background: #1B1E2B; border: 1px solid #2C3145; font-size: 13px; color: #D8D6E6;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #8BE77A;"></span>Claude Code ready on this PC</span><button type="button" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: {{accent}}; color: #15121F; font: inherit; font-weight: 700; cursor: pointer; height: 40px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>Generate report</button></div>
 </header>
 <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
 <section aria-labelledby="h601" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
@@ -98,10 +98,10 @@ input::placeholder,textarea::placeholder{color:#9D9BB3}
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#9B87FF","options":["#9B87FF","#5CC8FF","#45E0B4","#FFB35C","#FF7EB3"]},"$preview":{"width":1440,"height":1400}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DDCD0","options":["#3DDCD0","#5CC8FF","#9B87FF","#FFB35C","#FF7EB3"]},"$preview":{"width":1440,"height":1400}}'>
 class Component extends DCLogic {
   renderVals() {
-    const accent = this.props.accent ?? '#9B87FF';
+    const accent = this.props.accent ?? '#3DDCD0';
     const n = parseInt(accent.slice(1), 16);
     const rgb = ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
     return { accent, accentSoft: 'rgba(' + rgb + ',0.16)', accentMid: 'rgba(' + rgb + ',0.45)' };

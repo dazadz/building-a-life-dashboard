@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#10121A}
-a{color:#BDB2FF;text-decoration:none}a:hover{color:#DCD6FF}
+a{color:#8EEFE6;text-decoration:none}a:hover{color:#C4F7F2}
 input::placeholder,textarea::placeholder{color:#9D9BB3}
 </style>
 </helmet>
@@ -112,10 +112,10 @@ input::placeholder,textarea::placeholder{color:#9D9BB3}
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#9B87FF","options":["#9B87FF","#5CC8FF","#45E0B4","#FFB35C","#FF7EB3"]},"$preview":{"width":1440,"height":1180}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DDCD0","options":["#3DDCD0","#5CC8FF","#9B87FF","#FFB35C","#FF7EB3"]},"$preview":{"width":1440,"height":1180}}'>
 class Component extends DCLogic {
   renderVals() {
-    const accent = this.props.accent ?? '#9B87FF';
+    const accent = this.props.accent ?? '#3DDCD0';
     const n = parseInt(accent.slice(1), 16);
     const rgb = ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
     return { accent, accentSoft: 'rgba(' + rgb + ',0.16)', accentMid: 'rgba(' + rgb + ',0.45)' };
