@@ -10,26 +10,65 @@ Walking skeleton: you can save a daily check-in, see your scores, and have Samue
 
 ## Run it
 
-You need Python 3.11+, Node 22 and, for Samuel's reports, [Claude Code](https://claude.com/claude-code) logged in on the same computer.
+You need Python 3.11+, Node 22 and, for Samuel's reports, [Claude Code](https://claude.com/claude-code) logged in on the same computer. The commands below are for Windows PowerShell, run from the folder you cloned the repo into. On macOS or Linux, use `/` in paths and `.venv/bin/` instead of `.venv\Scripts\`.
 
-```sh
-# Backend
-cd backend
+### Set up (once)
+
+```powershell
+cd building-a-life-dashboard\backend
 python -m venv .venv
-.venv/Scripts/activate          # Windows; use: source .venv/bin/activate on macOS/Linux
-pip install -e ".[dev]"
-
-# Frontend (build once)
-cd ../frontend
+.\.venv\Scripts\python -m pip install -e ".[dev]"
+cd ..\frontend
 npm install
 npm run build
-
-# Start
-cd ../backend
-samuel serve                    # open http://127.0.0.1:8765
 ```
 
-Your data lives in `~/.samuel/samuel.db`, outside this repo (set `SAMUEL_DATA_DIR` to move it). To try the app with made-up data, point `SAMUEL_DATA_DIR` at an empty folder and run `samuel demo`.
+### Start Samuel
+
+```powershell
+cd building-a-life-dashboard\backend
+.\.venv\Scripts\samuel serve
+```
+
+Open **http://127.0.0.1:8765**. Leave the PowerShell window open while you use the app, and press **Ctrl+C** to stop the server.
+
+Your data lives in `~\.samuel\samuel.db`, outside this repo. It starts empty, so Home shows dashes until you save your first check-in. Set `SAMUEL_DATA_DIR` to keep it somewhere else.
+
+### Try it with demo data
+
+To explore with the made-up persona Jordan instead of your own data, open a new PowerShell window:
+
+```powershell
+cd building-a-life-dashboard\backend
+$env:SAMUEL_DATA_DIR = "$env:TEMP\samuel-demo"
+.\.venv\Scripts\samuel demo
+.\.venv\Scripts\samuel serve
+```
+
+The setting only lasts for that window. Close it and open a new one to get back to your real data.
+
+### After pulling new code
+
+```powershell
+cd building-a-life-dashboard\backend
+.\.venv\Scripts\python -m pip install -e ".[dev]"
+cd ..\frontend
+npm install
+npm run build
+```
+
+Then start Samuel again.
+
+### Samuel's reports
+
+Reports need Claude Code installed and logged in on this computer (run `claude` once in a terminal to log in). Use **Generate daily report** on the Coach page, or **Save and write my report** on the check-in. Scores work without Claude Code.
+
+### Tips
+
+- **Typing `samuel` without `.\.venv\Scripts\`:** activate the virtualenv with `.\.venv\Scripts\Activate.ps1`. If PowerShell refuses with an "execution policy" error, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.
+- **"Address already in use":** Samuel is already running in another window. Use that one, or start on another port with `samuel serve --port 8766`.
+- **Back up your data:** `.\.venv\Scripts\samuel backup` writes a dated copy to `~\.samuel\backups`.
+- **Working on the frontend:** run `npm run dev` in `frontend` while `samuel serve` is running, and open http://localhost:5173 for live reload.
 
 **Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask for a report.
 
