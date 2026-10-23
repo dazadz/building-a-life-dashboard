@@ -4,6 +4,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Added
+- **Goals:** goals by life area with milestones, progress from milestones done (a dash until a goal has any), area filters and sorting, a priority matrix (impact vs effort), a 6-month roadmap, this week's milestones and your long-term vision. Samuel's export now includes active goals and what's due this week.
+
 ### Changed
 - **Mission control look:** Chakra Petch uppercase headings, sharp 2px corners, accent corner brackets on cards, LED-style segmented score meters, a faint grid behind the page, and a soft glow on active items.
 

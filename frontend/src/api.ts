@@ -102,6 +102,40 @@ export interface DataInfo {
   keep_daily: number
 }
 
+export const AREAS = ['fitness', 'financial', 'career', 'learning', 'business', 'social', 'relationships', 'health', 'other'] as const
+export type Area = (typeof AREAS)[number]
+
+export interface Milestone {
+  id: number
+  goal_id: number
+  title: string
+  due_date: string | null
+  done_date: string | null
+}
+
+export interface Goal {
+  id: number
+  title: string
+  area: Area
+  impact: number
+  effort: number
+  target_date: string | null
+  done_date: string | null
+  created_at: string
+  milestones: Milestone[]
+  progress: number | null
+  next_milestone: Milestone | null
+}
+
+export interface GoalsSummary {
+  goals: Goal[]
+  week: (Milestone & { goal_title: string; overdue: boolean })[]
+  vision: string | null
+  completed_this_year: number
+}
+
+export type GoalFields = Pick<Goal, 'title' | 'area' | 'impact' | 'effort' | 'target_date'>
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -147,4 +181,20 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  // Goals writes return the whole Goals screen. DELETE sends '{}' because every write must be JSON.
+  goals: (today: string) => request<GoalsSummary>(`/api/goals?today=${today}`),
+  addGoal: (today: string, fields: GoalFields) =>
+    request<GoalsSummary>(`/api/goals?today=${today}`, { method: 'POST', body: JSON.stringify(fields) }),
+  updateGoal: (today: string, id: number, changes: Partial<GoalFields> & { done?: boolean }) =>
+    request<GoalsSummary>(`/api/goals/${id}?today=${today}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  deleteGoal: (today: string, id: number) =>
+    request<GoalsSummary>(`/api/goals/${id}?today=${today}`, { method: 'DELETE', body: '{}' }),
+  addMilestone: (today: string, goalId: number, fields: { title: string; due_date: string | null }) =>
+    request<GoalsSummary>(`/api/goals/${goalId}/milestones?today=${today}`, { method: 'POST', body: JSON.stringify(fields) }),
+  updateMilestone: (today: string, id: number, changes: { title?: string; due_date?: string | null; done?: boolean }) =>
+    request<GoalsSummary>(`/api/milestones/${id}?today=${today}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  deleteMilestone: (today: string, id: number) =>
+    request<GoalsSummary>(`/api/milestones/${id}?today=${today}`, { method: 'DELETE', body: '{}' }),
+  saveVision: (today: string, vision: string) =>
+    request<GoalsSummary>(`/api/vision?today=${today}`, { method: 'PUT', body: JSON.stringify({ vision }) }),
 }
