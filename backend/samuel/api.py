@@ -2,7 +2,7 @@
 
 import re
 import time
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Literal
 
@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, profile, reports, routines, scores, security, settings, weekly
+from . import backups, coach, db, goals, habits, profile, reports, routines, scores, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -114,6 +114,43 @@ class RoutineChange(BaseModel):
     end: str | None = None
     weekdays: list[int] | None = None
     note: str | None = Field(None, max_length=200)
+
+
+class TaskIn(BaseModel):
+    # `subtasks` comes before `list`: once a field is called `list`, list[...] means that field.
+    title: str = Field(max_length=200)
+    subtasks: list[str] = []
+    notes: str | None = Field(None, max_length=4000)
+    list: str = Field("Personal", max_length=40)
+    priority: Literal["high", "normal", "low"] = "normal"
+    due_date: str | None = None
+    due_time: str | None = None
+    remind_at: str | None = None
+    goal_id: int | None = None
+
+
+class TaskChange(BaseModel):
+    title: str | None = Field(None, max_length=200)
+    notes: str | None = Field(None, max_length=4000)
+    list: str | None = Field(None, max_length=40)
+    priority: Literal["high", "normal", "low"] | None = None
+    due_date: str | None = None
+    due_time: str | None = None
+    remind_at: str | None = None
+    goal_id: int | None = None
+    done: bool | None = None
+
+
+class SnoozeIn(BaseModel):
+    how: Literal["hour", "tomorrow"]
+
+
+class SubtaskIn(BaseModel):
+    title: str = Field(max_length=200)
+
+
+class SubtaskChange(BaseModel):
+    done: bool
 
 
 class CoachRunIn(BaseModel):
@@ -327,6 +364,74 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     @app.get("/api/plan/{day}")
     def get_plan(day: str, conn=Depends(get_conn)):
         return routines.plan(conn, _day(day))
+
+    def _now(now: str | None) -> str:
+        """The user's local time from the app, YYYY-MM-DDTHH:MM."""
+        if now is None:
+            return datetime.now().strftime("%Y-%m-%dT%H:%M")
+        try:
+            return datetime.strptime(now, "%Y-%m-%dT%H:%M").strftime("%Y-%m-%dT%H:%M")
+        except ValueError:
+            raise HTTPException(422, "now must be YYYY-MM-DDTHH:MM")
+
+    def task_write(work):
+        try:
+            work()
+        except KeyError:
+            raise HTTPException(404, "no such task")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    # Every tasks write returns the whole Tasks screen.
+    @app.get("/api/tasks")
+    def get_tasks(now: str | None = None, conn=Depends(get_conn)):
+        return tasks.summary(conn, _now(now))
+
+    @app.post("/api/tasks")
+    def post_task(body: TaskIn, now: str | None = None, conn=Depends(get_conn)):
+        task_write(lambda: tasks.add(conn, body.model_dump()))
+        return tasks.summary(conn, _now(now))
+
+    @app.put("/api/tasks/{task_id}")
+    def put_task(task_id: int, body: TaskChange, now: str | None = None, conn=Depends(get_conn)):
+        at = _now(now)
+        task_write(lambda: tasks.update(conn, task_id, body.model_dump(exclude_unset=True), at))
+        return tasks.summary(conn, at)
+
+    @app.post("/api/tasks/{task_id}/snooze")
+    def post_snooze(task_id: int, body: SnoozeIn, now: str | None = None, conn=Depends(get_conn)):
+        at = _now(now)
+        task_write(lambda: tasks.snooze(conn, task_id, body.how, at))
+        return tasks.summary(conn, at)
+
+    @app.delete("/api/tasks/{task_id}")
+    def delete_task(task_id: int, now: str | None = None, conn=Depends(get_conn)):
+        task_write(lambda: tasks.delete(conn, task_id))
+        return tasks.summary(conn, _now(now))
+
+    @app.post("/api/tasks/{task_id}/subtasks")
+    def post_subtask(task_id: int, body: SubtaskIn, now: str | None = None, conn=Depends(get_conn)):
+        task_write(lambda: tasks.add_subtask(conn, task_id, body.title))
+        return tasks.summary(conn, _now(now))
+
+    @app.put("/api/subtasks/{subtask_id}")
+    def put_subtask(subtask_id: int, body: SubtaskChange, now: str | None = None, conn=Depends(get_conn)):
+        task_write(lambda: tasks.set_subtask(conn, subtask_id, body.done))
+        return tasks.summary(conn, _now(now))
+
+    @app.delete("/api/subtasks/{subtask_id}")
+    def delete_subtask(subtask_id: int, now: str | None = None, conn=Depends(get_conn)):
+        task_write(lambda: tasks.set_subtask(conn, subtask_id, None, delete_it=True))
+        return tasks.summary(conn, _now(now))
+
+    @app.get("/api/reminders/due")
+    def get_due_reminders(now: str | None = None, conn=Depends(get_conn)):
+        return tasks.due_reminders(conn, _now(now))
+
+    @app.post("/api/tasks/{task_id}/notified")
+    def post_notified(task_id: int, now: str | None = None, conn=Depends(get_conn)):
+        task_write(lambda: tasks.mark_notified(conn, task_id, _now(now)))
+        return {"ok": True}
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):

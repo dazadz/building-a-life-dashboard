@@ -232,6 +232,51 @@ export interface Plan {
   has_routine: boolean
 }
 
+export type Priority = 'high' | 'normal' | 'low'
+
+export interface Task {
+  id: number
+  title: string
+  notes: string | null
+  list: string
+  priority: Priority
+  due_date: string | null
+  due_time: string | null
+  remind_at: string | null
+  goal_id: number | null
+  goal_title: string | null
+  done_at: string | null
+  view: 'today' | 'upcoming' | 'someday' | 'overdue' | 'done'
+  subtasks: { id: number; title: string; done: boolean }[]
+}
+
+export interface TasksSummary {
+  tasks: Task[]
+  counts: { today: number; upcoming: number; overdue: number; all: number; done: number }
+  this_week: number
+  lists: string[]
+  reminders: { id: number; title: string; remind_at: string }[]
+}
+
+export interface NewTask {
+  title: string
+  list?: string
+  priority?: Priority
+  due_date?: string | null
+  due_time?: string | null
+  remind_at?: string | null
+  notes?: string | null
+  goal_id?: number | null
+  subtasks?: string[]
+}
+
+export interface DueReminder {
+  id: number
+  title: string
+  list: string
+  remind_at: string
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -290,6 +335,24 @@ export const api = {
     request<Routine[]>(`/api/routines/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
   deleteRoutine: (id: number) => request<Routine[]>(`/api/routines/${id}`, { method: 'DELETE', body: '{}' }),
   plan: (day: string) => request<Plan>(`/api/plan/${day}`),
+  tasks: (now: string) => request<TasksSummary>(`/api/tasks?now=${now}`),
+  addTask: (now: string, task: NewTask) =>
+    request<TasksSummary>(`/api/tasks?now=${now}`, { method: 'POST', body: JSON.stringify(task) }),
+  updateTask: (now: string, id: number, changes: Partial<NewTask> & { done?: boolean }) =>
+    request<TasksSummary>(`/api/tasks/${id}?now=${now}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  snoozeTask: (now: string, id: number, how: 'hour' | 'tomorrow') =>
+    request<TasksSummary>(`/api/tasks/${id}/snooze?now=${now}`, { method: 'POST', body: JSON.stringify({ how }) }),
+  deleteTask: (now: string, id: number) =>
+    request<TasksSummary>(`/api/tasks/${id}?now=${now}`, { method: 'DELETE', body: '{}' }),
+  addSubtask: (now: string, taskId: number, title: string) =>
+    request<TasksSummary>(`/api/tasks/${taskId}/subtasks?now=${now}`, { method: 'POST', body: JSON.stringify({ title }) }),
+  setSubtask: (now: string, id: number, done: boolean) =>
+    request<TasksSummary>(`/api/subtasks/${id}?now=${now}`, { method: 'PUT', body: JSON.stringify({ done }) }),
+  deleteSubtask: (now: string, id: number) =>
+    request<TasksSummary>(`/api/subtasks/${id}?now=${now}`, { method: 'DELETE', body: '{}' }),
+  dueReminders: (now: string) => request<DueReminder[]>(`/api/reminders/due?now=${now}`),
+  markNotified: (now: string, id: number) =>
+    request<{ ok: boolean }>(`/api/tasks/${id}/notified?now=${now}`, { method: 'POST', body: '{}' }),
   profile: () => request<Profile>('/api/profile'),
   saveProfile: (section: string, answers: Record<string, ProfileValue>, done?: boolean) =>
     request<Profile>(`/api/profile/${section}`, { method: 'PUT', body: JSON.stringify({ answers, done }) }),

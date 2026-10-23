@@ -10,7 +10,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, db, profile, reports, routines, scores
+from . import backups, db, profile, reports, routines, scores, tasks
 from .checkins import log_habit, save_checkin
 
 
@@ -180,6 +180,31 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
     seed_demo_profile(conn)
     if not routines.list_routines(conn):
         routines.add_suggested(conn, end.isoformat())
+    seed_demo_tasks(conn, end)
+
+
+def seed_demo_tasks(conn, end: date) -> None:
+    """Jordan's to-do list, dated around `end`."""
+    def on(days: int) -> str:
+        return (end + timedelta(days=days)).isoformat()
+
+    goal = conn.execute("SELECT id FROM goals WHERE title = 'Promotion to senior analyst'").fetchone()
+    demo = [
+        {"title": "Add hiring costs to Q4 budget", "list": "Work", "priority": "high", "due_date": on(0), "due_time": "14:00",
+         "remind_at": f"{on(0)}T13:45", "goal_id": goal["id"] if goal else None,
+         "notes": "Pull the three open roles from the hiring plan and add salary bands plus a 15% recruiting buffer.",
+         "subtasks": ["Export hiring plan", "Add salary bands for 3 roles", "Add recruiting buffer"]},
+        {"title": "Reply to Sarah about the vendor contract", "list": "Work", "due_date": on(0), "remind_at": f"{on(0)}T16:00"},
+        {"title": "Book physio appointment", "list": "Personal", "due_date": on(0)},
+        {"title": "Send expense report", "list": "Work", "priority": "high", "due_date": on(-1)},
+        {"title": "Buy running gels for Sunday", "list": "Personal", "due_date": on(1)},
+        {"title": "Draft section 3 of onboarding playbook", "list": "Work", "due_date": on(3)},
+        {"title": "Call the bank about the savings rate", "list": "Personal", "priority": "low", "due_date": on(5)},
+    ]
+    for t in demo:
+        tasks.add(conn, t)
+    done = tasks.add(conn, {"title": "Renew passport", "list": "Personal", "due_date": on(-3)})
+    tasks.update(conn, done, {"done": True}, f"{on(-3)}T18:00")
 
 
 def seed_demo_profile(conn) -> None:

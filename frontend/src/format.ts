@@ -10,6 +10,11 @@ export function isoDate(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
+/** The local date and time as YYYY-MM-DDTHH:MM, the format tasks and reminders use. */
+export function localStamp(d: Date): string {
+  return `${isoDate(d)}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 export function addDays(iso: string, n: number): string {
   const d = new Date(`${iso}T12:00:00`)
   d.setDate(d.getDate() + n)

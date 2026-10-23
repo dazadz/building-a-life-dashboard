@@ -12,7 +12,7 @@ from . import db
 
 KEEP_DAILY = 14
 FORMAT = "samuel-export"
-TABLES = ("settings", "target_history", "habits", "checkins", "habit_logs", "reports", "goals", "milestones", "profile_answers", "weekly_reviews", "routines")
+TABLES = ("settings", "target_history", "habits", "checkins", "habit_logs", "reports", "goals", "milestones", "profile_answers", "weekly_reviews", "routines", "tasks", "subtasks")
 
 
 def folder() -> Path:
@@ -66,7 +66,7 @@ def export_all(conn: sqlite3.Connection) -> dict:
 def is_empty(conn: sqlite3.Connection) -> bool:
     return all(
         conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] == 0
-        for t in ("checkins", "habit_logs", "reports", "goals", "profile_answers", "weekly_reviews")
+        for t in ("checkins", "habit_logs", "reports", "goals", "profile_answers", "weekly_reviews", "tasks")
     )
 
 

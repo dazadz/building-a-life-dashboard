@@ -91,6 +91,20 @@ const planBody = {
   ],
 }
 
+const tasksBody = {
+  counts: { today: 1, upcoming: 0, overdue: 1, all: 2, done: 0 }, this_week: 0, lists: ['Personal', 'Work'],
+  reminders: [{ id: 1, title: 'Add hiring costs', remind_at: '2026-10-24T13:45' }],
+  tasks: [
+    { id: 1, title: 'Add hiring costs', notes: null, list: 'Work', priority: 'high', due_date: '2026-10-24', due_time: '14:00',
+      remind_at: '2026-10-24T13:45', goal_id: null, goal_title: null, done_at: null, view: 'today',
+      subtasks: [{ id: 9, title: 'Export hiring plan', done: false }] },
+    { id: 2, title: 'Send expense report', notes: null, list: 'Work', priority: 'normal', due_date: '2026-10-23', due_time: null,
+      remind_at: null, goal_id: null, goal_title: null, done_at: null, view: 'overdue', subtasks: [] },
+  ],
+}
+
+let dueReminders: unknown[] = []
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
@@ -103,6 +117,8 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     else if (url.startsWith('/api/profile')) body = profileBody
     else if (url.startsWith('/api/weekly')) body = weeklyBody
     else if (url.startsWith('/api/plan/')) body = planBody
+    else if (url.startsWith('/api/tasks')) body = tasksBody
+    else if (url.startsWith('/api/reminders/due')) body = dueReminders
     else if (url.startsWith('/api/routines')) body = planBody.blocks
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
     return new Response(JSON.stringify(body), { status: 200 })
@@ -224,6 +240,38 @@ describe('App', () => {
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith('/api/routines/2', expect.objectContaining({ method: 'DELETE' })),
     )
+  })
+
+  it('lists tasks, adds one with quick add, and snoozes from a task', async () => {
+    mockServer(true)
+    window.location.hash = '#/tasks'
+    render(<App />)
+    expect(await screen.findByRole('button', { name: 'Add hiring costs' })).toBeInTheDocument()
+    expect(screen.queryByText('Send expense report')).not.toBeInTheDocument() // overdue, not today
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Quick add' }), { target: { value: 'Buy gels fri #personal' } })
+    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Quick add' }), { key: 'Enter' })
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\?now=/), expect.objectContaining({ method: 'POST' })),
+    )
+    const post = vi.mocked(fetch).mock.calls.find(([u, i]) => String(u).startsWith('/api/tasks?') && i?.method === 'POST')!
+    expect(JSON.parse(String(post[1]!.body))).toMatchObject({ title: 'Buy gels', list: 'Personal' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add hiring costs' }))
+    fireEvent.click(await screen.findByRole('button', { name: '+1 hour' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\/1\/snooze/), expect.objectContaining({ body: '{"how":"hour"}' })),
+    )
+  })
+
+  it('shows a due reminder with Done, +1 hour and Tomorrow', async () => {
+    dueReminders = [{ id: 1, title: 'Add hiring costs', list: 'Work', remind_at: '2026-10-24T13:45' }]
+    mockServer(true)
+    render(<App />)
+    const region = await screen.findByRole('region', { name: 'Reminders' })
+    expect(region).toHaveTextContent('Add hiring costs')
+    expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\/1\/notified/), expect.objectContaining({ method: 'POST' }))
+    dueReminders = []
   })
 
   it('reminds the user to finish the profile on Home', async () => {
