@@ -34,6 +34,7 @@ def _env() -> dict:
     scripts = Path(sys.executable).parent
     env["PATH"] = os.pathsep.join([str(scripts), str(scripts / "Scripts"), env.get("PATH", "")])
     env["SAMUEL_DATA_DIR"] = str(db.data_dir())
+    env["PYTHONIOENCODING"] = "utf-8"
     return env
 
 

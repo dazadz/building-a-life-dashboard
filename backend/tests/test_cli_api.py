@@ -34,6 +34,16 @@ def test_export_and_report_round_trip(capsys, monkeypatch):
     assert "Good day" in run_cli(["report", "list"], capsys)
 
 
+def test_report_add_reads_utf8_from_stdin(capsys, monkeypatch):
+    text = "# Daily report · Saturday\nSleep 6.2–6.4 h, energy −2"
+    raw = io.TextIOWrapper(io.BytesIO(text.encode("utf-8")), encoding="cp1252")
+    monkeypatch.setattr(sys, "stdin", raw)
+    cli.main(["report", "add", "--kind", "daily"])
+    capsys.readouterr()
+    from samuel import reports
+    assert reports.list_reports(db.connect())[0]["markdown"] == text
+
+
 def test_demo_refuses_a_database_with_data(capsys):
     run_cli(["demo", "--days", "3"], capsys)
     with pytest.raises(SystemExit):

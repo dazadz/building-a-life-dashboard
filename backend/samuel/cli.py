@@ -42,7 +42,10 @@ def cmd_export(args) -> None:
 
 
 def cmd_report_add(args) -> None:
-    text = sys.stdin.read() if args.file == "-" else open(args.file, encoding="utf-8").read()
+    if args.file == "-":
+        text = sys.stdin.buffer.read().decode("utf-8-sig") if hasattr(sys.stdin, "buffer") else sys.stdin.read()
+    else:
+        text = open(args.file, encoding="utf-8-sig").read()
     conn = db.connect()
     try:
         report_id = reports.add_report(conn, args.kind, text, args.date)
@@ -146,6 +149,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--force", action="store_true")
     p.set_defaults(func=cmd_demo)
 
+    # Reports and exports are UTF-8 whatever the Windows console code page is.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     args = parser.parse_args(argv)
     args.func(args)
 
