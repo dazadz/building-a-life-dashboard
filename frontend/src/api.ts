@@ -1,3 +1,5 @@
+import type { Theme } from './theme'
+
 // Typed calls to the Samuel backend. In development Vite proxies /api to `samuel serve`.
 
 export type Mood = 'low' | 'flat' | 'okay' | 'good' | 'great'
@@ -48,6 +50,7 @@ export interface Status {
   name: string | null
   onboarded: boolean
   text_size: TextSize
+  theme: Theme | null
 }
 
 export type TextSize = 'small' | 'medium' | 'large' | 'xlarge'
@@ -56,13 +59,16 @@ export interface Settings {
   name: string | null
   onboarded: boolean
   text_size: TextSize
+  theme: Theme | null
   wake_target: string
   sleep_target_hours: number
   deep_work_target_hours: number
   habits: { key: string; name: string; auto: number; active: boolean }[]
 }
 
-export type SettingsChange = Partial<Pick<Settings, 'name' | 'onboarded' | 'text_size' | 'wake_target' | 'sleep_target_hours' | 'deep_work_target_hours'>>
+export type SettingsChange = Partial<Pick<Settings, 'name' | 'onboarded' | 'text_size' | 'wake_target' | 'sleep_target_hours' | 'deep_work_target_hours'>> & {
+  theme?: Theme | Record<string, never>
+}
 
 export interface Report {
   id: number

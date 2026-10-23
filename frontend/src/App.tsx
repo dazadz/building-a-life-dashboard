@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { api, type TextSize } from './api'
+import { applyTheme } from './theme'
 import { ServerDown } from './components/States'
 import { useCoachJob, useLoad, useRoute } from './hooks'
 import { CheckinPage } from './pages/Checkin'
@@ -39,6 +40,13 @@ export default function App() {
   useEffect(() => {
     if (textSize) document.documentElement.style.setProperty('--ui-scale', String(TEXT_SCALE[textSize]))
   }, [textSize])
+  // The saved theme (or the default look) applies everywhere.
+  // Keyed on the theme's value, so a status reload doesn't undo a live preview in Settings.
+  const loadedOnce = status.data != null
+  const themeKey = JSON.stringify(status.data?.theme ?? null)
+  useEffect(() => {
+    if (loadedOnce) applyTheme(JSON.parse(themeKey))
+  }, [loadedOnce, themeKey])
   // Check in every 30 seconds: a server started by `samuel app` stops once no window checks in.
   useEffect(() => {
     const id = window.setInterval(() => void api.status().catch(() => {}), 30_000)

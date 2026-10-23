@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { api, type DataInfo, type Settings, type TextSize } from '../api'
 import { Card } from '../components/Card'
 import { RoutineEditor } from '../components/Routine'
+import { AppearanceCard } from '../components/Appearance'
 import { HabitToggles, NameField, TargetFields } from '../components/SetupFields'
 import { parseTargets, targetsFrom, type Targets } from '../targets'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
@@ -89,6 +90,7 @@ function Forms({ today, initial, onSaved }: { today: string; initial: Settings; 
         <Status message={goals.message} error={goals.error} />
       </Card>
       <RoutineEditor />
+      <AppearanceCard today={today} saved={initial.theme} onSaved={onSaved} />
       <TextSizeCard today={today} initial={initial.text_size} onSaved={onSaved} />
       <DataCard />
       <Card title="Habits" meta={`${habits.filter((h) => h.active).length} of ${habits.length} on`} action={<a href="#/habits">Habits →</a>}>
