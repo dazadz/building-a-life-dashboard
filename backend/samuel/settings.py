@@ -6,6 +6,8 @@ import sqlite3
 
 TARGETS = ("wake_target", "sleep_target_hours", "deep_work_target_hours")
 EARLIEST = "0001-01-01"
+TEXT_SIZES = ("small", "medium", "large", "xlarge")
+DEFAULT_TEXT_SIZE = "medium"
 
 
 def validate(key: str, value):
@@ -25,6 +27,10 @@ def validate(key: str, value):
         if not isinstance(value, (int, float)) or not 0.5 <= value <= 12:
             raise ValueError("deep work target must be between 0.5 and 12 hours")
         return float(value)
+    if key == "text_size":
+        if value not in TEXT_SIZES:
+            raise ValueError(f"text_size must be one of {', '.join(TEXT_SIZES)}")
+        return value
     if key == "onboarded":
         if not isinstance(value, bool):
             raise ValueError("onboarded must be true or false")
@@ -84,6 +90,7 @@ def public(conn: sqlite3.Connection, today: str) -> dict:
     return {
         "name": stored.get("name"),
         "onboarded": bool(stored.get("onboarded", False)),
+        "text_size": stored.get("text_size", DEFAULT_TEXT_SIZE),
         **targets_on(conn, today),
         "habits": habit_list(conn),
     }

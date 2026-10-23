@@ -51,6 +51,7 @@ As you work, commit to Git and push to GitHub regularly, so there is always a sa
 Design rules:
 - Tech style (since 2026-10-24, this overrides the canvas's colours and fonts; the canvas still defines layout): a pure black page and sidebar (#000000, the user's choice) with cards a hair above it (card #0A0D12, border #1B222D) and one electric cyan accent (default #22E0E6). Status colours: green #5BE38A, amber #FFC24D, blue #5CB8FF. Every text colour passes WCAG AA on every surface.
 - Mission control details (since 2026-10-24): Michroma for uppercase headings (wide, smooth and techy; one weight, so never fake a bold), Inter for body text, JetBrains Mono for numbers, times, and small uppercase labels, all bundled locally. Sharp 2px corners, thin 1px borders, accent corner brackets on cards, segmented LED-style meters, a soft accent glow on active items, and a soft accent glow under headings, labels and key numbers (a text-shadow). No background grid. Settings sits at the bottom-left of the sidebar.
+- Settings → Text size zooms the whole UI via `--ui-scale` (default 110%); full-height layouts divide `100vh` by it.
 - Users can re-theme from any accent (see Custom themes in `docs/PLAN.md`), so build every colour from CSS variables and never hard-code the hex values in components.
 - Every card prompts an action and ends with a "→" link.
 - Dense lists of 5–10 rows with "Show more", filter pills, sortable headers, and visible labels.

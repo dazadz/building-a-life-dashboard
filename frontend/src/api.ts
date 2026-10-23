@@ -47,18 +47,22 @@ export interface Status {
   today: string
   name: string | null
   onboarded: boolean
+  text_size: TextSize
 }
+
+export type TextSize = 'small' | 'medium' | 'large' | 'xlarge'
 
 export interface Settings {
   name: string | null
   onboarded: boolean
+  text_size: TextSize
   wake_target: string
   sleep_target_hours: number
   deep_work_target_hours: number
   habits: { key: string; name: string; auto: number; active: boolean }[]
 }
 
-export type SettingsChange = Partial<Pick<Settings, 'name' | 'onboarded' | 'wake_target' | 'sleep_target_hours' | 'deep_work_target_hours'>>
+export type SettingsChange = Partial<Pick<Settings, 'name' | 'onboarded' | 'text_size' | 'wake_target' | 'sleep_target_hours' | 'deep_work_target_hours'>>
 
 export interface Report {
   id: number

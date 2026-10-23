@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api, type DataInfo, type Settings } from '../api'
+import { api, type DataInfo, type Settings, type TextSize } from '../api'
 import { Card } from '../components/Card'
 import { HabitToggles, NameField, TargetFields } from '../components/SetupFields'
 import { parseTargets, targetsFrom, type Targets } from '../targets'
@@ -87,12 +87,42 @@ function Forms({ today, initial, onSaved }: { today: string; initial: Settings; 
         <TargetFields value={targets} onChange={setTargets} />
         <Status message={goals.message} error={goals.error} />
       </Card>
+      <TextSizeCard today={today} initial={initial.text_size} onSaved={onSaved} />
       <DataCard />
       <Card title="Habits" meta={`${habits.filter((h) => h.active).length} of ${habits.length} on`} action={<a href="#/habits">Habits →</a>}>
         <HabitToggles habits={habits} onToggle={toggle} />
         <Status message={tracking.message} error={tracking.error} />
       </Card>
     </div>
+  )
+}
+
+const TEXT_SIZES: { key: TextSize; label: string; percent: number }[] = [
+  { key: 'small', label: 'Small', percent: 100 },
+  { key: 'medium', label: 'Medium', percent: 110 },
+  { key: 'large', label: 'Large', percent: 125 },
+  { key: 'xlarge', label: 'Extra large', percent: 140 },
+]
+
+function TextSizeCard({ today, initial, onSaved }: { today: string; initial: TextSize; onSaved: () => void }) {
+  const [size, setSize] = useState<TextSize>(initial)
+  const state = useSave()
+  const pick = (key: TextSize) => state.save(async () => {
+    setSize(key)
+    await api.saveSettings(today, { text_size: key })
+    onSaved()
+  }, 'Text size saved.')
+  return (
+    <Card title="Text size" meta="Applies everywhere" action={<a href="#/">See it on Today →</a>}>
+      <div className="pills" role="group" aria-label="Text size">
+        {TEXT_SIZES.map((t) => (
+          <button key={t.key} type="button" className="pill" aria-pressed={size === t.key} disabled={state.saving} onClick={() => pick(t.key)}>
+            {t.label} <span className="faint">{t.percent}%</span>
+          </button>
+        ))}
+      </div>
+      <Status message={state.message} error={state.error} />
+    </Card>
   )
 }
 
