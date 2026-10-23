@@ -12,5 +12,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
+    // A zone well ahead of UTC, so code that slips into UTC dates fails the tests.
+    env: { TZ: 'Pacific/Auckland' },
   },
 })

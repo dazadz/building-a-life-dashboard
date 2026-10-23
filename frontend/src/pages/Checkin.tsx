@@ -51,6 +51,7 @@ function Header({ today }: { today: string }) {
 }
 
 export function CheckinPage(props: Props) {
+  // Fixed when the page opens, so a check-in started before midnight saves to that day.
   const [today] = useState(() => isoDate(new Date()))
   const days = useLoad(() => Promise.all([api.day(today), api.day(addDays(today, -1))]), [today])
   if (days.error) {

@@ -3,8 +3,8 @@ import Markdown from 'react-markdown'
 import { api, type Day, type HabitStatus, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, answeredCount, deltaText, greeting, isoDate, longDate, scoreText } from '../format'
-import { useLoad } from '../hooks'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, longDate, scoreText } from '../format'
+import { useLoad, useNow } from '../hooks'
 
 const STRIP = [
   { key: 'productivity', label: 'Productivity' },
@@ -16,7 +16,7 @@ const STRIP = [
 const SCORES_DOC = 'https://github.com/dazadz/building-a-life-dashboard/blob/main/docs/scores.md'
 
 export function HomePage({ status }: { status: Status | null }) {
-  const [now] = useState(() => new Date())
+  const now = useNow()
   const today = isoDate(now)
   const yesterday = addDays(today, -1)
   const days = useLoad(() => Promise.all([api.day(today), api.day(yesterday)]), [today])
@@ -32,7 +32,9 @@ export function HomePage({ status }: { status: Status | null }) {
   return (
     <div className="page">
       <header className="page-head">
-        <div className="eyebrow">{longDate(today)}</div>
+        <div className="eyebrow">
+          {longDate(today)} · <time dateTime={now.toISOString()}>{localTime(now)}</time>
+        </div>
         <h1>{name ? `${greeting(now.getHours())}, ${name}` : greeting(now.getHours())}</h1>
         <p>
           {yScore != null

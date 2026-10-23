@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, answeredCount, deltaText, greeting, scoreText } from './format'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, scoreText } from './format'
 
 describe('format', () => {
   it('shows a dash for a missing score, never 0', () => {
@@ -28,5 +28,13 @@ describe('format', () => {
     expect(greeting(8)).toBe('Good morning')
     expect(greeting(13)).toBe('Good afternoon')
     expect(greeting(21)).toBe('Good evening')
+  })
+
+  it('uses the local date, not the UTC date', () => {
+    // 00:30 on 24 October in Auckland is still 23 October in UTC.
+    const justAfterMidnight = new Date(2026, 9, 24, 0, 30)
+    expect(justAfterMidnight.toISOString().slice(0, 10)).toBe('2026-10-23')
+    expect(isoDate(justAfterMidnight)).toBe('2026-10-24')
+    expect(localTime(justAfterMidnight)).toBe('00:30')
   })
 })

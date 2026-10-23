@@ -2,6 +2,7 @@
 
 import type { Checkin } from './api'
 
+/** The local calendar date as YYYY-MM-DD. Never use toISOString() for this: it gives the UTC date. */
 export function isoDate(d: Date): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -17,6 +18,10 @@ export function addDays(iso: string, n: number): string {
 
 export function longDate(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+}
+
+export function localTime(d: Date): string {
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 }
 
 export function greeting(hour: number): string {
