@@ -96,6 +96,14 @@
    "w": 1200,
    "h": 780,
    "title": "Command palette (Ctrl+K)"
+  },
+  "Settings.dc.html": {
+   "x": 3040,
+   "y": 4440,
+   "w": 1440,
+   "h": 1200,
+   "title": "Settings — Appearance",
+   "expand": "fill"
   }
  },
  "order": [
@@ -109,7 +117,8 @@
   "Monthly.dc.html",
   "Coach.dc.html",
   "Tasks.dc.html",
-  "Palette.dc.html"
+  "Palette.dc.html",
+  "Settings.dc.html"
  ],
  "notes": {},
  "designSystems": []

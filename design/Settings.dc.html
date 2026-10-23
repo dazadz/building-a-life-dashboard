@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings — Appearance</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#10121A}
+a{color:#8EEFE6;text-decoration:none}a:hover{color:#C4F7F2}
+input::placeholder,textarea::placeholder{color:#9D9BB3}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #10121A; color: #F6F5FC; font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; line-height: 1.45; display: flex; flex-wrap: wrap; align-items: stretch;">
+  <nav aria-label="Main" style="flex: 1 1 232px; box-sizing: border-box; background: #151823; border-right: 1px solid #272C3D; padding: 20px 14px; display: flex; flex-direction: column; gap: 6px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 14px;">
+      <div style="width: 34px; height: 34px; border-radius: 10px; background: {{accent}}; color: #15121F; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 17px;">S</div>
+      <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.01em;">Samuel</span>
+    </div>
+    <button type="button" style="display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px 0 12px; margin-bottom: 10px; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 12px; color: #B3B1C7; font: inherit; cursor: pointer; text-align: left;">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span style="flex: 1;">Search or jump to…</span>
+      <kbd style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #B3B1C7; background: #272C3D; border: 1px solid #383F57; border-radius: 6px; padding: 2px 6px;">Ctrl K</kbd>
+    </button>
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      <span style="flex: 1;">Today</span>
+    </a>
+    <a href="#inbox" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13l2.5 8v6H3v-6z"/></svg>
+      <span style="flex: 1;">Inbox</span><span style="font-size: 12px; font-weight: 600; color: #15121F; background: {{accent}}; border-radius: 999px; padding: 1px 8px;">5</span>
+    </a>
+    <a href="Checkin.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9z"/><path d="m9 13 2 2 4-4"/></svg>
+      <span style="flex: 1;">Check-in</span><span style="font-size: 11px; font-weight: 600; color: {{accent}};">Due</span>
+    </a>
+    <a href="Tasks.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg>
+      <span style="flex: 1;">Tasks</span><span style="font-size: 12px; color: #B3B1C7;">7</span>
+    </a>
+    <a href="Habits.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>
+      <span style="flex: 1;">Habits</span>
+    </a>
+    <a href="Goals.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+      <span style="flex: 1;">Goals</span>
+    </a>
+    <a href="Health.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>
+      <span style="flex: 1;">Health & energy</span>
+    </a>
+    <a href="Review.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/></svg>
+      <span style="flex: 1;">Reviews</span>
+    </a>
+    <a href="Coach.dc.html" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; color: #D8D6E6;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>
+      <span style="flex: 1;">Coach</span>
+    </a>
+    <div style="flex: 1; min-height: 24px;"></div>
+    <a href="Settings.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: 10px; background: {{accentSoft}}; color: #F6F5FC; font-weight: 600;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+      <span style="flex: 1;">Settings</span>
+    </a>
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 10px; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 12px;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: {{accentSoft}}; color: {{accent}}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">JA</div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-weight: 600;">Jordan</div>
+        <div style="font-size: 12px; color: #B3B1C7; display: flex; align-items: center; gap: 5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Local · private</div>
+      </div>
+    </div>
+  </nav>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px clamp(16px, 3vw, 40px) 48px;">
+    <div style="max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+<header style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between;">
+<div style="flex: 1 1 380px; min-width: 0;"><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: {{accent}};">Settings</div><h1 style="margin: 6px 0 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(28px, 3vw, 34px); line-height: 1.15; font-weight: 800; letter-spacing: -0.02em;">Appearance</h1><p style="margin: 0; color: #B3B1C7; font-size: 15px;">Pick any accent and Samuel builds the rest of the theme around it. The background always stays dark.</p></div>
+
+</header>
+<nav aria-label="Settings sections" style="display: flex; gap: 4px; flex-wrap: wrap; padding: 4px; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 14px; align-self: flex-start;"><a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; color: #B3B1C7;">Profile</a><a href="#" aria-current="page" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; background: {{accentSoft}}; color: #F6F5FC; font-weight: 600;">Appearance</a><a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; color: #B3B1C7;">Coach (Claude Code)</a><a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; color: #B3B1C7;">Email</a><a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; color: #B3B1C7;">Phone access</a><a href="#" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 14px; color: #B3B1C7;">Data &amp; privacy</a></nav>
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
+<section aria-labelledby="h804" style="flex: 2 1 600px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; align-items: center; gap: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg><h2 id="h804" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Accent colour</h2><span style="font-size: 12px; color: #9D9BB3;">Drag the ring or type a hex</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: center;"><div style="position: relative; width: 240px; height: 240px; flex: 0 0 240px;"><div role="slider" tabindex="0" aria-label="Accent hue" aria-valuemin="0" aria-valuemax="359" aria-valuenow="{{hue}}" style="position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(hsl(0,90%,62%), hsl(60,90%,62%), hsl(120,90%,62%), hsl(180,90%,62%), hsl(240,90%,62%), hsl(300,90%,62%), hsl(360,90%,62%)); cursor: pointer;"></div><div style="position: absolute; inset: 38px; border-radius: 50%; background: #1B1E2B; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;"><div style="width: 64px; height: 64px; border-radius: 50%; background: {{accent}}; color: {{onAccent}}; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 22px;">Aa</div><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #F6F5FC;">{{accent}}</span><span style="font-size: 12px; color: #9D9BB3;">{{vibeName}}</span></div><div style="{{marker}}"></div></div><div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 16px;"><div style="display: flex; gap: 12px;"><div style="flex: 1; display: flex; flex-direction: column; gap: 6px;"><label for="hex801" style="font-weight: 600;">Hex</label><input id="hex801" type="text" value="{{accent}}" style="box-sizing: border-box; width: 100%; height: 44px; padding: 0 14px; background: #151823; border: 1px solid #383F57; border-radius: 10px; color: #F6F5FC; font: inherit; font-family: 'JetBrains Mono', monospace;"></div><div style="flex: 1; display: flex; flex-direction: column; gap: 6px;"><span style="font-weight: 600;">HSL</span><span style="height: 44px; display: flex; align-items: center; font-family: 'JetBrains Mono', monospace; color: #D8D6E6;">{{hsl}}</span></div></div><div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between;"><label for="rg802" style="font-weight: 600;">Vibrancy</label><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #B3B1C7;">{{sat}}</span></div><input id="rg802" type="range" min="0" max="100" value="{{sat}}" style="width: 100%; accent-color: {{accent}};"><span style="font-size: 12px; color: #9D9BB3;">Saturation. Lower is calmer, higher is punchier.</span></div><div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between;"><label for="rg803" style="font-weight: 600;">Brightness</label><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #B3B1C7;">{{light}}</span></div><input id="rg803" type="range" min="0" max="100" value="{{light}}" style="width: 100%; accent-color: {{accent}};"><span style="font-size: 12px; color: #9D9BB3;">Kept between 50 and 75 so text stays readable.</span></div><div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #151823; border: 1px solid #2C3145; border-radius: 12px;"><span style="width: 36px; height: 28px; border-radius: 8px; background: {{accent}}; color: {{onAccent}}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">Aa</span><div style="flex: 1; min-width: 0;"><div style="font-weight: 600;">{{textName}} on accent · {{ratio}}:1</div><div style="font-size: 12px; color: #9D9BB3;">{{passes}}</div></div></div></div></div>
+</section>
+<section aria-labelledby="h805" style="flex: 1 1 340px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; align-items: center; gap: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg><h2 id="h805" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Vibes</h2><span style="font-size: 12px; color: #9D9BB3;">One tap</span></div>
+<div role="radiogroup" aria-label="Vibe presets" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px;"><sc-for list="{{vibes}}" as="v" hint-placeholder-count="6"><button type="button" role="radio" aria-checked="{{v.checked}}" style="{{v.tile}}"><span style="{{v.swatch}}"></span><span style="min-width: 0;"><span style="display: block; font-weight: 700;">{{v.name}}</span><span style="display: block; font-size: 12px; color: #9D9BB3;">{{v.desc}}</span></span></button></sc-for></div><p style="margin: 0; font-size: 12px; color: #9D9BB3; display: flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>Each vibe sets the accent and tints the surfaces to match.</p>
+</section>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch;">
+<section aria-labelledby="h808" style="flex: 2 1 600px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; align-items: center; gap: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><h2 id="h808" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Live preview</h2><span style="font-size: 12px; color: #9D9BB3;">Updates as you pick</span></div>
+<div role="img" aria-label="Preview of Samuel with the chosen theme" style="display: flex; border-radius: 14px; overflow: hidden; border: 1px solid {{t.border}}; background: {{t.bg}}; min-height: 280px;"><div style="flex: 0 0 150px; background: {{t.side}}; border-right: 1px solid {{t.border}}; padding: 14px 10px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: {{t.muted}};"><div style="display: flex; align-items: center; gap: 8px; color: {{t.text}}; font-weight: 700; padding: 0 6px 8px;"><span style="width: 24px; height: 24px; border-radius: 7px; background: {{accent}}; color: {{onAccent}}; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">S</span>Samuel</div><span style="padding: 7px 8px; border-radius: 8px; background: {{accentSoft}}; color: {{t.text}}; font-weight: 600;">Today</span><span style="padding: 7px 8px;">Inbox</span><span style="padding: 7px 8px;">Habits</span><span style="padding: 7px 8px;">Goals</span></div><div style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0;"><div style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; color: {{t.text}};">Good morning, Jordan</div><div style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;"><div style="display: flex; justify-content: space-between; color: {{t.muted}}; font-size: 13px;"><span>Discipline</span><span style="color: {{t.text}}; font-weight: 800;">71</span></div><div style="height: 6px; border-radius: 999px; background: {{t.track}};"><div style="width: 71%; height: 6px; border-radius: 999px; background: {{accent}};"></div></div><div style="display: flex; gap: 6px; flex-wrap: wrap;"><span style="font-size: 12px; padding: 3px 10px; border-radius: 999px; background: {{accentSoft}}; color: {{t.text}};">Focus</span><span style="font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid {{t.border}}; color: {{t.muted}};">Health</span></div></div><div style="display: flex; gap: 12px; font-size: 12px; color: {{t.muted}};"><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{success}};"></span>On track</span><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FFC766;"></span>At risk</span><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #6CCBFF;"></span>Info</span></div><div style="flex: 1;"></div><span style="align-self: flex-start; height: 36px; padding: 0 14px; border-radius: 10px; background: {{accent}}; color: {{onAccent}}; font-weight: 700; display: inline-flex; align-items: center;">Start check-in</span></div></div>
+<div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;"><button type="button" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 14px; border: 1px solid #383F57; border-radius: 10px; background: transparent; color: #D8D6E6; font: inherit; font-weight: 600; cursor: pointer; height: 44px;">Reset to Calm aqua</button><button type="button" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: {{accent}}; color: #15121F; font: inherit; font-weight: 700; cursor: pointer;">Save theme</button></div>
+</section>
+<section aria-labelledby="h807" style="flex: 1 1 300px; min-width: 0; box-sizing: border-box; background: #1B1E2B; border: 1px solid #2C3145; border-radius: 16px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; align-items: center; gap: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><h2 id="h807" style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; flex: 1;">Theme</h2><span style="font-size: 12px; color: #9D9BB3;">Applies everywhere</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;"><span id="s806" style="font-weight: 600;">Darkness</span><div role="radiogroup" aria-labelledby="s806" style="display: flex; gap: 6px;"><button type="button" role="radio" aria-checked="false" style="flex: 1 1 0; min-width: 44px; height: 40px; padding: 0 8px; border-radius: 10px; background: #151823; border: 1px solid #383F57; color: #B3B1C7; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap;">Dim</button><button type="button" role="radio" aria-checked="true" style="flex: 1 1 0; min-width: 44px; height: 40px; padding: 0 8px; border-radius: 10px; background: {{accentSoft}}; border: 1px solid {{accent}}; color: #F6F5FC; font-weight: 600; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap;">Dark</button><button type="button" role="radio" aria-checked="false" style="flex: 1 1 0; min-width: 44px; height: 40px; padding: 0 8px; border-radius: 10px; background: #151823; border: 1px solid #383F57; color: #B3B1C7; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap;">Midnight</button></div></div><div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between;"><label for="tint" style="font-weight: 600;">Surface tint</label><span style="font-size: 12px; color: #9D9BB3;">Neutral to tinted</span></div><input id="tint" type="range" min="0" max="100" value="60" style="width: 100%; accent-color: {{accent}};"></div><h3 style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #B3B1C7;">Automatic adjustments</h3><ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: #D8D6E6;"><li>Surfaces take a hint of your accent's hue.</li><li>Text on buttons switches between dark and white for contrast.</li><li>{{successNote}}</li></ul>
+</section>
+</div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DDCD0","options":["#3DDCD0","#5CC8FF","#9B87FF","#FFB35C","#FF7EB3"]},"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#3DDCD0';
+    const n = parseInt(accent.slice(1), 16);
+    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    const rgb = r + ',' + g + ',' + b;
+    // hex -> HSL
+    const R = r / 255, G = g / 255, B = b / 255, mx = Math.max(R, G, B), mn = Math.min(R, G, B), d = mx - mn;
+    let h = 0;
+    if (d) h = mx === R ? ((G - B) / d) % 6 : mx === G ? (B - R) / d + 2 : (R - G) / d + 4;
+    h = Math.round((h * 60 + 360) % 360);
+    const l = (mx + mn) / 2, sat = d ? d / (1 - Math.abs(2 * l - 1)) : 0;
+    const S = Math.round(sat * 100), L = Math.round(l * 100);
+    // contrast of dark vs white text on the accent
+    const lin = (c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    const lum = 0.2126 * lin(R) + 0.7152 * lin(G) + 0.0722 * lin(B);
+    const cDark = (lum + 0.05) / 0.0638, cWhite = 1.05 / (lum + 0.05);
+    const darkText = cDark >= cWhite;
+    const onAccent = darkText ? '#0F1A1C' : '#FFFFFF';
+    const ratio = Math.max(cDark, cWhite).toFixed(1);
+    // theme derived from the hue
+    const surf = (lt, st) => 'hsl(' + h + ',' + st + '%,' + lt + '%)';
+    const theme = { bg: surf(7, 24), side: surf(9.5, 22), card: surf(12.5, 22), border: surf(21, 20), track: surf(18, 18), text: surf(97, 30), muted: surf(74, 12) };
+    const greenish = h >= 80 && h <= 170;
+    const success = greenish ? '#6CCBFF' : '#8BE77A';
+    // marker on the hue ring (radius 101 in a 240 box, 0deg at top)
+    const a = h * Math.PI / 180;
+    const marker = { position: 'absolute', left: (120 + 101 * Math.sin(a) - 14) + 'px', top: (120 - 101 * Math.cos(a) - 14) + 'px', width: '28px', height: '28px',
+      borderRadius: '50%', background: accent, border: '3px solid #F6F5FC', boxSizing: 'border-box', boxShadow: '0 2px 10px rgba(0,0,0,0.5)' };
+    const VIBES = [['Calm', '#3DDCD0', 'Clear and steady'], ['Clear', '#5CC8FF', 'Cool and open'], ['Focus', '#9B87FF', 'Deep and composed'],
+      ['Energise', '#FFB35C', 'Warm and upbeat'], ['Bold', '#FF7EB3', 'Playful and confident'], ['Fresh', '#8BE77A', 'Light and lively']];
+    const sel = VIBES.findIndex((v) => v[1].toLowerCase() === accent.toLowerCase());
+    const vibes = VIBES.map(([name, c, desc], i) => ({ name, desc, swatch: { width: '36px', height: '36px', borderRadius: '50%', background: c, flex: '0 0 36px' },
+      checked: i === sel ? 'true' : 'false',
+      tile: { display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '14px', cursor: 'pointer', textAlign: 'left', font: 'inherit', color: '#F6F5FC',
+        background: i === sel ? 'rgba(' + rgb + ',0.16)' : '#151823', border: '1px solid ' + (i === sel ? accent : '#2C3145') } }));
+    return { accent, accentSoft: 'rgba(' + rgb + ',0.16)', accentMid: 'rgba(' + rgb + ',0.45)', hue: h, sat: S, light: L,
+      hsl: h + '°  ' + S + '%  ' + L + '%', onAccent, ratio, textName: darkText ? 'Dark text' : 'White text',
+      passes: Number(ratio) >= 4.5 ? 'Passes WCAG AA' : 'Below AA, try a brighter colour',
+      vibeName: sel >= 0 ? VIBES[sel][0] : 'Custom', marker, vibes, t: theme, success,
+      successNote: greenish ? 'Success colour switches to blue so it stays distinct from a green accent.' : 'Success stays lime; amber and blue are unchanged.' };
+  }
+}
+</script>
+</body>
+</html>
