@@ -265,6 +265,20 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
 .bar-value { font-size: 11px; color: var(--text-muted); }
 .bar-label { font-size: 10px; color: var(--text-faint); white-space: nowrap; text-transform: uppercase; }
 
+/* Onboarding */
+.onboarding { min-height: 100vh; display: flex; justify-content: center; padding: 48px 16px; }
+.onboarding-inner { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 20px; }
+.onboarding-body { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.steps { list-style: none; margin: 0; padding: 0; flex: 0 0 200px; display: flex; flex-direction: column; gap: 2px; }
+.steps li {
+  display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; color: var(--text-faint);
+  border-left: 2px solid var(--divider);
+}
+.steps li[aria-current='step'] { color: var(--text); border-left-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.steps li[data-done='true'] { color: var(--text-muted); border-left-color: var(--accent-line); }
+.step-num { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+.check { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+
 @media (max-width: 900px) {
   .shell { flex-direction: column; }
   .sidebar { flex: none; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px; }

@@ -85,6 +85,7 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
     end = end or date.today()
     with conn:
         conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('name', '\"Jordan\"')")
+        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('onboarded', 'true')")
     distractions = ["Phone", "Social media", "Email", "Meetings", "Noise", "Low energy"]
     wins = ["Shipped the budget draft", "Ran 6 km", "Inbox to zero", "Finished module 7", "Good 1:1 with Marcus"]
     for i in range(days - 1, -1, -1):

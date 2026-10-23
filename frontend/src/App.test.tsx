@@ -14,6 +14,11 @@ const emptyDay = (date: string) => ({
   },
 })
 
+const settingsBody = {
+  name: null, onboarded: false, wake_target: '07:00', sleep_target_hours: 7.5, deep_work_target_hours: 3,
+  habits: [{ key: 'reading', name: 'Reading done', auto: 0, active: true }],
+}
+
 const habitHistory = {
   end: '2026-10-24',
   dates: ['2026-10-18', '2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24'],
@@ -26,11 +31,13 @@ const habitHistory = {
   patterns: [{ key: 'reading', name: 'Reading done', weekday: 'Wednesday', missed: 3, of: 4 }],
 }
 
-function mockServer(installed: boolean, hasCheckin = true) {
+function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
-    if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: 'Jordan' }
+    if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded }
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
+    else if (url.startsWith('/api/settings')) body = settingsBody
+    else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
     else if (url.startsWith('/api/habits?')) body = habitHistory
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
     return new Response(JSON.stringify(body), { status: 200 })
@@ -92,5 +99,24 @@ describe('App', () => {
     render(<App />)
     expect(await screen.findByText('Save a check-in first.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Generate daily report' })).not.toBeInTheDocument()
+  })
+
+  it('walks a new user through setup', async () => {
+    mockServer(true, true, false)
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: 'About you' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(await screen.findByText('Enter a first name to continue.')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('First name'), { target: { value: 'Jordan' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(await screen.findByRole('heading', { name: 'Your day' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Sleep target (hours)')).toHaveValue(7.5)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(await screen.findByRole('heading', { name: 'Your habits' })).toBeInTheDocument()
+    expect(screen.getByText(/not medical advice/)).toBeInTheDocument()
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/settings?today='),
+      expect.objectContaining({ method: 'PUT', body: '{"name":"Jordan"}' }))
   })
 })

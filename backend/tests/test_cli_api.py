@@ -127,3 +127,21 @@ def test_report_needs_a_recent_checkin(client, monkeypatch):
     r = client.post("/api/coach/run", json={})
     assert r.status_code == 409
     assert "Save a check-in first" in r.json()["detail"]
+
+
+def test_settings_api(client):
+    assert client.get("/api/status").json()["onboarded"] is False
+    r = client.put("/api/settings?today=2026-10-24", json={"name": "Jordan", "sleep_target_hours": 8, "onboarded": True})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["name"] == "Jordan" and body["sleep_target_hours"] == 8 and body["onboarded"] is True
+    assert client.get("/api/status").json()["onboarded"] is True
+    assert client.put("/api/settings", json={"sleep_target_hours": 30}).status_code == 422
+    habits = client.put("/api/habit-settings/meditation", json={"active": False}).json()
+    assert {h["key"]: h["active"] for h in habits}["meditation"] is False
+
+
+def test_demo_counts_as_onboarded(capsys):
+    cli.main(["demo", "--days", "3"])
+    from samuel import settings as st
+    assert st.public(db.connect(), "2026-10-24")["onboarded"] is True
