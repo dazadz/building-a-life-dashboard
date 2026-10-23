@@ -15,7 +15,8 @@ const NAV = [
 
 export default function App() {
   const route = useRoute()
-  const status = useLoad(() => api.status(), [])
+  // Reload on each screen change, so the Coach page knows about a check-in saved a moment ago.
+  const status = useLoad(() => api.status(), [route])
   const coach = useCoachJob()
 
   if (status.error) return <ServerDown onRetry={status.reload} />

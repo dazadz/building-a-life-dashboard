@@ -26,10 +26,10 @@ const habitHistory = {
   patterns: [{ key: 'reading', name: 'Reading done', weekday: 'Wednesday', missed: 3, of: 4 }],
 }
 
-function mockServer(installed: boolean) {
+function mockServer(installed: boolean, hasCheckin = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
-    if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'] }, today: '2026-10-24', name: 'Jordan' }
+    if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: 'Jordan' }
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
     else if (url.startsWith('/api/habits?')) body = habitHistory
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
@@ -84,5 +84,13 @@ describe('App', () => {
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith('/api/habits/2026-10-24/water', expect.objectContaining({ method: 'PUT', body: '{"status":"done"}' })),
     )
+  })
+
+  it('asks for a check-in before offering a report', async () => {
+    mockServer(true, false)
+    window.location.hash = '#/coach'
+    render(<App />)
+    expect(await screen.findByText('Save a check-in first.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Generate daily report' })).not.toBeInTheDocument()
   })
 })
