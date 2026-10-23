@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, profile, reports, scores, security, settings, weekly
+from . import backups, coach, db, goals, habits, profile, reports, routines, scores, security, settings, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -98,6 +98,22 @@ class WeeklyIn(BaseModel):
     priorities: list[str] = []
     carry: list[int] = []
     status: Literal["draft", "done"] = "draft"
+
+
+class RoutineIn(BaseModel):
+    name: str = Field(max_length=80)
+    start: str
+    end: str
+    weekdays: list[int] = [0, 1, 2, 3, 4, 5, 6]
+    note: str | None = Field(None, max_length=200)
+
+
+class RoutineChange(BaseModel):
+    name: str | None = Field(None, max_length=80)
+    start: str | None = None
+    end: str | None = None
+    weekdays: list[int] | None = None
+    note: str | None = Field(None, max_length=200)
 
 
 class CoachRunIn(BaseModel):
@@ -274,6 +290,43 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         except ValueError as exc:
             raise HTTPException(422, str(exc))
         return weekly.review(conn, week_start, day)
+
+    def routine_write(work):
+        try:
+            work()
+        except KeyError:
+            raise HTTPException(404, "no such block")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    @app.get("/api/routines")
+    def get_routines(conn=Depends(get_conn)):
+        return routines.list_routines(conn)
+
+    @app.post("/api/routines")
+    def post_routine(body: RoutineIn, conn=Depends(get_conn)):
+        routine_write(lambda: routines.add(conn, body.model_dump()))
+        return routines.list_routines(conn)
+
+    @app.post("/api/routines/suggested")
+    def post_suggested(today: str | None = None, conn=Depends(get_conn)):
+        routine_write(lambda: routines.add_suggested(conn, _day(today) if today else date.today().isoformat()))
+        return routines.list_routines(conn)
+
+    @app.put("/api/routines/{routine_id}")
+    def put_routine(routine_id: int, body: RoutineChange, conn=Depends(get_conn)):
+        # Only the fields sent change, so sending "note": null clears the note.
+        routine_write(lambda: routines.update(conn, routine_id, body.model_dump(exclude_unset=True)))
+        return routines.list_routines(conn)
+
+    @app.delete("/api/routines/{routine_id}")
+    def delete_routine(routine_id: int, conn=Depends(get_conn)):
+        routine_write(lambda: routines.delete(conn, routine_id))
+        return routines.list_routines(conn)
+
+    @app.get("/api/plan/{day}")
+    def get_plan(day: str, conn=Depends(get_conn)):
+        return routines.plan(conn, _day(day))
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):

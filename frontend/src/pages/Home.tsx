@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Markdown from 'react-markdown'
 import { api, type Day, type HabitStatus, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
+import { TodaysPlan } from '../components/Routine'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, longDate, scoreText } from '../format'
 import { useLoad, useNow } from '../hooks'
@@ -25,6 +26,7 @@ export function HomePage({ status }: { status: Status | null }) {
   const days = useLoad(() => Promise.all([api.day(today), api.day(yesterday)]), [today])
   const reports = useLoad(() => api.reports('daily'), [])
   const profile = useLoad(() => api.profile(), [])
+  const plan = useLoad(() => api.plan(today), [today])
   const [todayData, yesterdayData] = days.data ?? [null, null]
 
   const name = status?.name
@@ -85,7 +87,10 @@ export function HomePage({ status }: { status: Status | null }) {
       </section>
 
       <div className="row">
+        <TodaysPlan now={now} plan={plan.data} />
         <CheckinCard day={todayData} yesterday={yesterdayData} loading={!days.data && !days.error} />
+      </div>
+      <div className="row">
         <LatestReport reports={reports} />
         <HabitsCard day={todayData} onChange={(d) => days.setData([d, yesterdayData!])} />
       </div>

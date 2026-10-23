@@ -10,7 +10,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, db, profile, reports, scores
+from . import backups, db, profile, reports, routines, scores
 from .checkins import log_habit, save_checkin
 
 
@@ -178,6 +178,8 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
                 log_habit(conn, day, key, "done" if rng.random() < 0.65 else "missed")
     seed_demo_goals(conn, end)
     seed_demo_profile(conn)
+    if not routines.list_routines(conn):
+        routines.add_suggested(conn, end.isoformat())
 
 
 def seed_demo_profile(conn) -> None:
