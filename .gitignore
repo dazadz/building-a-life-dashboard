@@ -4,6 +4,8 @@ node_modules/
 venv/
 __pycache__/
 *.pyc
+*.egg-info/
+.pytest_cache/
 
 # Build output
 dist/
@@ -17,6 +19,8 @@ build/
 
 # Local data
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm

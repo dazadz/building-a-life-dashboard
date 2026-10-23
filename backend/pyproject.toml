@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "samuel"
+version = "0.0.1"
+description = "Local personal performance dashboard with Claude Code as its coach"
+license = { text = "PolyForm-Noncommercial-1.0.0" }
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+samuel = "samuel.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["samuel*"]
+
+[tool.setuptools.package-data]
+samuel = ["migrations/*.sql"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
