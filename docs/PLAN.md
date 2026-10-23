@@ -59,6 +59,13 @@ design/    canvas source (kept in sync)
   - This also works from the phone.
   - If `claude` isn't installed, the UI shows the needs-setup line instead.
 
+**Email, optional ("Needs a reply"):**
+- Connect Gmail or Outlook in Settings, using OAuth on the user's own machine (or IMAP with an app password).
+- Access is read-only. Only the sender, subject, thread age and replied state are stored. Message bodies are never stored.
+- Tokens go in the OS keychain (`keyring`), never in the database or repo.
+- "Needs a reply" uses plain rules: threads from real people where you haven't replied yet, oldest first. Claude Code is used only if the user asks.
+- With no email connected, the card shows the needs-setup line.
+
 **Phone access (opt-in, never public):**
 - By default the app binds to 127.0.0.1.
 - `samuel serve --lan` turns on phone access. It requires a passcode, set at first run and stored as a hash, and issues a session cookie. The README documents Tailscale (`tailscale serve`) as the recommended private HTTPS route.
@@ -73,7 +80,7 @@ design/    canvas source (kept in sync)
 ## Screens (update the canvas first, then build)
 **Existing screens, revised:**
 - Rename to Samuel.
-- Remove "Needs a reply" because there's no email integration.
+- Keep "Needs a reply" and the Inbox, powered by the optional email connection.
 - Add a compact score strip to Home: Productivity, Discipline, Energy and Focus meters in the header, with no hero KPI cards.
 
 **New screens:**
@@ -86,6 +93,8 @@ design/    canvas source (kept in sync)
 7. **Coach:** the report feed and Ask Samuel.
 
 **Kept:** Tasks with reminders, and the Ctrl+K palette.
+
+**Palette:** a dark but lifted base (page #10121A, cards #1B1E2B) with a vivid accent (default iris #9B87FF; sky, mint, sunrise and pink are alternatives) and bright status colours (green #5CE8A4, amber #FFC766, blue #6CCBFF).
 
 **Charts:** follow the dataviz skill with one accent colour, so the prompt's "Unicode bars" become real meters.
 
@@ -107,8 +116,9 @@ design/    canvas source (kept in sync)
    - the `/coach/run` subprocess runner
    - the Coach screen and Ask Samuel
 7. **Reviews:** weekly and monthly views, plus charts for health and energy.
-8. **Phone access:** `--lan` with a passcode, the PWA manifest, and the Tailscale guide.
-9. **CLAUDE.md:** update it with run and test commands, the privacy rules, and the coach architecture.
+8. **Email (optional):** OAuth/IMAP connect, read-only sync, the "Needs a reply" card and Inbox.
+9. **Phone access:** `--lan` with a passcode, the PWA manifest, and the Tailscale guide.
+10. **CLAUDE.md:** update it with run and test commands, the privacy rules, and the coach architecture.
 
 ## Verification
 - **Tests:** `pytest` covers scores (nulls aren't treated as 0), the upsert rule, CLI export and import, and the passcode requirement for `--lan`. `npm test` and `npm run build` pass, and CI is green on GitHub.

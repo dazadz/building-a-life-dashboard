@@ -15,7 +15,7 @@ UI designs live in `design/` (the source of the canvas at https://claude.ai/arti
 | File | Screen |
 | --- | --- |
 | `design/Onboarding.dc.html` | Five-step setup with scores and insights after each section |
-| `design/Main.dc.html` | Home: scores, Samuel's brief, today's plan, habits, goals |
+| `design/Main.dc.html` | Home: scores, Samuel's brief, today's plan, check-in, needs a reply (optional email), habits, goals |
 | `design/Checkin.dc.html` | Daily check-in (12 questions) and yesterday's report |
 | `design/Habits.dc.html` | 10 daily trackers, streaks, consistency, failure detection |
 | `design/Health.dc.html` | Sleep and energy, recovery, burnout risk, energy curve |
@@ -26,7 +26,7 @@ UI designs live in `design/` (the source of the canvas at https://claude.ai/arti
 | `design/Tasks.dc.html` | Tasks and reminders |
 | `design/Palette.dc.html` | Ctrl+K command palette |
 
-Design rules: dark theme with a single accent colour; every card ends in an action;
+Design rules: dark but bright theme with one vivid accent colour; every card ends in an action;
 no hero KPI cards, emoji, gradients, glass effects, nested cards, or pure black/white.
 
 ## License
