@@ -43,7 +43,7 @@ export interface Day {
 }
 
 export interface Status {
-  coach: { installed: boolean; skills: string[] }
+  coach: { installed: boolean; skills: string[]; has_recent_checkin: boolean }
   today: string
   name: string | null
 }

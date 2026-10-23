@@ -48,7 +48,14 @@ export function CoachPage({ coach, status }: Props) {
         <p>Samuel reads your logs with Claude Code on this computer and writes reports here.</p>
       </header>
 
-      {!status ? <Loading lines={1} /> : installed ? (
+      {!status ? <Loading lines={1} /> : installed && !status.coach.has_recent_checkin ? (
+        <NeedsSetup>
+          <span style={{ flex: 1 }}>
+            <strong>Save a check-in first.</strong> Samuel needs at least one from the last 7 days to write a report.
+          </span>
+          <a href="#/checkin">Start check-in →</a>
+        </NeedsSetup>
+      ) : installed ? (
         <div className="notice ok" style={{ alignItems: 'center' }}>
           <span style={{ flex: 1 }}><strong>Claude Code is ready on this PC.</strong> Reports use your own Claude Code login.</span>
           <button type="button" className="btn btn-primary" disabled={coach.running} onClick={() => coach.start('daily-report')}>
@@ -108,7 +115,7 @@ export function CoachPage({ coach, status }: Props) {
         <Card
           title={current ? KIND_LABEL[current.kind] : 'Report'}
           meta={current ? `Written ${new Date(current.created_at).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}` : undefined}
-          action={installed
+          action={installed && status?.coach.has_recent_checkin
             ? <button type="button" className="link-btn" style={{ color: 'var(--link)' }} disabled={coach.running}
                 onClick={() => coach.start('daily-report')}>Write a new one →</button>
             : <a href="#/checkin">Check-in →</a>}

@@ -69,7 +69,7 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     @app.get("/api/status")
     def status(conn=Depends(get_conn)):
         return {
-            "coach": coach.status(),
+            "coach": {**coach.status(), "has_recent_checkin": coach.has_recent_checkin(conn)},
             "today": date.today().isoformat(),
             "name": db.get_setting(conn, "name"),
         }
@@ -115,6 +115,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             return {"job_id": coach.start(conn, body.skill)}
         except ValueError as exc:
             raise HTTPException(422, str(exc))
+        except coach.NothingToReport as exc:
+            raise HTTPException(409, str(exc))
         except RuntimeError as exc:
             raise HTTPException(503, str(exc))
 

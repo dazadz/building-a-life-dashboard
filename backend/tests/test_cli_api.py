@@ -2,6 +2,7 @@ import io
 import json
 import sys
 import time
+from datetime import date
 
 import pytest
 from fastapi.testclient import TestClient
@@ -87,6 +88,7 @@ def test_coach_job_runs_and_finds_the_report(client, monkeypatch, tmp_path):
     )
     monkeypatch.setattr(coach, "claude_path", lambda: "claude")
     monkeypatch.setattr(coach, "command", lambda skill: [sys.executable, str(fake)])
+    client.put(f"/api/checkins/{date.today().isoformat()}", json={"energy": 6})
 
     job_id = client.post("/api/coach/run", json={"skill": "daily-report"}).json()["job_id"]
     for _ in range(100):
@@ -101,6 +103,7 @@ def test_coach_job_runs_and_finds_the_report(client, monkeypatch, tmp_path):
 def test_coach_job_fails_without_a_report(client, monkeypatch):
     monkeypatch.setattr(coach, "claude_path", lambda: "claude")
     monkeypatch.setattr(coach, "command", lambda skill: [sys.executable, "-c", "pass"])
+    client.put(f"/api/checkins/{date.today().isoformat()}", json={"energy": 6})
     job_id = client.post("/api/coach/run", json={}).json()["job_id"]
     for _ in range(100):
         job = client.get(f"/api/coach/jobs/{job_id}").json()
@@ -116,3 +119,11 @@ def test_habits_history_api(client):
     body = client.get("/api/habits?end=2026-10-20&days=7").json()
     assert body["dates"][-1] == "2026-10-20"
     assert client.get("/api/habits?days=5").status_code == 422
+
+
+def test_report_needs_a_recent_checkin(client, monkeypatch):
+    monkeypatch.setattr(coach, "claude_path", lambda: "claude")
+    assert client.get("/api/status").json()["coach"]["has_recent_checkin"] is False
+    r = client.post("/api/coach/run", json={})
+    assert r.status_code == 409
+    assert "Save a check-in first" in r.json()["detail"]
