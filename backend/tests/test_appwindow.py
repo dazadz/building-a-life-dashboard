@@ -1,4 +1,6 @@
 import socket
+import threading
+import time
 
 from samuel import appwindow, cli
 
@@ -20,22 +22,28 @@ def test_window_command_uses_app_mode_and_its_own_profile(data_dir):
     assert f"--user-data-dir={data_dir / 'app-window'}" in cmd
 
 
-def test_app_starts_the_server_opens_a_window_and_stops_when_it_closes(monkeypatch):
+def test_app_serves_while_the_page_checks_in_then_stops(monkeypatch):
     port = free_port()
     opened = []
 
-    class Window:
-        def __init__(self, cmd):
-            opened.append(cmd)
-            assert appwindow.is_running(port)  # the server answers before the window opens
+    def window(cmd):
+        opened.append(cmd)
+        assert appwindow.is_running(port)  # the server answers before the window opens
 
-        def wait(self):
-            return 0
+        def page():  # the open window checking in, then closing after a few check-ins
+            for _ in range(4):
+                time.sleep(0.2)
+                appwindow.is_running(port)
+        threading.Thread(target=page, daemon=True).start()
 
+    monkeypatch.setattr(appwindow, "IDLE_STOP", 0.5)
+    monkeypatch.setattr(appwindow, "CHECK_EVERY", 0.05)
     monkeypatch.setattr(appwindow, "find_browser", lambda: "edge.exe")
-    monkeypatch.setattr(appwindow.subprocess, "Popen", Window)
+    monkeypatch.setattr(appwindow.subprocess, "Popen", window)
+    started = time.monotonic()
     cli.main(["app", "--port", str(port)])
     assert opened and opened[0][1] == f"--app=http://127.0.0.1:{port}"
+    assert time.monotonic() - started >= 0.8  # stayed up while the page checked in
     assert not appwindow.is_running(port)
 
 

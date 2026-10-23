@@ -1,8 +1,10 @@
 """`samuel app`: Samuel in its own window, with no browser tabs, address bar or toolbar.
 
 It uses a Chromium browser's app mode (Edge first, as every Windows PC has it) with a separate
-browser profile in the data folder, so the window is its own process: when it closes, a server
-started by `samuel app` stops too.
+browser profile in the data folder. Edge doesn't reliably keep its launcher process alive for as
+long as the window is open, so a server started by `samuel app` watches for the page instead: the
+app checks in every 30 seconds, and the server stops once it hasn't heard from any page for
+IDLE_STOP seconds.
 """
 
 import json
@@ -19,6 +21,8 @@ from pathlib import Path
 from . import db
 
 BROWSER_NAMES = ("msedge", "chrome", "chromium", "google-chrome", "chromium-browser")
+IDLE_STOP = 180  # seconds without any request before a server started by `samuel app` stops
+CHECK_EVERY = 5
 
 
 def is_running(port: int) -> bool:
@@ -83,27 +87,23 @@ def run(port: int) -> None:
     if browser is None:
         print("No Edge or Chrome found, so Samuel opens in your default browser instead.")
         webbrowser.open(f"http://127.0.0.1:{port}")
-        if started:
-            print("Press Ctrl+C to stop Samuel.")
-            _wait_forever(started)
-        return
-
-    window = subprocess.Popen(window_command(browser, port))
+    else:
+        subprocess.Popen(window_command(browser, port))
     if started:
-        # The window has its own browser profile, so this returns when it's closed.
-        window.wait()
-        server, thread = started
-        server.should_exit = True
-        thread.join(timeout=10)
+        print("Samuel stops a few minutes after its window closes. Press Ctrl+C to stop it now.")
+        _serve_while_open(*started)
 
 
-def _wait_forever(started) -> None:
-    server, thread = started
+def _serve_while_open(server, thread) -> None:
+    """Keep the server up while a page keeps checking in, then stop it."""
+    state = server.config.app.state
     try:
-        while thread.is_alive():
-            thread.join(timeout=1)
+        while thread.is_alive() and time.monotonic() - state.last_request < IDLE_STOP:
+            time.sleep(CHECK_EVERY)
     except KeyboardInterrupt:
-        server.should_exit = True
+        pass
+    server.should_exit = True
+    thread.join(timeout=10)
 
 
 def quiet_output_to_log() -> None:
