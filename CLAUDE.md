@@ -32,9 +32,10 @@ Scores follow `docs/scores.md` exactly. Change the doc first, then `backend/samu
 
 As you work, commit to Git and push to GitHub regularly, so there is always a saved version to revert to. The full process is under Process in `docs/PLAN.md`.
 
-- **Branches:**
-  - Until CI exists (the walking-skeleton milestone), commit to `main` and push.
-  - After that, create a feature branch per GitHub issue (`feat/…`, `fix/…`, `docs/…`) and open a pull request that must pass CI. Merge with squash.
+- **Branches:** `main` is protected, so nothing can be pushed to it directly, admins included.
+  - Create a feature branch per GitHub issue (`feat/…`, `fix/…`, `docs/…`) and open a pull request.
+  - The four CI checks must pass and the branch must be up to date with `main`. No review approval is needed.
+  - Merge with squash (the only merge type allowed). The branch is deleted after merging.
 - Commit after each logical change; don't batch unrelated work into one commit.
 - Write clean commit messages: an imperative subject of 72 characters or fewer (e.g. "Add task snooze buttons"), then a short body explaining why when it isn't obvious.
 - Never commit secrets, `.env` files, local database files or `*.local.json` settings (`.gitignore` covers these).
