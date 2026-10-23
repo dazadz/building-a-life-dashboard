@@ -129,7 +129,7 @@ design/    canvas source (kept in sync)
 
 **Settings → Appearance:** a hue wheel, vibe presets, theme controls and a live preview.
 
-**Palette (tech style, 2026-10-24):** a deep blue-black base (page #0A0D13, cards #11161F) with an electric cyan accent (default #22E0E6; sky, iris, sunrise and pink are alternatives) and crisp status colours (green #5BE38A, amber #FFC24D, blue #5CB8FF). Fonts: Sora, Inter and JetBrains Mono. A mission control finish: 2px corners, card corner brackets, LED-style segmented meters, a soft glow on active items and under headings and labels. The canvas designs keep the earlier palette and fonts; the app's styles are the reference for colour and type.
+**Palette (tech style, 2026-10-24):** a pure black base (page #000000, cards #0A0D12) with an electric cyan accent (default #22E0E6; sky, iris, sunrise and pink are alternatives) and crisp status colours (green #5BE38A, amber #FFC24D, blue #5CB8FF). Fonts: Michroma, Inter and JetBrains Mono. A mission control finish: 2px corners, card corner brackets, LED-style segmented meters, a soft glow on active items and under headings and labels. The canvas designs keep the earlier palette and fonts; the app's styles are the reference for colour and type.
 
 **Custom themes (Settings → Appearance):**
 - Electric cyan is the default ("Calm" vibe).
