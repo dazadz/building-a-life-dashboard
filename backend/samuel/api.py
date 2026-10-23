@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, chats, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, security, settings, tasks, weekly
+from . import backups, chats, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -521,6 +521,10 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             raise HTTPException(409, str(exc))
         except ValueError as exc:
             raise HTTPException(422, str(exc))
+
+    @app.get("/api/search")
+    def get_search(q: str = "", conn=Depends(get_conn)):
+        return search.search(conn, q[:100])
 
     @app.get("/api/chats")
     def get_chats(conn=Depends(get_conn)):

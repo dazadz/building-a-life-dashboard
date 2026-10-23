@@ -3,7 +3,7 @@ import { api, type Checkin, type Day } from '../api'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, answeredCount, isoDate, longDate, scoreText } from '../format'
-import { useLoad, type useCoachJob } from '../hooks'
+import { useLoad, useQuery, type useCoachJob } from '../hooks'
 
 type Form = Record<keyof Checkin, string>
 
@@ -52,13 +52,28 @@ function Header({ today }: { today: string }) {
 
 export function CheckinPage(props: Props) {
   // Fixed when the page opens, so a check-in started before midnight saves to that day.
-  const [today] = useState(() => isoDate(new Date()))
+  const [realToday] = useState(() => isoDate(new Date()))
+  // "#/checkin?date=2026-10-22" opens a past day (from Ctrl+K search), never a future one.
+  const asked = useQuery().get('date')
+  const today = asked && /^\d{4}-\d{2}-\d{2}$/.test(asked) && asked < realToday ? asked : realToday
   const days = useLoad(() => Promise.all([api.day(today), api.day(addDays(today, -1))]), [today])
   if (days.error) {
     return <div className="page"><Header today={today} /><ErrorLine message={days.error} onRetry={days.reload} /></div>
   }
   if (!days.data) return <div className="page"><Header today={today} /><Loading lines={6} /></div>
-  return <CheckinForm {...props} today={days.data[0]} yesterday={days.data[1]} />
+  return (
+    <>
+      {today !== realToday && (
+        <div className="page" style={{ paddingBottom: 0 }}>
+          <div className="notice">
+            <span style={{ flex: 1 }}>You're looking at the check-in for <strong>{longDate(today)}</strong>.</span>
+            <a href="#/checkin">Today's check-in →</a>
+          </div>
+        </div>
+      )}
+      <CheckinForm key={today} {...props} today={days.data[0]} yesterday={days.data[1]} />
+    </>
+  )
 }
 
 function startingForm(today: Day, yesterday: Day): { form: Form; prefilled: boolean } {

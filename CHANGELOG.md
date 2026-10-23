@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Added
+- **Ctrl+K palette:** press Ctrl+K (or Search in the sidebar) to jump to any screen, search tasks, goals, milestones, check-ins, reports and chats, create a task with quick-add syntax, or ask Samuel. Type `>` for commands only and `?` to ask Samuel. Search results open the exact report, chat or past check-in.
 - **Chat with Samuel:** the prompt's coach mode as a conversation on the Coach page. Ask about your sleep, energy, habits, goals or plans and get an answer built from your own data, then ask follow-ups; Samuel sees the conversation so far. Start from a suggested question, or ask about the report you're reading. Conversations are kept on this computer, and each answer is a locked-down Claude Code run (the new `ask` skill) with the same two `samuel` commands as reports.
 
 ### Security

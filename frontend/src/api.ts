@@ -106,6 +106,14 @@ export interface Chat {
   awaiting_reply: boolean
 }
 
+export interface SearchResults {
+  query: string
+  groups: {
+    name: string
+    items: { kind: string; id: number | string; title: string; meta: string; href: string }[]
+  }[]
+}
+
 export interface CoachJob {
   id: number
   skill: string
@@ -414,6 +422,7 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  search: (q: string) => request<SearchResults>(`/api/search?q=${encodeURIComponent(q)}`),
   chats: () => request<ChatSummary[]>('/api/chats'),
   chat: (id: number) => request<Chat>(`/api/chats/${id}`),
   startChat: (text: string, reportId?: number) =>

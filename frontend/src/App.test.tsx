@@ -379,6 +379,30 @@ describe('App', () => {
     expect(screen.getByLabelText('Ask a follow-up')).toBeInTheDocument()
   })
 
+  it('opens the Ctrl+K palette, searches and jumps to a result', async () => {
+    mockServer(true)
+    const base = fetch as (url: string, init?: RequestInit) => Promise<Response>
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.startsWith('/api/search')) {
+        return new Response(JSON.stringify({ query: 'budget', groups: [{ name: 'Reports', items: [
+          { kind: 'report', id: 12, title: 'Daily report · Thursday 22 October', meta: 'The budget meeting cost you 2 h.', href: '#/coach?report=12' },
+        ] }] }), { status: 200 })
+      }
+      return base(url, init)
+    }))
+    render(<App />)
+    await screen.findByRole('heading', { level: 1, name: /Jordan/ })
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true })
+    const box = await screen.findByRole('combobox', { name: 'Search or run a command' })
+    fireEvent.change(box, { target: { value: 'budget' } })
+    expect(await screen.findByText('Daily report · Thursday 22 October')).toBeInTheDocument()
+    expect(screen.getByText('Create task “budget”')).toBeInTheDocument()
+    expect(screen.getByText('Ask Samuel: “budget”')).toBeInTheDocument()
+    fireEvent.keyDown(box, { key: 'Enter' })
+    await waitFor(() => expect(window.location.hash).toBe('#/coach?report=12'))
+    expect(screen.queryByRole('dialog', { name: 'Command palette' })).not.toBeInTheDocument()
+  })
+
   it('walks a new user through setup', async () => {
     mockServer(true, true, false)
     render(<App />)

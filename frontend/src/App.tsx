@@ -12,6 +12,7 @@ import { ReviewPage } from './pages/Review'
 import { TasksPage } from './pages/Tasks'
 import { HealthPage } from './pages/Health'
 import { MonthlyPage } from './pages/Monthly'
+import { Palette } from './components/Palette'
 import { Reminders } from './components/Reminders'
 import { HomePage } from './pages/Home'
 import { OnboardingPage } from './pages/Onboarding'
@@ -65,6 +66,9 @@ export default function App() {
           <div className="brand-mark" aria-hidden="true">S</div>
           <span className="brand-name">Samuel</span>
         </div>
+        <button type="button" className="search-btn" onClick={() => window.dispatchEvent(new Event('samuel:palette'))}>
+          <span>Search</span><kbd>Ctrl K</kbd>
+        </button>
         {NAV.map((item) => (
           <a
             key={item.route}
@@ -109,6 +113,7 @@ export default function App() {
         )}
       </main>
       <Reminders />
+      <Palette coachInstalled={status.data?.coach.installed ?? false} />
     </div>
   )
 }
