@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import coach, db, reports, scores
+from . import coach, db, habits, reports, scores
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -87,6 +87,12 @@ def create_app() -> FastAPI:
         day = _day(day)
         save_checkin(conn, day, body.model_dump())
         return get_day(day, conn)
+
+    @app.get("/api/habits")
+    def get_habits(end: str | None = None, days: int = 14, conn=Depends(get_conn)):
+        if days not in (7, 14, 30, 90):
+            raise HTTPException(422, "days must be 7, 14, 30 or 90")
+        return habits.history(conn, _day(end) if end else date.today().isoformat(), days)
 
     @app.put("/api/habits/{day}/{key}")
     def put_habit(day: str, key: str, body: HabitIn, conn=Depends(get_conn)):
