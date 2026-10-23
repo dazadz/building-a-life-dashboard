@@ -4,6 +4,14 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Security
+- **Coach runs are locked down further.** Bash is the only tool, and only `samuel export` and `samuel report add` may run. Runs no longer load your own Claude Code settings or MCP servers. Inside a run, `samuel export` refuses full exports and `report add` won't read files.
+- **Exports can't be committed.** The privacy check stops any Samuel export file.
+- **Dependencies are watched.** CI checks Python and npm packages for known vulnerabilities, Dependabot proposes updates, and CI actions are pinned to exact versions.
+
+### Fixed
+- **Docs:** two README lines broken by stray control characters, new issue and PR templates, the coach permissions in CLAUDE.md, the plan and ADR 0001, and the README design rules. The README now warns against saving exports in cloud-synced folders.
+
 ## [0.3.0] - 2026-10-24
 
 Tasks, health, the monthly view and your own theme.
@@ -29,9 +37,8 @@ Planning: goals, the full onboarding, the weekly review and today's plan, plus a
 ### Changed
 - **Centred Home:** the greeting, scores and cards sit in a narrower column in the middle of the window.
 - **App icon:** a cyan "S" icon for the desktop shortcut and the browser tab.
-- **Black and Michroma:** the page and sidebar are pure black, and headings use Michroma, a wide, smooth tech font (replacing Chakra Petch, which looked blocky).
-- **Glow and sidebar:** a soft accent glow under headings, labels and key numbers; the background grid is gone; Settings sits at the bottom-left of the sidebar, which now stays in place as the page scrolls.
-- **Mission control look:** Chakra Petch uppercase headings, sharp 2px corners, accent corner brackets on cards, LED-style segmented score meters, a faint grid behind the page, and a soft glow on active items.
+- **Mission control look:** a pure black page and sidebar, Michroma uppercase headings (a wide, smooth tech font), sharp 2px corners, accent corner brackets on cards, LED-style segmented score meters, and a soft accent glow on active items and under headings, labels and key numbers.
+- **Sidebar:** Settings sits at the bottom-left, and the sidebar stays in place as the page scrolls.
 
 ## [0.1.0] - 2026-10-24
 
