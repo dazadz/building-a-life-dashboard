@@ -13,6 +13,26 @@ export function useRoute(): string {
   return route
 }
 
+/**
+ * The current local time, refreshed every 30 seconds and whenever the window regains focus,
+ * so a dashboard left open overnight moves to the new day by itself.
+ */
+export function useNow(): Date {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const tick = () => setNow(new Date())
+    const id = window.setInterval(tick, 30_000)
+    window.addEventListener('focus', tick)
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      window.clearInterval(id)
+      window.removeEventListener('focus', tick)
+      document.removeEventListener('visibilitychange', tick)
+    }
+  }, [])
+  return now
+}
+
 /** Load data with loading and error states, and a reload function. */
 export function useLoad<T>(load: () => Promise<T>, deps: unknown[]) {
   const [data, setData] = useState<T | null>(null)
