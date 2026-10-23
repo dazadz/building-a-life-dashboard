@@ -12,7 +12,7 @@ from . import db
 
 KEEP_DAILY = 14
 FORMAT = "samuel-export"
-TABLES = ("settings", "target_history", "habits", "checkins", "habit_logs", "reports", "goals", "milestones", "profile_answers", "weekly_reviews", "routines", "tasks", "subtasks")
+TABLES = ("settings", "target_history", "habits", "checkins", "habit_logs", "reports", "goals", "milestones", "profile_answers", "weekly_reviews", "routines", "tasks", "subtasks", "health_logs")
 
 
 def folder() -> Path:

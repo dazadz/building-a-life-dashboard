@@ -10,7 +10,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, db, profile, reports, routines, scores, tasks
+from . import backups, db, health, profile, reports, routines, scores, tasks
 from .checkins import log_habit, save_checkin
 
 
@@ -173,6 +173,12 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
             "failures": rng.choice(["Skipped reading", "Phone in bed", "Late coffee", ""]),
             "improvement": rng.choice(["Phone out of the bedroom", "Deep work before 10:00", "Last coffee by 14:00"]),
         })
+        if rng.random() < 0.7:
+            health.save_log(conn, day, {
+                "water_l": round(rng.uniform(1.0, 2.6), 1), "caffeine_cups": rng.choice([1, 2, 2, 3, 4]),
+                "caffeine_last": rng.choice(["11:30", "13:00", "14:30", "15:45", "16:10"]),
+                "screens_late": rng.choice([0, 20, 35, 50, 75]),
+            })
         for key in ("reading", "healthy_eating", "water", "meditation", "no_procrastination", "no_social_media"):
             if rng.random() < 0.85:
                 log_habit(conn, day, key, "done" if rng.random() < 0.65 else "missed")

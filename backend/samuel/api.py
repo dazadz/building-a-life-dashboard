@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, profile, reports, routines, scores, security, settings, tasks, weekly
+from . import backups, coach, db, goals, habits, health, profile, reports, routines, scores, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -151,6 +151,13 @@ class SubtaskIn(BaseModel):
 
 class SubtaskChange(BaseModel):
     done: bool
+
+
+class HealthLogIn(BaseModel):
+    water_l: float | None = None
+    caffeine_cups: int | None = None
+    caffeine_last: str | None = None
+    screens_late: int | None = None
 
 
 class CoachRunIn(BaseModel):
@@ -432,6 +439,22 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     def post_notified(task_id: int, now: str | None = None, conn=Depends(get_conn)):
         task_write(lambda: tasks.mark_notified(conn, task_id, _now(now)))
         return {"ok": True}
+
+    @app.get("/api/health/{day}")
+    def get_health(day: str, days: int = 30, conn=Depends(get_conn)):
+        if days not in (7, 30, 90):
+            raise HTTPException(422, "days must be 7, 30 or 90")
+        return health.summary(conn, _day(day), days)
+
+    @app.put("/api/health-log/{day}")
+    def put_health_log(day: str, body: HealthLogIn, conn=Depends(get_conn)):
+        # Only the fields sent change; sending null clears one.
+        day = _day(day)
+        try:
+            health.save_log(conn, day, body.model_dump(exclude_unset=True))
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return health.summary(conn, day, 30)
 
     @app.get("/api/data")
     def get_data(conn=Depends(get_conn)):

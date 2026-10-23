@@ -422,6 +422,23 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
 }
 .toast-head { display: flex; align-items: center; justify-content: space-between; }
 
+/* Health */
+.mini-chart { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.mini-chart figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.mini-chart svg { width: 100%; height: 96px; display: block; }
+.mini-bar { fill: var(--accent-mid); }
+.mini-bar[data-hover='true'] { fill: var(--accent); }
+.mini-target { stroke: var(--amber); stroke-width: 1; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; }
+.mini-axis { display: flex; justify-content: space-between; font-size: 10px; }
+.risk { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.risk-step {
+  padding: 6px 0; text-align: center; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-faint); background: var(--inset); border: 1px solid var(--divider);
+}
+.risk-step[data-on='true'][data-level='low'] { color: var(--green); border-color: var(--green); }
+.risk-step[data-on='true'][data-level='moderate'] { color: var(--amber); border-color: var(--amber); }
+.risk-step[data-on='true'][data-level='high'] { color: var(--amber); border-color: var(--amber); background: color-mix(in srgb, var(--amber) 14%, var(--inset)); font-weight: 700; }
+
 /* Onboarding */
 .onboarding { min-height: calc(100vh / var(--ui-scale)); display: flex; justify-content: center; padding: 48px 16px; }
 .onboarding-inner { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 20px; }
