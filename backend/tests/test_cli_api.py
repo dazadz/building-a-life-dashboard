@@ -29,6 +29,7 @@ def test_export_and_report_round_trip(capsys, monkeypatch):
     assert len(out["days"]) == 7
     assert out["days"][-2]["checkin"]["sleep_hours"] is not None
     assert out["days"][-1]["checkin"] is None  # demo leaves today empty
+    assert out["name"] == "Jordan"
 
     said = run_cli(["report", "add", "--kind", "daily", "--file", "-"], capsys, "# Good day\nMore text", monkeypatch)
     assert "Saved daily report" in said
