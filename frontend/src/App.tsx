@@ -15,8 +15,8 @@ const NAV = [
   { href: '#/habits', route: '/habits', label: 'Habits' },
   { href: '#/goals', route: '/goals', label: 'Goals' },
   { href: '#/coach', route: '/coach', label: 'Coach' },
-  { href: '#/settings', route: '/settings', label: 'Settings' },
 ]
+const SETTINGS = { href: '#/settings', route: '/settings', label: 'Settings' }
 
 export default function App() {
   const route = useRoute()
@@ -47,7 +47,12 @@ export default function App() {
             {item.route === '/coach' && coach.running && <span className="badge faint">Writing…</span>}
           </a>
         ))}
-        <div className="sidebar-foot">Local · private</div>
+        <div className="sidebar-bottom">
+          <div className="sidebar-foot">Local · private</div>
+          <a href={SETTINGS.href} className="nav-link" aria-current={route === SETTINGS.route ? 'page' : undefined}>
+            {SETTINGS.label}
+          </a>
+        </div>
       </nav>
       <main>
         {route === '/checkin' ? (

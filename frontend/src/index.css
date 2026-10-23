@@ -31,10 +31,11 @@
   --radius: 2px;
   --radius-small: 2px;
 
-  /* Mission control details: the page grid, card corner brackets and the glow on active items */
-  --grid-line: color-mix(in srgb, var(--accent) 6%, transparent);
+  /* Mission control details: card corner brackets, the glow on active items and the soft glow under text */
   --bracket: var(--accent);
   --glow: 0 0 14px color-mix(in srgb, var(--accent) 30%, transparent);
+  --text-glow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
+  --text-glow-wide: 0 2px 22px color-mix(in srgb, var(--accent) 65%, transparent);
 
   color-scheme: dark;
 }
@@ -52,13 +53,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* A faint grid behind the page. The SVG is only a mask; its colour comes from --grid-line. */
-body::before {
-  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background-color: var(--grid-line);
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M0 .5H32M.5 0V32' fill='none' stroke='black'/%3E%3C/svg%3E") 0 0 / 32px 32px;
-}
-
 a { color: var(--link); text-decoration: none; font-weight: 500; }
 a:hover { color: var(--accent); }
 :focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
@@ -72,11 +66,20 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
+/* A soft glow under headings, accent labels and numbers. It's a text-shadow, never a gradient. */
+.page-head h1, .brand-name { text-shadow: var(--text-glow-wide); }
+.page-head .eyebrow, .card-head h2, .meter-value, .card-foot a, .link-btn.accent, .form legend, .report h2,
+.step-num, .nav-link[aria-current='page'], .accent-text, .vision {
+  text-shadow: var(--text-glow);
+}
+
 /* Layout */
 .shell { display: flex; min-height: 100vh; }
 .sidebar {
   flex: 0 0 220px; background: var(--sidebar); border-right: 1px solid var(--border);
   padding: 18px 12px; display: flex; flex-direction: column; gap: 2px;
+  /* Pinned to the window, so Settings stays in the bottom-left corner on long pages. */
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
 }
 .brand { display: flex; align-items: center; gap: 10px; padding: 2px 8px 18px; }
 .brand-mark {
@@ -97,8 +100,10 @@ button, input, textarea, select { font: inherit; color: inherit; }
   box-shadow: inset 12px 0 14px -12px var(--accent);
 }
 .nav-link .badge { margin-left: auto; }
+/* Settings and the privacy line sit at the bottom of the sidebar. */
+.sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 2px; }
 .sidebar-foot {
-  margin-top: auto; padding: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);
+  padding: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);
   text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px;
 }
 .sidebar-foot::before {
@@ -383,8 +388,9 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
 
 @media (max-width: 900px) {
   .shell { flex-direction: column; }
-  .sidebar { flex: none; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px; }
+  .sidebar { flex: none; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px; position: static; height: auto; }
   .brand { padding: 0 8px 0 0; }
   .sidebar-foot { display: none; }
+  .sidebar-bottom { margin: 0 0 0 auto; }
   .coach-layout { grid-template-columns: 1fr; }
 }
