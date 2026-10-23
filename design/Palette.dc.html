@@ -63,7 +63,7 @@ a{color:#C4B5FD;text-decoration:none}a:hover{color:#DDD6FE}
       <span><kbd style="font-family: 'JetBrains Mono', monospace; color: #C9C7D3;">↵</kbd> Open</span>
       <span><kbd style="font-family: 'JetBrains Mono', monospace; color: #C9C7D3;">Tab</kbd> More actions</span>
       <span style="flex: 1;"></span>
-      <span>Type <kbd style="font-family: 'JetBrains Mono', monospace; color: #C9C7D3;">&gt;</kbd> for commands, <kbd style="font-family: 'JetBrains Mono', monospace; color: #C9C7D3;">?</kbd> to ask the assistant</span>
+      <span>Type <kbd style="font-family: 'JetBrains Mono', monospace; color: #C9C7D3;">&gt;</kbd> for commands, <kbd style="font-family: 'JetBrains Mono', monospace; color: #C9C7D3;">?</kbd> to ask Samuel</span>
     </div>
   </div>
 </div>
@@ -90,15 +90,15 @@ class Component extends DCLogic {
       { name: 'Tasks', items: [
         row('task', 'Add hiring costs to Q4 budget', 'Today · 14:00 · Work · High priority', true)
       ] },
-      { name: 'Projects', items: [
-        row('folder', 'Q4 budget proposal', 'Finance · In progress · updated 2h ago')
+      { name: 'Goals', items: [
+        row('folder', 'Promotion to senior analyst', 'Career · 40% · next: ship Q4 budget proposal')
       ] },
-      { name: 'Journal', items: [
-        row('journal', 'Thursday 22 October', '“…the budget meeting ran long, so I lost the afternoon focus block…”')
+      { name: 'Check-ins', items: [
+        row('journal', 'Thursday 22 October · score 74', 'Failures: “…the budget meeting ran long, so I lost the afternoon focus block…”')
       ] },
       { name: 'Actions', items: [
         row('plus', 'Create task “budget”', 'Adds to Today'),
-        row('spark', 'Ask the assistant about “budget”', 'Searches across tasks, projects and journal')
+        row('spark', 'Ask Samuel about “budget”', 'Runs with Claude Code across tasks, goals and check-ins')
       ] }
     ];
     return { accent, groups };

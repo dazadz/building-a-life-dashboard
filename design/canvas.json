@@ -1,1 +1,116 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-23T13:20:00Z"},"title":"Productivity Dashboard UI","launch":{"view":"canvas"},"pages":[],"boards":{"Main.dc.html":{"x":0,"y":0,"w":1440,"h":1380,"title":"Home — Today","expand":"fill"},"Tasks.dc.html":{"x":1520,"y":0,"w":1440,"h":1240,"title":"Tasks","expand":"fill"},"Review.dc.html":{"x":0,"y":1500,"w":1440,"h":1340,"title":"Weekly review","expand":"fill"},"Palette.dc.html":{"x":1520,"y":1500,"w":1200,"h":780,"title":"Command palette (Ctrl+K)"}},"order":["Main.dc.html","Tasks.dc.html","Review.dc.html","Palette.dc.html"],"notes":{},"designSystems":[]}
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-23T13:20:00Z"
+ },
+ "title": "Samuel — UI designs",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Onboarding.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1420,
+   "title": "Onboarding — Life OS Prime",
+   "expand": "fill"
+  },
+  "Main.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1460,
+   "title": "Home — Today",
+   "expand": "fill"
+  },
+  "Checkin.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1320,
+   "title": "Daily check-in",
+   "expand": "fill"
+  },
+  "Habits.dc.html": {
+   "x": 0,
+   "y": 1560,
+   "w": 1440,
+   "h": 1260,
+   "title": "Habits",
+   "expand": "fill"
+  },
+  "Health.dc.html": {
+   "x": 1520,
+   "y": 1560,
+   "w": 1440,
+   "h": 1180,
+   "title": "Health & energy",
+   "expand": "fill"
+  },
+  "Goals.dc.html": {
+   "x": 3040,
+   "y": 1560,
+   "w": 1440,
+   "h": 1300,
+   "title": "Goals",
+   "expand": "fill"
+  },
+  "Review.dc.html": {
+   "x": 0,
+   "y": 2960,
+   "w": 1440,
+   "h": 1340,
+   "title": "Weekly review",
+   "expand": "fill"
+  },
+  "Monthly.dc.html": {
+   "x": 1520,
+   "y": 2960,
+   "w": 1440,
+   "h": 1320,
+   "title": "Monthly evolution",
+   "expand": "fill"
+  },
+  "Coach.dc.html": {
+   "x": 3040,
+   "y": 2960,
+   "w": 1440,
+   "h": 1400,
+   "title": "Coach — Samuel",
+   "expand": "fill"
+  },
+  "Tasks.dc.html": {
+   "x": 0,
+   "y": 4440,
+   "w": 1440,
+   "h": 1240,
+   "title": "Tasks",
+   "expand": "fill"
+  },
+  "Palette.dc.html": {
+   "x": 1520,
+   "y": 4440,
+   "w": 1200,
+   "h": 780,
+   "title": "Command palette (Ctrl+K)"
+  }
+ },
+ "order": [
+  "Onboarding.dc.html",
+  "Main.dc.html",
+  "Checkin.dc.html",
+  "Habits.dc.html",
+  "Health.dc.html",
+  "Goals.dc.html",
+  "Review.dc.html",
+  "Monthly.dc.html",
+  "Coach.dc.html",
+  "Tasks.dc.html",
+  "Palette.dc.html"
+ ],
+ "notes": {},
+ "designSystems": []
+}
