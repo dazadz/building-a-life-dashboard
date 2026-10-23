@@ -33,7 +33,7 @@ export function HomePage({ status }: { status: Status | null }) {
   const scoreLabel = todayData?.checkin ? 'Today' : 'Yesterday'
 
   return (
-    <div className="page">
+    <div className="page home">
       <header className="page-head">
         <div className="eyebrow">
           {longDate(today)} <span className="faint">//</span> <time dateTime={now.toISOString()}>{localTime(now)}</time>

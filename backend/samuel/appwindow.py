@@ -122,7 +122,7 @@ def create_shortcut(port: int) -> Path:
     if not pythonw.is_file():
         raise RuntimeError(f"Couldn't find pythonw.exe next to {sys.executable}.")
     args = "-m samuel app" + (f" --port {port}" if port != 8765 else "")
-    icon = find_browser() or str(pythonw)
+    icon = str(Path(__file__).with_name("assets") / "samuel.ico")
     # Values go to PowerShell as environment variables, never pasted into the script text.
     script = (
         "$desktop = [Environment]::GetFolderPath('Desktop');"
