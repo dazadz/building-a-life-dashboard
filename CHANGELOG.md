@@ -4,12 +4,16 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-24
+
+Planning: goals, the full onboarding, the weekly review and today's plan, plus a new look and a desktop window.
+
 ### Added
 - **Routines and Today's plan:** routine blocks with times and weekdays, edited in Settings, with a suggested routine built from your targets. Home shows today's plan with Now and Next markers and milestones due today. Samuel's daily report plans tomorrow around your routine.
 - **Weekly review:** look back on the week (wins, what slipped, and the week's numbers), answer three questions drawn from your own data, set next week's top 3, and pick milestones to carry over. Saving it asks Samuel (the new `weekly-review` skill) for a brief built around your priorities.
 - **Text size:** Settings → Text size scales the whole interface: Small (100%), Medium (110%, the new default), Large (125%) or Extra large (140%).
 - **Full onboarding:** 45 profile questions in four sections (life structure, daily routine, health and energy, goals and ambition), saved as you go. After each section you get a snapshot of key numbers and Samuel's insights (the new `onboard-insights` coach skill). Home shows how much Samuel knows until the profile is done. Health limitations and mental health answers are optional and only go to Claude for onboarding insights.
-- **`samuel app`:** opens Samuel in its own Edge app window with no browser UI, starting the server if needed and stopping it when the window closes. `samuel app --shortcut` makes a desktop shortcut.
+- **`samuel app`:** opens Samuel in its own Edge app window with no browser UI, starting the server if needed and stopping it a few minutes after the window closes. `samuel app --shortcut` makes a desktop shortcut.
 - **Goals:** goals by life area with milestones, progress from milestones done (a dash until a goal has any), area filters and sorting, a priority matrix (impact vs effort), a 6-month roadmap, this week's milestones and your long-term vision. Samuel's export now includes active goals and what's due this week.
 
 ### Changed
@@ -39,4 +43,5 @@ The core loop: check in each evening, see your scores, and have Samuel write you
 - Protection against DNS rebinding and cross-site writes. Coach runs can only use the `samuel` CLI.
 - A pre-commit hook and a CI check block database files, secrets, local paths and personal email addresses.
 
+[0.2.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.2.0
 [0.1.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.1.0
