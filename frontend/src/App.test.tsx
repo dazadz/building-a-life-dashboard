@@ -127,6 +127,11 @@ const monthlyBody = {
   trend: [{ date: '2026-10-01', discipline: 70, average: 70 }, { date: '2026-10-02', discipline: 80, average: 75 }],
 }
 
+const leaksBody = {
+  days: 30, checkins: 20, total_lost: 9.5,
+  leaks: [{ name: 'Phone', days: 6, dates: [], deep_work_lost: 5.5, deep_work_avg: 1.6, deep_work_avg_other_days: 2.4, impact: 'high' }],
+}
+
 const digestBody = {
   now: '2026-10-24T10:37',
   focus: { text: 'Phone out of the bedroom', source: "Your improvement from last night's check-in" },
@@ -143,6 +148,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
     let body: unknown = []
     if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded }
     else if (url.startsWith('/api/digest')) body = digestBody
+    else if (url.startsWith('/api/leaks/')) body = leaksBody
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
     else if (url.startsWith('/api/settings')) body = settingsBody
     else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
@@ -249,6 +255,8 @@ describe('App', () => {
     render(<App />)
     expect(await screen.findByText('Sent the brief')).toBeInTheDocument()
     expect(screen.getByText('+4 vs last week')).toBeInTheDocument()
+    expect(await screen.findByRole('rowheader', { name: 'Phone' })).toBeInTheDocument()
+    expect(screen.getByText('5.5 h')).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText(/best focus day/), { target: { value: 'No meetings before 13:00' } })
     fireEvent.change(screen.getByLabelText('Priority 1'), { target: { value: 'Ship the budget' } })
     fireEvent.click(screen.getByRole('checkbox', { name: /Review the doc/ }))

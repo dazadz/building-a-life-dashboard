@@ -28,7 +28,7 @@ Each answer is first turned into a value from 0 to 1.
 | Workout | Workout completed? | Yes 1, No 0, Rest day 1 for Balance and unknown elsewhere |
 | Habits | Habit log | done 1, missed 0, not logged unknown |
 
-The other questions (main goal, biggest distraction, wins, failures, one improvement) are not scored. Samuel uses them in reports to find time leaks and patterns.
+The other questions (main goal, biggest distraction, wins, failures, one improvement) are not scored. Samuel uses them in reports to find patterns, and the biggest distraction drives Time leaks (below).
 
 ## Habits ticked from the check-in
 
@@ -123,6 +123,17 @@ No flags is **Low**, 1 or 2 is **Moderate**, 3 or more is **High**. The screen l
 **Energy taps:** optional 1–10 ratings during the day, one per slot: **Morning** (before 11:00), **Midday** (11:00–13:59), **Afternoon** (14:00–17:59) and **Evening** (18:00 on). The slot comes from your local time when you tap, and a new tap in the same slot replaces the old one. Taps never change the check-in's energy answer or any score.
 
 **Energy curve:** the average tap for each slot over the chosen period. A slot shows once it has taps on at least 3 days; until then it's a dash. Once at least 2 slots show, the highest is your **peak** and the lowest your **dip** (the earlier slot wins a tie).
+
+## Time leaks
+
+Time leaks come from the check-in's **Biggest distraction** answer over the last 7 or 30 days. For each distraction:
+
+- **Days:** the days it was your biggest distraction.
+- **Deep work lost:** on those days, how far deep work fell short of your target (target − hours, never below 0), added up. Days without a deep work answer are left out of this, not counted as 0.
+- **Deep work on those days:** the average, next to the average on days with a different distraction or none.
+- **Impact:** **High** when it accounts for at least a third of all deep work lost to distractions in the period, **Medium** for at least 15%, otherwise **Low**. With no deep work lost at all, every leak is Low.
+
+Leaks are listed by deep work lost, then by days. A distraction needs at least 2 days to be listed. Samuel's reports explain the top leaks with your own check-in words.
 
 ## Monthly evolution
 

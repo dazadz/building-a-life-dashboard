@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Added
+- **Time leaks:** the weekly review lists your biggest distractions over 7 or 30 days, with the deep work lost on those days against your target, deep work on those days versus other days, and the impact. One click asks Samuel about the top leak. Daily reports now include a Time leaks table explained with your own check-in words. The rules are in `docs/scores.md`.
 - **Today at a glance:** a card at the top of Home, kept current all day: one focus (your "one improvement" from last night's check-in, else this week's top priority, else a due milestone), what's due or overdue across tasks and milestones, what's on now or next in your routine, and yesterday's score. It updates every minute and has a Refresh link.
 - **Energy taps and the energy curve:** an optional "Energy now" card on Today takes a 1–10 tap for the morning, midday, afternoon or evening. Health & energy draws the average for each part of the day, with your peak and dip, once a part has taps on 3 days. Samuel's reports and chat see the curve. The rules are in `docs/scores.md`.
 - **Ctrl+K palette:** press Ctrl+K (or Search in the sidebar) to jump to any screen, search tasks, goals, milestones, check-ins, reports and chats, create a task with quick-add syntax, or ask Samuel. Type `>` for commands only and `?` to ask Samuel. Search results open the exact report, chat or past check-in.

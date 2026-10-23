@@ -106,6 +106,21 @@ export interface Chat {
   awaiting_reply: boolean
 }
 
+export interface TimeLeaks {
+  days: number
+  checkins: number
+  total_lost: number
+  leaks: {
+    name: string
+    days: number
+    dates: string[]
+    deep_work_lost: number
+    deep_work_avg: number | null
+    deep_work_avg_other_days: number | null
+    impact: 'high' | 'medium' | 'low'
+  }[]
+}
+
 export interface Digest {
   now: string
   focus: { text: string; source: string } | null
@@ -446,6 +461,7 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  leaks: (day: string, days: number) => request<TimeLeaks>(`/api/leaks/${day}?days=${days}`),
   digest: (now: string) => request<Digest>(`/api/digest?now=${now}`),
   search: (q: string) => request<SearchResults>(`/api/search?q=${encodeURIComponent(q)}`),
   chats: () => request<ChatSummary[]>('/api/chats'),
