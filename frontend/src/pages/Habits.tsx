@@ -147,7 +147,7 @@ function TrackerRow({ row, dates, onLog }: { row: Row; dates: string[]; onLog: (
     <tr>
       <th scope="row">
         {row.name}
-        {row.auto === 1 && <span className="faint"> · auto</span>}
+        {row.auto === 1 && <span className="tag" title="Ticked from the check-in">auto</span>}
       </th>
       {row.days.map((s, i) => (
         <td key={dates[i]} className="day-col">
@@ -190,7 +190,7 @@ function Patterns({ history }: { history: HabitHistory | null }) {
             <li key={`${p.key}-${p.weekday}`}>
               <span className="dot missed" aria-hidden="true" />
               <span style={{ flex: 1, minWidth: 0 }}>
-                <strong>{p.name}</strong>
+                <span className="item-name">{p.name}</span>
                 <span className="muted"> · missed {p.missed} of the last {p.of} {p.weekday}s</span>
               </span>
             </li>

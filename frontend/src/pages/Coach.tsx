@@ -103,7 +103,9 @@ export function CoachPage({ coach, status }: Props) {
                     <button type="button" className="report-item" aria-current={r.id === current?.id}
                       onClick={() => setSelected(r.id)}>
                       <span style={{ fontWeight: 600 }}>{KIND_LABEL[r.kind]}</span>
-                      <span className="faint">{longDate(r.date)}</span>
+                      <span className="faint">
+                        {longDate(r.date)} · {new Date(r.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </button>
                   </li>
                 ))}
