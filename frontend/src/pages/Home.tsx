@@ -13,6 +13,9 @@ const STRIP = [
   { key: 'focus', label: 'Focus' },
 ] as const
 
+// The meters are LED-style bars: 20 segments of 5 points each.
+const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
+
 const SCORES_DOC = 'https://github.com/dazadz/building-a-life-dashboard/blob/main/docs/scores.md'
 
 export function HomePage({ status }: { status: Status | null }) {
@@ -59,7 +62,7 @@ export function HomePage({ status }: { status: Status | null }) {
                 <span className="meter-value">{scoreText(value)}</span>
               </div>
               <div className="meter-track" role="img" aria-label={`${label} ${scoreText(value)} of 100`}>
-                <div className="meter-fill" style={{ width: `${value ?? 0}%` }} />
+                {SEGMENTS.map((i) => <span key={i} className="meter-seg" data-on={value != null && i < Math.round(value / 5)} />)}
               </div>
             </div>
           )
