@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, chats, coach, db, digest, energy, goals, habits, health, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
+from . import backups, chats, coach, db, digest, energy, goals, habits, health, leaks, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -465,6 +465,12 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         if days not in (7, 30, 90):
             raise HTTPException(422, "days must be 7, 30 or 90")
         return health.summary(conn, _day(day), days)
+
+    @app.get("/api/leaks/{day}")
+    def get_leaks(day: str, days: int = 30, conn=Depends(get_conn)):
+        if days not in (7, 30):
+            raise HTTPException(422, "days must be 7 or 30")
+        return leaks.time_leaks(conn, _day(day), days)
 
     @app.get("/api/energy/{day}")
     def get_energy(day: str, conn=Depends(get_conn)):

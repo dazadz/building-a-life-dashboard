@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { api, type Report, type Status, type WeeklyReview } from '../api'
+import { TimeLeaksCard } from '../components/Leaks'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, deltaText, isoDate, scoreText, shortDate } from '../format'
@@ -111,6 +112,10 @@ function ReviewBody({ review, today, coach, status, onSaved }: {
       <div className="row">
         <Entries title="Wins" items={review.wins} empty="No wins logged yet. They come from your check-ins and finished milestones." dot="done" />
         <Entries title="Slipped" items={review.slipped} empty="Nothing slipped. Failures from check-ins and overdue milestones show here." dot="missed" />
+      </div>
+
+      <div className="row">
+        <TimeLeaksCard today={today} coachInstalled={status?.coach.installed ?? false} />
       </div>
 
       <form className="row" onSubmit={(e) => { e.preventDefault(); void save(true) }}>

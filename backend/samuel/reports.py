@@ -4,7 +4,7 @@ import json
 import sqlite3
 from datetime import date, timedelta
 
-from . import db, goals, health, monthly, profile, routines, scores, tasks, weekly
+from . import db, goals, health, leaks, monthly, profile, routines, scores, tasks, weekly
 from .checkins import habits_for
 
 KINDS = ("daily", "weekly", "monthly", "onboarding", "ask")
@@ -60,6 +60,7 @@ def export(conn: sqlite3.Connection, days: int, until: str | None = None, sensit
         "routine": routines.for_coach(conn),
         "tasks": tasks.for_coach(conn, end.isoformat()),
         "health": health.for_coach(conn, end.isoformat()),
+        "time_leaks_30d": leaks.time_leaks(conn, end.isoformat(), 30),
         "recent_reports": [
             {k: r[k] for k in ("kind", "date", "markdown")} for r in list_reports(conn, limit=3)
         ],
