@@ -42,6 +42,21 @@ cd building-a-life-dashboard\backend
 
 Open **http://127.0.0.1:8765**. Leave the PowerShell window open while you use the app, and press **Ctrl+C** to stop the server.
 
+### Open Samuel in its own window
+
+To use Samuel like a desktop app, with no browser tabs, address bar or toolbar:
+
+```powershell
+cd building-a-life-dashboardackend
+.\.venv\Scripts\samuel app
+```
+
+It starts the server if it isn't already running and opens Samuel in a Microsoft Edge app window (Chrome or Chromium if Edge isn't installed). Closing the window stops the server it started. The window keeps its own small browser profile in `~\.samuelpp-window`, separate from your normal browser.
+
+To get a **desktop shortcut** that does this with a double-click and no console window, run `.\.venv\Scripts\samuel app --shortcut` once. You can pin the shortcut to the taskbar.
+
+Samuel uses plain HTTP on `127.0.0.1`. That address never leaves your computer, so there is no network for HTTPS to protect. HTTPS comes with phone access later.
+
 Your data lives in `~\.samuel\samuel.db`, outside this repo. It starts empty, so Home shows dashes until you save your first check-in. Set `SAMUEL_DATA_DIR` to keep it somewhere else.
 
 ### Try it with demo data
