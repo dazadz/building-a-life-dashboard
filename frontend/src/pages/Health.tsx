@@ -50,6 +50,7 @@ export function HealthPage({ coachInstalled }: { coachInstalled: boolean }) {
       </div>
       <div className="row">
         <EnergyCurveCard curve={h?.energy_curve ?? null} days={days} />
+        <Lifestyle health={h} />
         <Inputs health={h} />
         {h ? <LogToday key={today} today={today} log={h.log_today} onSaved={loaded.reload} />
           : <Card title="Log today" action={<a href="#/checkin">Check-in →</a>}><Loading /></Card>}
@@ -117,6 +118,38 @@ function Recovery({ health: h }: { health: Health | null }) {
             <li><span className="muted" style={{ flex: 1 }}>Workouts</span><strong>{r.workouts}</strong><span className="faint">this week</span></li>
           </ul>
         </>
+      )}
+    </Card>
+  )
+}
+
+// LED-style meters, as in the Home score strip: 20 segments of 5 points each.
+const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
+
+function Lifestyle({ health: h }: { health: Health | null }) {
+  const w = h?.week_scores
+  const rows = w ? [
+    { label: 'Lifestyle', note: 'Sleep, workouts, eating, water', value: w.lifestyle, change: w.lifestyle_change },
+    { label: 'Balance', note: 'Sleep, workouts, overwork, mood', value: w.balance, change: w.balance_change },
+  ] : []
+  return (
+    <Card title="Lifestyle and balance" meta="7-day average" action={<a href="#/habits">Habits →</a>}>
+      {!w ? <Loading lines={2} /> : (
+        <div className="meter-stack">
+          {rows.map((r) => (
+            <div className="meter" key={r.label}>
+              <div className="meter-top">
+                <span className="meter-label">{r.label}</span>
+                {deltaText(r.change) && <span className={r.change! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(r.change)}</span>}
+                <span className="meter-value">{scoreText(r.value)}</span>
+              </div>
+              <div className="meter-track" role="img" aria-label={`${r.label} ${scoreText(r.value)} of 100`}>
+                {SEGMENTS.map((i) => <span key={i} className="meter-seg" data-on={r.value != null && i < Math.round(r.value / 5)} />)}
+              </div>
+              <span className="faint">{r.note}</span>
+            </div>
+          ))}
+        </div>
       )}
     </Card>
   )

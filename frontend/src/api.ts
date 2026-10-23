@@ -21,7 +21,7 @@ export interface Checkin {
   improvement: string | null
 }
 
-export type ScoreKey = 'productivity' | 'focus' | 'energy' | 'discipline' | 'balance' | 'day'
+export type ScoreKey = 'productivity' | 'focus' | 'energy' | 'discipline' | 'balance' | 'lifestyle' | 'day'
 export type Scores = Record<ScoreKey, number | null> & { stress: number | null }
 
 export interface Habit {
@@ -398,6 +398,7 @@ export interface Health {
   series: { date: string; sleep: number | null; energy: number | null }[]
   energy_gap: number | null
   energy_curve: EnergyCurve
+  week_scores: { lifestyle: number | null; lifestyle_change: number | null; balance: number | null; balance_change: number | null }
   taps_today: EnergyTaps
   inputs: {
     water_l: number | null

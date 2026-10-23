@@ -172,6 +172,18 @@ def inputs_week(conn: sqlite3.Connection, day: str) -> dict:
     }
 
 
+def week_scores(conn: sqlite3.Connection, day: str) -> dict:
+    """Lifestyle and Balance as 7-day averages, with the change against the 7 days before."""
+    out = {}
+    before = (date.fromisoformat(day) - timedelta(days=7)).isoformat()
+    for key in ("lifestyle", "balance"):
+        now = _avg([s for s in (scores.scores_for(conn, d)[key] for d in _back(day, 7)) if s is not None])
+        then = _avg([s for s in (scores.scores_for(conn, d)[key] for d in _back(before, 7)) if s is not None])
+        out[key] = None if now is None else round(now)
+        out[f"{key}_change"] = round(now) - round(then) if now is not None and then is not None else None
+    return out
+
+
 def summary(conn: sqlite3.Connection, day: str, days: int) -> dict:
     week_ago = (date.fromisoformat(day) - timedelta(days=7)).isoformat()
     today_r = recovery(conn, day)
@@ -197,6 +209,7 @@ def summary(conn: sqlite3.Connection, day: str, days: int) -> dict:
         "inputs": inputs_week(conn, day),
         "log_today": log_for(conn, day),
         "energy_curve": energy.curve(conn, day, days),
+        "week_scores": week_scores(conn, day),
         "taps_today": energy.taps_for(conn, day),
     }
 
@@ -207,4 +220,5 @@ def for_coach(conn: sqlite3.Connection, day: str) -> dict:
         "recovery": s["recovery"], "burnout": s["burnout"], "energy_gap_short_sleep": s["energy_gap"], "inputs": s["inputs"],
         # Average energy taps by time of day over 30 days (slots with fewer than 3 days are null).
         "energy_curve_30d": energy.curve(conn, day, 30),
+        "lifestyle_and_balance_7d": s["week_scores"],
     }

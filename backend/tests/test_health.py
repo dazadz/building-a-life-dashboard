@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from samuel import backups, health
 from samuel.api import create_app
-from samuel.checkins import save_checkin
+from samuel.checkins import log_habit, save_checkin
 from samuel.reports import export
 
 TODAY = "2026-10-24"
@@ -86,3 +86,12 @@ def test_api_export_and_backups(client, conn):
     assert client.get(f"/api/health/{TODAY}?days=5").status_code == 422
     assert "burnout" in export(conn, 7, TODAY)["health"]
     assert backups.export_all(conn)["tables"]["health_logs"][0]["caffeine_last"] == "13:00"
+
+
+def test_lifestyle_and_balance_week_averages(conn):
+    for d, eat in (("2026-10-20", "done"), ("2026-10-21", "missed")):
+        save_checkin(conn, d, {"sleep_hours": 7.5, "workout": "yes", "mood": "good", "deep_work_hours": 3})
+        log_habit(conn, d, "healthy_eating", eat)
+    w = health.week_scores(conn, "2026-10-24")
+    assert w["lifestyle"] == round((100 + 67) / 2) and w["lifestyle_change"] is None
+    assert w["balance"] is not None

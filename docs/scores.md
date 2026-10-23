@@ -52,6 +52,9 @@ You log the other six yourself: Reading, Healthy eating, Water target, Meditatio
 | **Energy** | Energy rating, Sleep, Mood | 50%, 30%, 20% |
 | **Discipline** | Share of today's logged habits marked done | 100% |
 | **Balance** | Sleep, Workout (rest counts), Overwork, Mood | 25% each |
+| **Lifestyle** | Sleep, Workout (rest counts), Healthy eating habit, Water target habit | 25% each |
+
+**Lifestyle** is the prompt's lifestyle score: how well you look after your body. Balance is how well work and rest fit together. Health & energy shows both as 7-day averages (the mean of the days that have the score), with the change against the 7 days before when both weeks have one.
 
 **Day score:** the average of whichever of Productivity, Discipline, Energy and Focus exist that day. It needs at least two of the four.
 
