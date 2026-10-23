@@ -33,7 +33,7 @@ export function HomePage({ status }: { status: Status | null }) {
     <div className="page">
       <header className="page-head">
         <div className="eyebrow">
-          {longDate(today)} · <time dateTime={now.toISOString()}>{localTime(now)}</time>
+          {longDate(today)} <span className="faint">//</span> <time dateTime={now.toISOString()}>{localTime(now)}</time>
         </div>
         <h1>{name ? `${greeting(now.getHours())}, ${name}` : greeting(now.getHours())}</h1>
         <p>
@@ -184,7 +184,7 @@ function HabitsCard({ day, onChange }: { day: Day | null; onChange: (d: Day) => 
             <span className={`dot ${h.status ?? ''}`} aria-hidden="true" />
             <span style={{ flex: 1, minWidth: 0 }}>
               {h.name}
-              {h.auto === 1 && h.source !== 'manual' && <span className="faint"> · from check-in</span>}
+              {h.auto === 1 && h.source !== 'manual' && <span className="tag" title="Ticked from the check-in">auto</span>}
             </span>
             <div className="pills" role="group" aria-label={h.name}>
               {(['done', 'missed'] as const).map((s) => (

@@ -49,7 +49,8 @@ As you work, commit to Git and push to GitHub regularly, so there is always a sa
 `design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Onboarding, Home with Needs a reply, Check-in, Habits, Health & energy, Goals, Weekly and Monthly reviews, Coach, Tasks, Ctrl+K palette, Settings → Appearance). Keep the files and the canvas in sync when designs change, and build the app to match them.
 
 Design rules:
-- Dark but bright: lifted blue-violet surfaces (page #10121A, sidebar #151823, card #1B1E2B, border #2C3145) and one vivid aqua accent (default #3DDCD0). Status colours: green #8BE77A, amber #FFC766, blue #6CCBFF.
+- Tech style (since 2026-10-24, this overrides the canvas's colours and fonts; the canvas still defines layout): deep blue-black surfaces (page #0A0D13, sidebar #0D1118, card #11161F, border #1E2633) and one electric cyan accent (default #22E0E6). Status colours: green #5BE38A, amber #FFC24D, blue #5CB8FF. Every text colour passes WCAG AA on every surface.
+- Fonts, bundled locally: Space Grotesk for headings, Inter for body text, JetBrains Mono for numbers, times, and small uppercase labels. 8px corners, thin 1px borders.
 - Users can re-theme from any accent (see Custom themes in `docs/PLAN.md`), so build every colour from CSS variables and never hard-code the hex values in components.
 - Every card prompts an action and ends with a "→" link.
 - Dense lists of 5–10 rows with "Show more", filter pills, sortable headers, and visible labels.

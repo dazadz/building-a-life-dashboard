@@ -129,10 +129,10 @@ design/    canvas source (kept in sync)
 
 **Settings → Appearance:** a hue wheel, vibe presets, theme controls and a live preview.
 
-**Palette:** a dark but lifted base (page #10121A, cards #1B1E2B) with a vivid aqua accent (default #3DDCD0; sky, iris, sunrise and pink are alternatives) and bright status colours (green #8BE77A, amber #FFC766, blue #6CCBFF).
+**Palette (tech style, 2026-10-24):** a deep blue-black base (page #0A0D13, cards #11161F) with an electric cyan accent (default #22E0E6; sky, iris, sunrise and pink are alternatives) and crisp status colours (green #5BE38A, amber #FFC24D, blue #5CB8FF). Fonts: Space Grotesk, Inter and JetBrains Mono. The canvas designs keep the earlier palette and fonts; the app's styles are the reference for colour and type.
 
 **Custom themes (Settings → Appearance):**
-- Aqua stays the default ("Calm" vibe).
+- Electric cyan is the default ("Calm" vibe).
 - Users can pick any accent from a hue wheel, with vibrancy and brightness sliders and a hex field, or tap a vibe preset: Calm, Clear, Focus, Energise, Bold or Fresh.
 - The theme comes from one accent. Every colour is a CSS variable, computed in a small `theme.ts`:
   - surfaces take a light tint of the accent's hue, with a strength the user sets
