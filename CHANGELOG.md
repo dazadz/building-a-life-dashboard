@@ -22,6 +22,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 - **Settings matches its design:** section tabs (Profile, Appearance, Coach, Data & privacy). Appearance has an accent ring you can drag or move with the arrow keys, vibe tiles, a live preview of Samuel, and a Theme card for darkness and surface tint.
 
 ### Fixed
+- **Updates reach the app window:** after you update, opening Samuel replaces a server left running from before the update (one started by `samuel app`), so the window no longer shows new screens on old server code. A `samuel serve` you started yourself is never stopped; you get a message instead.
 - **Safer data folder:** only the `samuel` command uses your real data in `~/.samuel`. Scripts and tests that open the database without `SAMUEL_DATA_DIR` now stop with an error instead of using it.
 - **Full export:** `samuel export --all` and import now include pains and goals, suggestions, day types and the block log. A test now fails when a new table isn't covered.
 - **Taskbar pinning:** `samuel app --shortcut` now gives the shortcut the same taskbar ID as Samuel's window and adds a Start menu entry. A pinned Samuel keeps its icon and opens Samuel, instead of opening a plain Edge page. Run `samuel app --shortcut` again, then re-pin.
