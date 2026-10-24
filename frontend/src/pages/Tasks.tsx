@@ -3,7 +3,7 @@ import { api, type Task, type TasksSummary, type BlockKind } from '../api'
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, isoDate, localStamp, shortDate } from '../format'
+import { dayDate, isoDate, localStamp, shortDate } from '../format'
 import { useLoad, useNow, useQuery } from '../hooks'
 import { TaskEditor } from '../components/TaskEditor'
 import { KIND_LABEL } from '../blocks'
@@ -20,10 +20,7 @@ const PRIORITY_RANK = { high: 0, normal: 1, low: 2 }
 
 function when(t: Task, today: string): string {
   if (!t.due_date) return 'No date'
-  const day = t.due_date === today ? 'Today' : t.due_date === addDays(today, 1) ? 'Tomorrow'
-    : t.due_date > today && t.due_date <= addDays(today, 6)
-      ? new Date(`${t.due_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short' })
-      : shortDate(t.due_date)
+  const day = t.due_date === today ? 'Today' : dayDate(t.due_date)
   return t.due_time ? `${day} · ${t.due_time}` : day
 }
 
@@ -101,9 +98,13 @@ export function TasksPage() {
           goals={(goals?.goals ?? []).filter((g) => !g.done_date || g.id === editTask?.goal_id)}
           routines={routines}
           onClose={() => setEditing(null)}
-          onSave={(fields) => write(() => editing === 'new'
-            ? api.addTask(localStamp(new Date()), fields)
-            : api.updateTask(localStamp(new Date()), editing, fields))}
+          onSave={(fields, subtasks) => write(async () => {
+            const now = localStamp(new Date())
+            if (editing === 'new') return api.addTask(now, { ...fields, subtasks })
+            let summary = await api.updateTask(now, editing, fields)
+            for (const title of subtasks) summary = await api.addSubtask(now, editing, title)
+            return summary
+          })}
         />
       )}
 

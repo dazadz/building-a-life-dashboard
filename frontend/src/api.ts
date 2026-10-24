@@ -202,7 +202,7 @@ export interface DataInfo {
   keep_daily: number
 }
 
-export const AREAS = ['fitness', 'financial', 'career', 'learning', 'business', 'social', 'relationships', 'health', 'other'] as const
+export const AREAS = ['fitness', 'financial', 'career', 'learning', 'business', 'social', 'relationships', 'health', 'spiritual', 'other'] as const
 export type Area = (typeof AREAS)[number]
 
 export interface Milestone {

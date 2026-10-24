@@ -35,7 +35,7 @@ The chat id is: $ARGUMENTS
      - **habit**: `name`.
      - **routine**: `name`, `start`, `end` (HH:MM), `weekdays` (numbers separated by spaces, 0 = Monday … 6 = Sunday), `note`, optionally `type` (focus, fixed, work, spiritual, habit, recovery or leisure) and `steps` (separated by `|`).
      - **task**: `title`, `due_date`, and optionally `type` (focus, fixed, work, spiritual, habit, recovery or leisure), `notes` or `goal_title`.
-     - **goal**: `title`, `area` (fitness, financial, career, learning, business, social, relationships, health, other), `target_date`, and one `milestone: <title> | <YYYY-MM-DD>` line per milestone.
+     - **goal**: `title`, `area` (fitness, financial, career, learning, business, social, relationships, health, spiritual, other), `target_date`, and one `milestone: <title> | <YYYY-MM-DD>` line per milestone.
      - **milestone**: `title`, `due_date`, `goal_title`.
      - **pain**: `text`, `area`, `evidence`.
 

@@ -4,7 +4,7 @@ import json
 import sqlite3
 from datetime import date, timedelta
 
-AREAS = ("fitness", "financial", "career", "learning", "business", "social", "relationships", "health", "other")
+AREAS = ("fitness", "financial", "career", "learning", "business", "social", "relationships", "health", "spiritual", "other")
 GOAL_FIELDS = ("title", "area", "impact", "effort", "target_date")
 MILESTONE_FIELDS = ("title", "due_date")
 VISION_MAX = 1000

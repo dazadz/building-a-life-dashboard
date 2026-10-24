@@ -3,12 +3,12 @@ import { api, AREAS, type Area, type Goal, type GoalFields, type GoalsSummary, t
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, isoDate, scoreText, shortDate } from '../format'
+import { addDays, dayDate, daysLeftText, daysUntil, isoDate, scoreText, shortDate } from '../format'
 import { useCoachJob, useLoad, useNow } from '../hooks'
 
 const VISIBLE = 8
 const ROADMAP_MONTHS = 6
-type SortKey = 'title' | 'progress' | 'due'
+type SortKey = 'title' | 'progress' | 'due' | 'priority'
 type Filter = Area | 'all' | 'done'
 
 const areaLabel = (a: string) => a[0].toUpperCase() + a.slice(1)
@@ -78,7 +78,7 @@ export function GoalsPage({ coach, status }: { coach: ReturnType<typeof useCoach
       )}
 
       <div className="row">
-        <ActiveGoals data={data} today={today} onOpen={setEditing} onAdd={() => setEditing('new')} />
+        <ActiveGoals data={data} today={today} write={write} onOpen={setEditing} onAdd={() => setEditing('new')} />
         <ThisWeek data={data} today={today} write={write}
           onRoadmap={() => roadmapRef.current?.scrollIntoView({ behavior: 'smooth' })} />
       </div>
@@ -93,8 +93,17 @@ export function GoalsPage({ coach, status }: { coach: ReturnType<typeof useCoach
   )
 }
 
-function ActiveGoals({ data, today, onOpen, onAdd }: {
-  data: GoalsSummary | null; today: string; onOpen: (id: number) => void; onAdd: () => void
+// A goal's priority is its impact (1-5), the same number the priority matrix uses.
+const PRIORITY: [number, string][] = [[5, 'Top'], [4, 'High'], [3, 'Medium'], [2, 'Low'], [1, 'Minimal']]
+
+function DaysLeft({ date, today }: { date: string | null; today: string }) {
+  if (!date) return <span className="faint">No date</span>
+  const n = daysUntil(date, today)
+  return <span className={`mono days-left${n < 0 ? ' late' : n <= 14 ? ' soon' : ''}`}>{daysLeftText(date, today)}</span>
+}
+
+function ActiveGoals({ data, today, write, onOpen, onAdd }: {
+  data: GoalsSummary | null; today: string; write: Write; onOpen: (id: number) => void; onAdd: () => void
 }) {
   const [filter, setFilter] = useState<Filter>('all')
   const [sort, setSort] = useState<{ key: SortKey; desc: boolean }>({ key: 'due', desc: false })
@@ -107,14 +116,15 @@ function ActiveGoals({ data, today, onOpen, onAdd }: {
   const counts = AREAS.map((a) => [a, active.filter((g) => g.area === a).length] as const).filter(([, n]) => n > 0)
   const rows = (filter === 'done' ? done : filter === 'all' ? active : active.filter((g) => g.area === filter)).slice()
   rows.sort((a, b) => {
-    const val = (g: Goal) => (sort.key === 'title' ? g.title : sort.key === 'progress' ? g.progress ?? -1 : g.target_date ?? '9999')
+    const val = (g: Goal) => (sort.key === 'title' ? g.title : sort.key === 'progress' ? g.progress ?? -1
+      : sort.key === 'priority' ? g.impact : g.target_date ?? '9999')
     const av = val(a)
     const bv = val(b)
     const cmp = typeof av === 'string' ? av.localeCompare(String(bv)) : av - (bv as number)
     return sort.desc ? -cmp : cmp
   })
   const shown = showAll ? rows : rows.slice(0, VISIBLE)
-  const sortBy = (key: SortKey) => setSort((s) => ({ key, desc: s.key === key ? !s.desc : key === 'progress' }))
+  const sortBy = (key: SortKey) => setSort((s) => ({ key, desc: s.key === key ? !s.desc : key === 'progress' || key === 'priority' }))
   const ariaSort = (key: SortKey) => (sort.key === key ? (sort.desc ? 'descending' : 'ascending') : undefined)
   const arrow = (key: SortKey) => (sort.key === key ? (sort.desc ? ' ↓' : ' ↑') : '')
   const header = (key: SortKey, label: string, className?: string) => (
@@ -161,9 +171,11 @@ function ActiveGoals({ data, today, onOpen, onAdd }: {
               <tr>
                 {header('title', 'Goal')}
                 <th scope="col">Area</th>
+                {header('priority', 'Priority')}
                 {header('progress', 'Progress')}
                 <th scope="col">Next milestone</th>
                 {header('due', 'Due', 'num')}
+                <th scope="col" className="num">Days left</th>
               </tr>
             </thead>
             <tbody>
@@ -173,6 +185,12 @@ function ActiveGoals({ data, today, onOpen, onAdd }: {
                     <button type="button" className="row-link" onClick={() => onOpen(g.id)}>{g.title}</button>
                   </th>
                   <td><span className="tag" style={{ marginLeft: 0 }}>{g.area}</span></td>
+                  <td>
+                    <select className="input priority-select" aria-label={`${g.title} priority`} value={g.impact} data-priority={g.impact}
+                      onChange={(e) => void write(() => api.updateGoal(today, g.id, { impact: Number(e.target.value) }))}>
+                      {PRIORITY.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+                    </select>
+                  </td>
                   <td><Progress value={g.progress} /></td>
                   <td className="muted">
                     {g.next_milestone ? (
@@ -182,7 +200,8 @@ function ActiveGoals({ data, today, onOpen, onAdd }: {
                       </>
                     ) : g.done_date ? `Done ${shortDate(g.done_date)}` : '—'}
                   </td>
-                  <td className="num">{g.target_date ? shortDate(g.target_date) : '—'}</td>
+                  <td className="num mono">{g.target_date ? dayDate(g.target_date) : '—'}</td>
+                  <td className="num">{g.done_date ? <span className="faint">Done</span> : <DaysLeft date={g.target_date} today={today} />}</td>
                 </tr>
               ))}
             </tbody>
