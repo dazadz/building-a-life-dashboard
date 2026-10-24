@@ -176,9 +176,18 @@ design/    canvas source (kept in sync)
    - **Time leaks:** a rule-based table from the "biggest distraction" answers (how often, and deep work lost on those days), with Samuel adding context in reports.
    - **What predicts your mood and energy:** same-day and next-day links between sleep, workouts, deep work, mood and energy.
    - **Lifestyle score** from the prompt's first onboarding section, a refresh action on cards with live data, and undo for deletes.
-8. **v0.5 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar. Health data from a phone health app or smartwatch (sleep, exercise, heart rate) may join later, so keep health inputs pluggable.
-9. **Phone:** 390px layouts for every screen, then phone access over Tailscale HTTPS with a passcode, the installable PWA and push notifications.
-10. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
+8. **v0.5 "Your plan":** Samuel turns what it knows into a plan you approve.
+   - **Pains and goals** from the onboarding answers, on an About me page with your own notes and the fixed parts of your week.
+   - **Samuel suggests:** goals, milestones, habits, tasks and routine blocks arrive in an inbox. The coach only proposes (`samuel suggest add`); nothing changes until you accept (ADR 0004).
+   - **Repeating routines** by day type (e.g. office day and home day), with steps, a linked goal or habit, and reminders 5 minutes before and at the start of each block.
+   - **Project breakdown:** a goal becomes milestones and session-sized tasks placed in routine blocks; skipped tasks roll to the next matching block.
+   - **Home built around your plan:** a Now card, today's timeline, focus areas from your pains and goals, and a card order that follows the time of day.
+   - **Settings** rebuilt to match the canvas: section tabs, and Appearance with the accent ring, vibes, live preview and theme cards.
+9. **v0.6 "Your coach":** a focus timer that logs deep work, a job hunt tracker, a sleep plan that moves anchored blocks each week, weekly targets on goals, a private journal card, a check-in pre-filled from the day, and time-boxed leisure.
+10. **v0.7 Phone:** 390px layouts for every screen, then phone access over Tailscale HTTPS with a passcode, the installable PWA and push notifications.
+11. **v0.8 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar. Health data from a phone health app or smartwatch (sleep, exercise, heart rate) may join later, so keep health inputs pluggable.
+12. **Later, career coach:** Claude Code reads your resume and experience (kept in `~/.samuel`, sent only on request), suggests portfolio projects and breaks them down with the v0.5 tools. It needs its own ADR, since it may need wider read access.
+13. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
 
 ## Verification
 - **Tests:** `pytest` covers scores (nulls aren't treated as 0), the upsert rule, CLI export and import, and the passcode requirement for `--lan`. `npm test` and `npm run build` pass, and CI is green on GitHub.

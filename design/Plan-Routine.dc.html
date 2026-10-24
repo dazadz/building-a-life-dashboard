@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Routine</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000000}
+a{color:#7DE9EC;text-decoration:none}a:hover{color:#B8F5F6}
+input::placeholder{color:#7F8C9F}
+.c{position:relative}
+.c::before,.c::after{content:'';position:absolute;width:10px;height:10px;pointer-events:none}
+.c::before{top:-1px;left:-1px;border-top:1px solid #22E0E6;border-left:1px solid #22E0E6}
+.c::after{bottom:-1px;right:-1px;border-bottom:1px solid #22E0E6;border-right:1px solid #22E0E6}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #000000; color: #E4EAF2; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch;">
+
+  <nav aria-label="Main" style="flex: 1 1 220px; box-sizing: border-box; background: #000000; border-right: 1px solid #1B222D; padding: 18px 12px; display: flex; flex-direction: column; gap: 4px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px;">
+      <div style="width: 30px; height: 30px; border: 1px solid {{accent}}; border-radius: 2px; color: {{accent}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; box-shadow: 0 0 14px {{accentGlow}};">S</div>
+      <span style="font-family: 'Michroma', sans-serif; font-size: 14px; letter-spacing: 0.14em; text-shadow: 0 2px 22px {{accentGlow}};">SAMUEL</span>
+    </div>
+    <a href="Plan-Home.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Today</a>
+    <a href="Plan-About.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">About me</a>
+    <a href="Checkin.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Check-in</a>
+    <a href="Plan-Routine.dc.html" aria-current="page" style="display: flex; align-items: center; height: 40px; padding: 0 12px; border-radius: 2px; background: {{accentSoft}}; border: 1px solid {{accentLine}}; color: #E4EAF2; font-weight: 600; box-shadow: 0 0 14px {{accentGlow}};">Routine</a>
+    <a href="Tasks.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Tasks</a>
+    <a href="Habits.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Habits</a>
+    <a href="Goals.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Goals</a>
+    <a href="Health.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Health</a>
+    <a href="Review.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Review</a>
+    <a href="Coach.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Coach</a>
+    <div style="flex: 1; min-height: 24px;"></div>
+    <a href="Settings.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #93A0B2; border-top: 1px solid #141A23;">Settings</a>
+  </nav>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 48px;">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px;">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;">
+        <div style="flex: 1 1 420px; min-width: 0;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #93A0B2;">Repeats every week <span style="color: #7F8C9F;">//</span> 3 day types <span style="color: #7F8C9F;">//</span> 22 blocks</div>
+          <h1 style="margin: 6px 0 4px; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 0.04em; text-transform: uppercase; text-shadow: 0 2px 22px {{accentGlow}};">Routine</h1>
+          <p style="margin: 0; color: #C3CCD8;">Each block says what to work on. Samuel reminds you 5 minutes before and when it starts.</p>
+        </div>
+        <a href="Plan-Breakdown.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 2px; border: 1px solid {{accent}}; color: #E4EAF2; font-weight: 600;">Ask Samuel to improve it →</a>
+      </header>
+
+      <section aria-label="Your week" class="c" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 14px 18px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;">
+        <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border-radius: 2px; {{d.style}}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">{{d.day}}</span>
+            <span style="font-weight: 600; font-size: 13px;">{{d.type}}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2;">{{d.blocks}}</span>
+          </div>
+        </sc-for>
+      </section>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start;">
+
+        <section class="c" aria-label="Office day blocks" style="flex: 3 1 560px; min-width: 0; background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+            <div role="tablist" aria-label="Day type" style="display: flex; gap: 6px; flex: 1;">
+              <button type="button" role="tab" aria-selected="true" style="height: 36px; padding: 0 14px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accentSoft}}; color: #E4EAF2; font: inherit; font-size: 13px; font-weight: 600; box-shadow: 0 0 14px {{accentGlow}}; cursor: pointer;">Office day</button>
+              <button type="button" role="tab" aria-selected="false" style="height: 36px; padding: 0 14px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 13px; cursor: pointer;">Home day</button>
+              <button type="button" role="tab" aria-selected="false" style="height: 36px; padding: 0 14px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 13px; cursor: pointer;">Weekend</button>
+              <button type="button" style="height: 36px; padding: 0 10px; border-radius: 2px; border: 0; background: transparent; color: #93A0B2; font: inherit; font-size: 13px; cursor: pointer;">+ Day type</button>
+            </div>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2;">Mon Tue Wed · 15 h 10 planned</span>
+          </div>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px;">
+              <thead>
+                <tr style="text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">
+                  <th scope="col" style="padding: 6px 8px 6px 0; font-weight: 500;">Time ↕</th>
+                  <th scope="col" style="padding: 6px 8px; font-weight: 500;">Block</th>
+                  <th scope="col" style="padding: 6px 8px; font-weight: 500;">Kind</th>
+                  <th scope="col" style="padding: 6px 8px; font-weight: 500;">Works on</th>
+                  <th scope="col" style="padding: 6px 0 6px 8px; font-weight: 500; text-align: right;">Remind</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{blocks}}" as="b" hint-placeholder-count="9">
+                  <tr style="border-top: 1px solid #141A23; {{b.rowStyle}}">
+                    <td style="padding: 10px 8px 10px 0; font-family: 'JetBrains Mono', monospace; white-space: nowrap;">{{b.time}}</td>
+                    <td style="padding: 10px 8px; font-weight: 600;">{{b.name}}</td>
+                    <td style="padding: 10px 8px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; padding: 1px 6px; {{b.kindStyle}}">{{b.kind}}</span></td>
+                    <td style="padding: 10px 8px; color: #93A0B2;">{{b.works}}</td>
+                    <td style="padding: 10px 0 10px 8px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #93A0B2;">{{b.remind}}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button type="button" style="height: 36px; padding: 0 12px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; font-size: 13px; cursor: pointer;">+ Add a block</button>
+            <span style="flex: 1;"></span>
+            <a href="Plan-Home.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;">See today →</a>
+          </div>
+        </section>
+
+        <section class="c" aria-label="Edit block" style="flex: 2 1 340px; min-width: 0; background: #0A0D12; border: 1px solid {{accentLine}}; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <h2 style="margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Edit block</h2>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #93A0B2;">Name
+            <input type="text" value="Deep work 2" style="height: 40px; box-sizing: border-box; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; font-size: 14px; padding: 0 10px;">
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #93A0B2;">Start
+              <input type="time" value="14:00" style="height: 40px; box-sizing: border-box; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font-family: 'JetBrains Mono', monospace; padding: 0 10px;">
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #93A0B2;">End
+              <input type="time" value="15:30" style="height: 40px; box-sizing: border-box; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font-family: 'JetBrains Mono', monospace; padding: 0 10px;">
+            </label>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #93A0B2;">Kind
+              <select style="height: 40px; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; font-size: 14px; padding: 0 8px;"><option>Focus</option><option>Fixed</option><option>Habit</option><option>Recovery</option><option>Leisure</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #93A0B2;">Day types
+              <select style="height: 40px; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; font-size: 14px; padding: 0 8px;"><option>Office day</option><option>Home day</option><option>All days</option></select>
+            </label>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #93A0B2;">Works on goal
+            <select style="height: 40px; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; font-size: 14px; padding: 0 8px;"><option>Python analytics project</option><option>Senior analyst by June</option><option>None</option></select>
+          </label>
+          <div style="background: #05070A; border: 1px solid #1B222D; border-radius: 2px; padding: 10px 12px; font-size: 13px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">Tasks queued for this block</div>
+            <div style="display: flex; gap: 8px; margin-top: 4px;"><span style="flex: 1;">Write the CSV loader and its tests</span><span style="font-family: 'JetBrains Mono', monospace; color: #93A0B2;">Today</span></div>
+            <div style="display: flex; gap: 8px;"><span style="flex: 1;">Clean the date columns</span><span style="font-family: 'JetBrains Mono', monospace; color: #FFC24D;">rolled 1×</span></div>
+            <div style="display: flex; gap: 8px;"><span style="flex: 1;">Write the README</span><span style="font-family: 'JetBrains Mono', monospace; color: #93A0B2;">Fri</span></div>
+          </div>
+          <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;">
+            <legend style="font-size: 12px; color: #93A0B2; padding: 0 0 4px;">Steps, shown when the block starts</legend>
+            <input type="text" value="Phone in another room" aria-label="Step 1" style="height: 36px; box-sizing: border-box; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; padding: 0 10px;">
+            <input type="text" value="Open the project board" aria-label="Step 2" style="height: 36px; box-sizing: border-box; background: #05070A; border: 1px solid #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; padding: 0 10px;">
+            <input type="text" placeholder="Add a step" aria-label="New step" style="height: 36px; box-sizing: border-box; background: #05070A; border: 1px dashed #2B3546; border-radius: 2px; color: #E4EAF2; font: inherit; padding: 0 10px;">
+          </fieldset>
+          <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 16px;">
+            <legend style="font-size: 12px; color: #93A0B2; padding: 0 0 4px;">Reminders</legend>
+            <label style="display: flex; align-items: center; gap: 8px; min-height: 32px;"><input type="checkbox" checked="checked" style="accent-color: {{accent}}; width: 16px; height: 16px;"> 5 min before</label>
+            <label style="display: flex; align-items: center; gap: 8px; min-height: 32px;"><input type="checkbox" checked="checked" style="accent-color: {{accent}}; width: 16px; height: 16px;"> At the start</label>
+          </fieldset>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" style="height: 44px; padding: 0 18px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accent}}; color: #071016; font: inherit; font-weight: 700; cursor: pointer;">Save block</button>
+            <button type="button" style="height: 44px; padding: 0 14px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; cursor: pointer;">Cancel</button>
+            <span style="flex: 1;"></span>
+            <button type="button" style="height: 44px; padding: 0 10px; border: 0; background: transparent; color: #FFC24D; font: inherit; cursor: pointer;">Remove…</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22E0E6","options":["#22E0E6","#5CB8FF","#9B87FF","#FF7EB3"]},"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#22E0E6';
+    const n = parseInt(accent.slice(1), 16);
+    const rgb = ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
+    const office = 'border: 1px solid rgba(' + rgb + ',0.55); background: rgba(' + rgb + ',0.12);';
+    const other = 'border: 1px solid #1B222D; background: #05070A;';
+    const focus = 'color: ' + accent + '; border: 1px solid rgba(' + rgb + ',0.55);';
+    const fixed = 'color: #93A0B2; border: 1px solid #2B3546;';
+    const habit = 'color: #5BE38A; border: 1px solid #24563A;';
+    const rec = 'color: #5CB8FF; border: 1px solid #23415C;';
+    const sel = 'background: rgba(' + rgb + ',0.08);';
+    return {
+      accent,
+      accentSoft: 'rgba(' + rgb + ',0.12)',
+      accentLine: 'rgba(' + rgb + ',0.55)',
+      accentGlow: 'rgba(' + rgb + ',0.45)',
+      week: [
+        { day: 'Mon', type: 'Office day', blocks: '9 blocks', style: office },
+        { day: 'Tue', type: 'Office day', blocks: '9 blocks', style: office },
+        { day: 'Wed', type: 'Office day', blocks: '9 blocks', style: office },
+        { day: 'Thu', type: 'Home day', blocks: '8 blocks', style: other },
+        { day: 'Fri', type: 'Home day', blocks: '8 blocks', style: other },
+        { day: 'Sat', type: 'Weekend', blocks: '5 blocks', style: other },
+        { day: 'Sun', type: 'Weekend', blocks: '5 blocks', style: other },
+      ],
+      blocks: [
+        { time: '06:45–07:15', name: 'Morning launch', kind: 'Habit', kindStyle: habit, works: 'Water, daylight, plan the day', remind: 'Start', rowStyle: '' },
+        { time: '07:30–08:15', name: 'Commute', kind: 'Fixed', kindStyle: fixed, works: 'Podcast or book', remind: 'Off', rowStyle: '' },
+        { time: '09:00–11:00', name: 'Deep work 1', kind: 'Focus', kindStyle: focus, works: 'Goal · Senior analyst by June', remind: '−5 · Start', rowStyle: '' },
+        { time: '12:30–13:15', name: 'Lunch away from screens', kind: 'Recovery', kindStyle: rec, works: 'Habit · walk after lunch', remind: 'Start', rowStyle: '' },
+        { time: '14:00–15:30', name: 'Deep work 2', kind: 'Focus', kindStyle: focus, works: 'Goal · Python analytics project', remind: '−5 · Start', rowStyle: sel },
+        { time: '15:30–15:45', name: 'Walk and coffee outside', kind: 'Recovery', kindStyle: rec, works: 'Beat the afternoon slump', remind: 'Start', rowStyle: '' },
+        { time: '18:30–19:30', name: 'Run', kind: 'Habit', kindStyle: habit, works: 'Goal · Half-marathon under 2 h', remind: '−5 · Start', rowStyle: '' },
+        { time: '20:30–21:30', name: 'Free time', kind: 'Leisure', kindStyle: rec, works: 'Ends with a "time’s up" nudge', remind: 'End', rowStyle: '' },
+        { time: '22:15–22:45', name: 'Wind down', kind: 'Habit', kindStyle: habit, works: 'Phone on the charger in the hall', remind: '−5 · Start', rowStyle: '' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
