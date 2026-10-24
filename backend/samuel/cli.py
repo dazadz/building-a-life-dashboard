@@ -376,6 +376,7 @@ def seed_demo_goals(conn, end: date) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
+    db.allow_real_folder()
     parser = argparse.ArgumentParser(prog="samuel", description="Samuel, your local performance coach.")
     sub = parser.add_subparsers(dest="command", required=True)
 
