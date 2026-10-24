@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Colours that mean something:** scores are green from 70, amber from 40 and red below that (stress the other way round), on Today, Health, the monthly scorecard, the weekly numbers and the check-in. Each kind of card has its own colour on every page (routine cyan, goals green, pains and risks amber, habits violet, check-in and reviews blue, suggestions pink, tasks orange, health rose), shown on its title and corner brackets.
 - **Today is compact, like its design:** the Now card and scores, then a row of three cards, Samuel's suggestions (3, with Review all), and a row of four small cards. Which cards lead follows the time of day. "Today at a glance" and the latest report leave Today; your focus moves into a "Focus and due" card, and the report stays on the Coach page.
 - **Black gradient background:** a faint accent glow at the top of the page, deepening down. Cards stay flat.
 - **About me:** add fixed parts of your week (office hours, classes, training) right there, and see your day types.

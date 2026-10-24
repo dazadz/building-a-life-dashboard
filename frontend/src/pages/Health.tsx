@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api, type Health, type HealthLog } from '../api'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { deltaText, isoDate, scoreText, shortDate } from '../format'
+import { deltaText, isoDate, scoreText, scoreTone, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
 import { MiniBars } from '../components/MiniBars'
 import { EnergyCurveCard } from '../components/Energy'
@@ -108,7 +108,7 @@ function Recovery({ health: h }: { health: Health | null }) {
       {!r ? <Loading /> : (
         <>
           <div className="meter-top">
-            <span className="meter-value" style={{ fontSize: 30 }}>{scoreText(r.score)}</span>
+            <span className="meter-value" data-score={scoreTone(r.score)} style={{ fontSize: 30 }}>{scoreText(r.score)}</span>
             {deltaText(r.change) && <span className={r.change! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(r.change)} this week</span>}
           </div>
           <ul className="list">
@@ -141,9 +141,9 @@ function Lifestyle({ health: h }: { health: Health | null }) {
               <div className="meter-top">
                 <span className="meter-label">{r.label}</span>
                 {deltaText(r.change) && <span className={r.change! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(r.change)}</span>}
-                <span className="meter-value">{scoreText(r.value)}</span>
+                <span className="meter-value" data-score={scoreTone(r.value)}>{scoreText(r.value)}</span>
               </div>
-              <div className="meter-track" role="img" aria-label={`${r.label} ${scoreText(r.value)} of 100`}>
+              <div className="meter-track" data-score={scoreTone(r.value)} role="img" aria-label={`${r.label} ${scoreText(r.value)} of 100`}>
                 {SEGMENTS.map((i) => <span key={i} className="meter-seg" data-on={r.value != null && i < Math.round(r.value / 5)} />)}
               </div>
               <span className="faint">{r.note}</span>

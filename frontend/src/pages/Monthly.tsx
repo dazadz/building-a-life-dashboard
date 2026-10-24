@@ -4,7 +4,7 @@ import { api, type Monthly, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
 import { MiniBars } from '../components/MiniBars'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { deltaText, isoDate, scoreText } from '../format'
+import { deltaText, isoDate, scoreText, scoreTone } from '../format'
 import { useLoad, useNow, type useCoachJob } from '../hooks'
 
 interface Props {
@@ -86,10 +86,10 @@ export function MonthlyPage({ coach, status }: Props) {
 
 function Scorecard({ month: m }: { month: Monthly | null }) {
   const rows = m ? [
-    { label: 'Discipline', value: scoreText(m.numbers.discipline), change: m.changes.discipline },
-    { label: 'Productivity', value: scoreText(m.numbers.productivity), change: m.changes.productivity },
-    { label: 'Consistency', value: m.numbers.consistency == null ? '—' : `${m.numbers.consistency}%`, change: m.changes.consistency },
-    { label: 'Energy', value: scoreText(m.numbers.energy), change: m.changes.energy },
+    { label: 'Discipline', value: scoreText(m.numbers.discipline), change: m.changes.discipline, tone: scoreTone(m.numbers.discipline) },
+    { label: 'Productivity', value: scoreText(m.numbers.productivity), change: m.changes.productivity, tone: scoreTone(m.numbers.productivity) },
+    { label: 'Consistency', value: m.numbers.consistency == null ? '—' : `${m.numbers.consistency}%`, change: m.changes.consistency, tone: scoreTone(m.numbers.consistency) },
+    { label: 'Energy', value: scoreText(m.numbers.energy), change: m.changes.energy, tone: scoreTone(m.numbers.energy) },
     { label: 'Sleep', value: m.numbers.sleep == null ? '—' : `${m.numbers.sleep} h`, change: m.changes.sleep },
     {
       label: 'Goal completion',
@@ -105,7 +105,7 @@ function Scorecard({ month: m }: { month: Monthly | null }) {
             <li key={r.label}>
               <span className="muted" style={{ flex: 1 }}>{r.label}{'note' in r && r.note ? <span className="faint"> · {r.note}</span> : null}</span>
               {deltaText(r.change) && <span className={r.change! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(r.change)}</span>}
-              <strong>{r.value}</strong>
+              <strong className="score-text" data-score={'tone' in r ? r.tone : undefined}>{r.value}</strong>
             </li>
           ))}
         </ul>
