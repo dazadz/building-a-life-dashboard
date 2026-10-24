@@ -15,7 +15,7 @@ from . import goals, settings
 FIELDS = ("name", "start", "end", "weekdays", "note", "kind", "goal_id", "habit_key", "steps",
           "remind_before", "remind_start", "day_type_id")
 # The types shared by routine blocks and tasks ("Type" in the app; `kind` on a block).
-KINDS = ("focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure")
+KINDS = ("focus", "fixed", "work", "faith", "habit", "recovery", "leisure")
 HHMM = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 STEPS_MAX = 8
 STEP_MAX = 120

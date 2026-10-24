@@ -856,3 +856,9 @@ select.input option { background: var(--card); color: var(--text); }
 @media (max-width: 900px) {
   .nav-link .icon { display: none; }
 }
+
+/* Routine table: room around the reminder and Edit columns */
+.block-table .remind-col { white-space: nowrap; padding-right: 20px; }
+.block-table .edit-col { width: 1%; white-space: nowrap; text-align: right; padding-left: 12px; }
+.block-table th .row-link { text-align: left; }
+.habit-edit-row .link-btn { margin-left: 8px; }

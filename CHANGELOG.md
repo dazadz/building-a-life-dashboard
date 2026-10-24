@@ -5,6 +5,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Faith instead of Spiritual:** routine block and task types, goal areas and the area of a pain or goal now say Faith. Existing Spiritual items, and suggestions waiting for review, become Faith (your data is backed up first).
+- **Routine page:** each block's Edit is a clear button in its own column, and clicking a block's name opens it too.
+- **Delete habits** in Edit habits, after a confirm. Unticking Tracking still hides a habit and keeps its history.
 - **Sidebar icons:** each page has a line icon in its card colour (Goals green, Habits violet, Tasks orange and so on), glowing on the current page. Search has one too. They're drawn in the app, so nothing loads from outside.
 - **Rounder and tidier:** cards have 10px corners and fields, dropdowns, buttons and pills 6px; corner brackets follow the curve. Dropdowns now have the app's dark style with a matching arrow. Samuel's suggestions sit under the other cards on Today.
 - **Subtasks have due dates:** set one when adding a subtask (in the task form or under a task), or change it later; a late one shows in red.

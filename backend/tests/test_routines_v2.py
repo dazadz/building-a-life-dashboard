@@ -178,21 +178,58 @@ def test_types_migration_keeps_links_and_maps_work_tasks(tmp_path):
     assert tuple(conn.execute("SELECT routine_id, type FROM tasks WHERE id = 8").fetchone()) == (3, "work")
     assert conn.execute("SELECT type FROM tasks WHERE id = 9").fetchone()[0] is None
     assert conn.execute("SELECT status FROM routine_logs WHERE routine_id = 3").fetchone()[0] == "done"
-    routines.add(conn, {"name": "Meditation", "start": "06:30", "end": "06:45", "kind": "spiritual"})
+    routines.add(conn, {"name": "Meditation", "start": "06:30", "end": "06:45", "kind": "faith"})
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute("INSERT INTO routines (name, start, end, kind) VALUES ('x', '01:00', '02:00', 'nap')")
 
 
 def test_tasks_take_a_type(conn):
     tid = tasks.add(conn, {"title": "Apply to three roles", "type": "work"})
-    tasks.update(conn, tid, {"type": "spiritual"}, f"{MON}T09:00")
-    assert conn.execute("SELECT type FROM tasks WHERE id = ?", (tid,)).fetchone()[0] == "spiritual"
+    tasks.update(conn, tid, {"type": "faith"}, f"{MON}T09:00")
+    assert conn.execute("SELECT type FROM tasks WHERE id = ?", (tid,)).fetchone()[0] == "faith"
     with pytest.raises(ValueError, match="type must be one of"):
         tasks.add(conn, {"title": "x", "type": "chores"})
 
 
 def test_suggestions_set_a_type_with_type_lines(conn):
     batch, items = suggestions.parse_text(
-        "kind: routine\nname: Meditation\nstart: 06:30\nend: 06:45\ntype: Spiritual\n---\nkind: task\ntitle: Budget report\ntype: work"
+        "kind: routine\nname: Meditation\nstart: 06:30\nend: 06:45\ntype: Faith\n---\nkind: task\ntitle: Budget report\ntype: work"
     )
-    assert items[0]["payload"]["kind"] == "spiritual" and items[1]["payload"]["type"] == "work"
+    assert items[0]["payload"]["kind"] == "faith" and items[1]["payload"]["type"] == "work"
+
+
+
+def test_faith_migration_renames_spiritual_everywhere(tmp_path):
+    import json
+    import sqlite3
+
+    from samuel import db
+
+    path = tmp_path / "v16.db"
+    old = sqlite3.connect(path)
+    for version, sql in db._migrations():
+        if version >= 17:
+            break
+        old.execute("PRAGMA foreign_keys = OFF")
+        old.executescript(f"BEGIN;\n{sql}\nPRAGMA user_version = {version};\nCOMMIT;")
+    old.execute("INSERT INTO routines (id, name, start, end, kind) VALUES (4, 'Quiet time', '06:30', '06:45', 'spiritual')")
+    old.execute("INSERT INTO routine_logs (routine_id, date, status) VALUES (4, ?, 'done')", (MON,))
+    old.execute("INSERT INTO tasks (id, title, type, routine_id) VALUES (8, 'Read', 'spiritual', 4)")
+    old.execute("INSERT INTO subtasks (task_id, title) VALUES (8, 'Chapter one')")
+    old.execute("INSERT INTO goals (id, title, area, created_at) VALUES (2, 'Daily quiet time', 'spiritual', ?)", (MON,))
+    old.execute("INSERT INTO pains_goals (kind, text, area) VALUES ('pain', 'No quiet time', 'Spiritual')")
+    old.execute("INSERT INTO suggestions (kind, title, payload) VALUES ('routine', 'Quiet', ?)",
+                (json.dumps({"name": "Quiet", "start": "06:00", "end": "06:15", "kind": "spiritual"}),))
+    old.commit()
+    old.close()
+
+    conn = db.connect(path)
+    assert conn.execute("SELECT kind FROM routines WHERE id = 4").fetchone()[0] == "faith"
+    assert tuple(conn.execute("SELECT type, routine_id FROM tasks WHERE id = 8").fetchone()) == ("faith", 4)
+    assert conn.execute("SELECT COUNT(*) FROM subtasks WHERE task_id = 8").fetchone()[0] == 1
+    assert conn.execute("SELECT COUNT(*) FROM routine_logs WHERE routine_id = 4").fetchone()[0] == 1
+    assert conn.execute("SELECT area FROM goals WHERE id = 2").fetchone()[0] == "faith"
+    assert conn.execute("SELECT area FROM pains_goals").fetchone()[0] == "Faith"
+    assert json.loads(conn.execute("SELECT payload FROM suggestions").fetchone()[0])["kind"] == "faith"
+    with pytest.raises(sqlite3.IntegrityError):
+        conn.execute("INSERT INTO tasks (title, type) VALUES ('x', 'spiritual')")

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { api, type HabitHistory, type HabitStatus, type Settings } from '../api'
 import { Card } from '../components/Card'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { isoDate, scoreText, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
@@ -232,6 +233,7 @@ function EditHabits({ today, onChanged, onClose }: { today: string; onChanged: (
   const loaded = useLoad(() => api.settings(today), [today])
   const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<{ key: string; name: string } | null>(null)
   const habits = loaded.data?.habits
 
   const write = async (work: () => Promise<Settings['habits']>) => {
@@ -266,6 +268,7 @@ function EditHabits({ today, onChanged, onClose }: { today: string; onChanged: (
                 <input type="checkbox" className="check" checked={x.active}
                   onChange={(e) => void write(() => api.setHabitActive(x.key, e.target.checked))} /> Tracking
               </label>
+              <button type="button" className="link-btn" aria-label={`Delete ${x.name}`} onClick={() => setDeleting({ key: x.key, name: x.name })}>Delete</button>
             </li>
           ))}
         </ul>
@@ -277,6 +280,12 @@ function EditHabits({ today, onChanged, onClose }: { today: string; onChanged: (
       </div>
       <p className="faint" style={{ margin: 0 }}>Turning a habit off hides it from your days but keeps its history.</p>
       {error && <ErrorLine message={error} />}
+      <ConfirmDialog open={deleting !== null} title="Delete habit?" confirmLabel="Delete habit"
+        onConfirm={() => { const d = deleting!; setDeleting(null); void write(() => api.deleteHabit(d.key)) }}
+        onCancel={() => setDeleting(null)}>
+        <p><strong>{deleting?.name}</strong> and all its history will be deleted, and it can't be restored.</p>
+        <p>To keep the history, untick Tracking instead.</p>
+      </ConfirmDialog>
     </Card>
   )
 }

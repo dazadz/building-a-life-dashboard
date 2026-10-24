@@ -147,3 +147,15 @@ def public(conn: sqlite3.Connection, today: str) -> dict:
         **targets_on(conn, today),
         "habits": habit_list(conn),
     }
+
+
+def delete_habit(conn: sqlite3.Connection, key: str) -> None:
+    """Delete a habit and its history. Blocks and pains that pointed at it stop pointing at anything."""
+    row = conn.execute("SELECT id FROM habits WHERE key = ?", (key,)).fetchone()
+    if row is None:
+        raise KeyError(key)
+    with conn:
+        conn.execute("DELETE FROM habit_logs WHERE habit_id = ?", (row["id"],))
+        conn.execute("UPDATE routines SET habit_key = NULL WHERE habit_key = ?", (key,))
+        conn.execute("UPDATE pains_goals SET habit_key = NULL WHERE habit_key = ?", (key,))
+        conn.execute("DELETE FROM habits WHERE id = ?", (row["id"],))
