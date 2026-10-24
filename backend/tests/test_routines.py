@@ -63,5 +63,5 @@ def test_api(client):
 
 def test_routine_reaches_the_coach_and_backups(conn):
     routines.add(conn, {"name": "Deep work", "start": "09:00", "end": "11:00", "weekdays": [0, 1]})
-    assert export(conn, 7, TODAY)["routine"][0] == {"name": "Deep work", "time": "09:00–11:00", "days": ["Mon", "Tue"], "note": None}
+    assert export(conn, 7, TODAY)["routine"]["blocks"][0] == {"name": "Deep work", "time": "09:00–11:00", "kind": "focus", "days": ["Mon", "Tue"]}
     assert backups.export_all(conn)["tables"]["routines"][0]["name"] == "Deep work"

@@ -83,13 +83,21 @@ const weeklyBody = {
   status: null, updated_at: null,
 }
 
+const block = {
+  kind: 'focus', goal_id: null, habit_key: null, steps: [], remind_before: true, remind_start: true, day_type_id: null,
+  goal_title: null, habit_name: null, day_type: null, status: null, reason: null, tasks: [],
+}
 const planBody = {
   date: '2026-10-24', has_routine: true, due_today: [{ id: 11, title: '14 km long run', goal_title: 'Half marathon' }],
+  day_type: null, day_types: [],
   blocks: [
-    { id: 1, name: 'Morning routine', start: '00:00', end: '00:01', weekdays: [5], note: 'Water, light' },
-    { id: 2, name: 'Wind down', start: '23:58', end: '23:59', weekdays: [5], note: null },
+    { ...block, id: 1, name: 'Morning routine', start: '00:00', end: '00:01', weekdays: [5], note: 'Water, light', status: 'done' },
+    { ...block, id: 2, name: 'Wind down', start: '23:58', end: '23:59', weekdays: [5], note: null,
+      tasks: [{ id: 9, title: 'Lay out running kit', due_date: '2026-10-23', notes: null, rolled: 1 }] },
   ],
 }
+const dayTypesBody = [{ id: 1, name: 'Office day', weekdays: [0, 1, 2], position: 1, blocks: 1 }]
+const officeBlock = { ...block, id: 3, name: 'Commute', start: '07:45', end: '08:30', weekdays: [0, 1, 2, 3, 4, 5, 6], note: null, kind: 'fixed', day_type_id: 1, day_type: 'Office day' }
 
 const tasksBody = {
   counts: { today: 1, upcoming: 0, overdue: 1, all: 2, done: 0 }, this_week: 0, lists: ['Personal', 'Work'],
@@ -104,6 +112,7 @@ const tasksBody = {
 }
 
 let dueReminders: unknown[] = []
+let blockReminders: unknown[] = []
 
 const healthBody = {
   date: '2026-10-24', days: 30, sleep_target: 7.5,
@@ -192,7 +201,10 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true, sug
     else if (url.startsWith('/api/health')) body = healthBody
     else if (url.startsWith('/api/monthly')) body = monthlyBody
     else if (url.startsWith('/api/reminders/due')) body = dueReminders
-    else if (url.startsWith('/api/routines')) body = planBody.blocks
+    else if (url.startsWith('/api/block-reminders/due')) body = blockReminders
+    else if (url.startsWith('/api/block-reminders/')) body = { ok: true }
+    else if (url.startsWith('/api/day-types')) body = dayTypesBody
+    else if (url.startsWith('/api/routines')) body = [...planBody.blocks, officeBlock]
     else if (url.startsWith('/api/goals') || url.startsWith('/api/milestones')) body = goalsBody
     return new Response(JSON.stringify(body), { status: 200 })
   }))
@@ -303,18 +315,58 @@ describe('App', () => {
     )
   })
 
-  it("shows today's plan on Home and edits the routine in Settings", async () => {
+  it("shows today's plan on Home with done marks and queued tasks", async () => {
     mockServer(true)
     render(<App />)
     expect(await screen.findByText('Morning routine')).toBeInTheDocument()
     expect(screen.getByText('14 km long run')).toBeInTheDocument()
+    expect(screen.getByText('Done', { selector: '.status-done' })).toBeInTheDocument()
+    expect(screen.getByText(/Task: Lay out running kit/)).toBeInTheDocument()
+    expect(screen.getByText('1 of 2 done')).toBeInTheDocument()
+  })
 
-    window.location.hash = '#/settings'
-    fireEvent(window, new HashChangeEvent('hashchange'))
-    fireEvent.click(await screen.findByRole('button', { name: 'Remove Wind down' }))
+  it('edits the routine by day type and removes a block', async () => {
+    mockServer(true)
+    window.location.hash = '#/routine'
+    render(<App />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'Routine' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: 'Office day' }))
+    expect(screen.getByText('Commute')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /Own days/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Wind down' }))
+    fireEvent.change(screen.getByLabelText('New step'), { target: { value: 'Phone on the charger' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save block' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/routines/2', expect.objectContaining({
+        method: 'PUT', body: expect.stringContaining('"steps":["Phone on the charger"]'),
+      })),
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Wind down' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith('/api/routines/2', expect.objectContaining({ method: 'DELETE' })),
     )
+  })
+
+  it('reminds when a block starts and asks what got in the way on skip', async () => {
+    blockReminders = [{ routine_id: 2, date: '2026-10-24', which: 'start', name: 'Deep work 2', start: '14:00', end: '15:30',
+      kind: 'focus', goal_title: 'Side project', steps: ['Phone in another room'], note: null, task: 'Write the CSV loader' }]
+    mockServer(true)
+    render(<App />)
+    const toast = await screen.findByText('Deep work 2 · Side project')
+    expect(toast).toBeInTheDocument()
+    expect(screen.getByText('Task: Write the CSV loader')).toBeInTheDocument()
+    expect(screen.getByText('Phone in another room')).toBeInTheDocument()
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/block-reminders/2/shown?which=start'), expect.anything()))
+    fireEvent.click(screen.getByRole('button', { name: 'Skip…' }))
+    fireEvent.change(screen.getByLabelText('What got in the way?'), { target: { value: 'Meeting ran over' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/plan/2026-10-24/blocks/2', expect.objectContaining({
+        method: 'PUT', body: '{"status":"skipped","reason":"Meeting ran over"}',
+      })),
+    )
+    blockReminders = []
   })
 
   it('lists tasks, adds one with quick add, and snoozes from a task', async () => {

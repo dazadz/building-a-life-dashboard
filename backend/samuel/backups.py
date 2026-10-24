@@ -12,7 +12,12 @@ from . import db
 
 KEEP_DAILY = 14
 FORMAT = "samuel-export"
-TABLES = ("settings", "target_history", "habits", "checkins", "habit_logs", "reports", "chats", "chat_messages", "goals", "milestones", "profile_answers", "weekly_reviews", "routines", "tasks", "subtasks", "health_logs", "energy_taps")
+# In foreign-key order: a table comes after the tables it points to.
+TABLES = ("settings", "target_history", "habits", "checkins", "habit_logs", "reports", "chats", "chat_messages", "goals", "milestones",
+          "profile_answers", "weekly_reviews", "day_types", "day_overrides", "routines", "routine_logs", "tasks", "subtasks",
+          "health_logs", "energy_taps", "pains_goals", "suggestions")
+# Not moved: coach job history and the 30-day undo bin.
+NOT_EXPORTED = ("coach_jobs", "trash")
 
 
 def folder() -> Path:

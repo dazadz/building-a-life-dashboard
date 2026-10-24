@@ -21,7 +21,7 @@ Arguments: $ARGUMENTS
 
    What the export holds:
    - `profile.answers`: their onboarding answers. `about.notes`: things they told Samuel in their own words, like fixed commitments, office days, people and limits. `about.pains_and_goals`: pains and goals they already have.
-   - `goals.active`, `habits` (`own: true` are their own) and `routine` (their blocks by day).
+   - `goals.active`, `habits` (`own: true` are their own) and `routine`: `blocks` (each with its days or day type, kind, goal, habit and steps), `day_types` (e.g. Office day on Mon–Wed) and `last_14_days` (blocks done and skipped, with what got in the way).
    - `tasks`, `days` (check-ins, habits and scores) and `summary`.
    - `suggestions`: what you suggested before, as `pending` (waiting), `dismissed` (turned down) and `accepted`.
    - With `--goal`: `breakdown_goal` is the goal to break down, with its milestones and open tasks.
@@ -61,7 +61,7 @@ Arguments: $ARGUMENTS
 **Goal breakdown.** Break `breakdown_goal` into what's left to do:
 
 - **Milestones:** dated milestones (skip ones that exist). Space them out to the target date, or about a week apart.
-- **Tasks:** about 2–4 tasks per milestone, each sized to **one work session** of their focus span. Each one starts with a verb ("Write the CSV loader and its tests"). Give each a `due_date` on a day that has a matching routine block. In `notes`, say which block it belongs to, e.g. "Block: Deep work 2".
+- **Tasks:** about 2–4 tasks per milestone, each sized to **one work session** of their focus span. Each one starts with a verb ("Write the CSV loader and its tests"). Give each a `due_date` on a day that has a matching routine block. Set `block` to the routine block it belongs to, e.g. "Deep work 2".
 - **Routine block:** if the goal has no block in their week, suggest one.
 
 ## Payloads
@@ -74,8 +74,8 @@ Each suggestion is `{"kind": ..., "reason": "...", "payload": {...}}`.
   - `area` is one of `fitness`, `financial`, `career`, `learning`, `business`, `social`, `relationships`, `health`, `other`.
 - **`milestone`**: `title`, `due_date` and `goal_title` (an active goal's exact title).
 - **`habit`**: `name` (at most 60 characters).
-- **`task`**: `title`, `due_date`, and optionally `due_time`, `notes`, `priority` (high, normal or low), `goal_title` and `subtasks` (a list of titles).
-- **`routine`**: `name`, `start` and `end` (`HH:MM`), `weekdays` (0 = Monday … 6 = Sunday) and `note`.
+- **`task`**: `title`, `due_date`, and optionally `due_time`, `notes`, `priority` (high, normal or low), `goal_title`, `block` (the exact name of the routine block it belongs to; the Now card shows it there) and `subtasks` (a list of titles).
+- **`routine`**: `name`, `start` and `end` (`HH:MM`; an end before the start runs past midnight), `weekdays` (0 = Monday … 6 = Sunday), `note`, and optionally `kind` (focus, fixed, habit, recovery or leisure), `steps` (up to 8 short steps shown when it starts), `goal_title`, `habit_name` and `day_type` (e.g. "Office day"; it is created with the block's weekdays if it doesn't exist yet). Use day types when their days differ, and give blocks of one type the same weekdays.
 
 Dates are `YYYY-MM-DD` and on or after `today`.
 

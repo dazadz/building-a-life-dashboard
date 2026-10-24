@@ -245,6 +245,15 @@ def seed_demo_plan(conn, end: date) -> None:
     on = lambda n: (end + timedelta(days=n)).isoformat()  # noqa: E731
     about.set_notes(conn, "Office Mon–Wed in the city, home Thu–Fri.\nRun club Saturdays at 08:00. Family dinner Sundays at 18:00.\n"
                           "I think best before lunch; after 15:00 I only manage admin.\nMy knee gets sore past 15 km.")
+    office = routines.add_day_type(conn, "Office day", [0, 1, 2])
+    routines.add_day_type(conn, "Home day", [3, 4])
+    routines.add(conn, {"name": "Commute", "start": "07:45", "end": "08:30", "kind": "fixed", "day_type_id": office,
+                        "note": "Podcast or a book", "remind_before": False, "remind_start": False})
+    blocks = {b["name"]: b["id"] for b in routines.list_routines(conn)}
+    if "Deep work 1" in blocks:
+        routines.update(conn, blocks["Deep work 1"], {"steps": ["Phone in another room", "Open the task list", "Two 50-minute sessions"]})
+        tasks.add(conn, {"title": "Draft the Q4 budget summary", "routine_id": blocks["Deep work 1"], "due_date": on(-1),
+                         "notes": "Two pages, numbers from the shared sheet"})
     walk = settings.add_habit(conn, "Walk after lunch")
     lights = settings.add_habit(conn, "Lights out by 23:00")
     goal_ids = {r["title"]: r["id"] for r in conn.execute("SELECT id, title FROM goals")}
@@ -258,12 +267,13 @@ def seed_demo_plan(conn, end: date) -> None:
         about.add(conn, item)
     suggestions.add_many(conn, [
         {"kind": "routine", "reason": "Focus scored higher on days you started before 09:00.",
-         "payload": {"name": "Deep work 1", "start": "08:30", "end": "10:30", "weekdays": [3, 4], "note": "Phone in another room"}},
+         "payload": {"name": "Deep work at home", "start": "08:30", "end": "10:30", "weekdays": [3, 4], "day_type": "Home day",
+                     "note": "Phone in another room", "steps": ["Phone in another room", "Hardest task first"]}},
         {"kind": "routine", "reason": "Your energy taps drop between 14:00 and 16:00.",
          "payload": {"name": "Walk and coffee outside", "start": "15:30", "end": "15:45", "weekdays": [0, 1, 2]}},
         {"kind": "habit", "reason": "You want two phone-free evenings a week.", "payload": {"name": "Phone on the charger in the hall"}},
         {"kind": "task", "reason": "Next step for the side project; fits Deep work on Friday.",
-         "payload": {"title": "Write the landing page copy", "due_date": on(2), "goal_title": "Launch side-project MVP", "notes": "Block: Deep work 1"}},
+         "payload": {"title": "Write the landing page copy", "due_date": on(2), "goal_title": "Launch side-project MVP", "block": "Deep work 1"}},
         {"kind": "task", "reason": "You noted knee soreness after long runs twice.", "payload": {"title": "Book a physio check", "due_date": on(4)}},
     ], batch="plan")
 

@@ -86,3 +86,24 @@ def test_cli_import(conn, tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("SAMUEL_DATA_DIR", str(tmp_path / "new"))
     cli.main(["import", str(f)])
     assert "Imported" in capsys.readouterr().out
+
+
+def test_the_full_export_covers_every_table(conn):
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")}
+    assert tables == set(backups.TABLES) | set(backups.NOT_EXPORTED)
+
+
+def test_plan_data_round_trips(conn, tmp_path):
+    from samuel import about, cli, routines
+
+    cli.seed_demo(conn, 5)
+    office = routines.day_type_id_by_name(conn, "Office day")  # the demo has it
+    block = routines.add(conn, {"name": "Evening study", "start": "20:00", "end": "21:30", "day_type_id": office, "steps": ["Phone away"]})
+    routines.log_block(conn, block, "2026-10-26", "skipped", "Meeting ran over")
+    data = backups.export_all(conn)
+    fresh = db.connect(tmp_path / "fresh.db")
+    backups.import_all(fresh, json.loads(json.dumps(data)))
+    assert [b["day_type"] for b in routines.list_routines(fresh) if b["name"] == "Evening study"] == ["Office day"]
+    assert len(about.list_items(fresh)) == len(about.list_items(conn)) > 0
+    assert fresh.execute("SELECT reason FROM routine_logs").fetchone()[0] == "Meeting ran over"
+    assert fresh.execute("SELECT COUNT(*) FROM suggestions").fetchone()[0] > 0

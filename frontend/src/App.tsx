@@ -17,6 +17,7 @@ import { Reminders } from './components/Reminders'
 import { UndoToast } from './components/Undo'
 import { HomePage } from './pages/Home'
 import { AboutPage } from './pages/About'
+import { RoutinePage } from './pages/Routine'
 import { OnboardingPage } from './pages/Onboarding'
 import { SettingsPage } from './pages/Settings'
 
@@ -24,6 +25,7 @@ const NAV = [
   { href: '#/', route: '/', label: 'Today' },
   { href: '#/about', route: '/about', label: 'About me' },
   { href: '#/checkin', route: '/checkin', label: 'Check-in' },
+  { href: '#/routine', route: '/routine', label: 'Routine' },
   { href: '#/tasks', route: '/tasks', label: 'Tasks' },
   { href: '#/habits', route: '/habits', label: 'Habits' },
   { href: '#/goals', route: '/goals', label: 'Goals' },
@@ -114,6 +116,8 @@ export default function App() {
           <ProfilePage coach={coach} status={status.data} />
         ) : route === '/settings' ? (
           <SettingsPage status={status.data} onSaved={status.reload} onRestored={() => setEpoch((e) => e + 1)} />
+        ) : route === '/routine' ? (
+          <RoutinePage coach={coach} status={status.data} />
         ) : route === '/about' ? (
           <AboutPage coach={coach} status={status.data} onChanged={status.reload} />
         ) : route === '/coach' ? (

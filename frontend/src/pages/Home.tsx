@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { api, type Day, type HabitStatus, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
@@ -30,6 +30,10 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
   const reports = useLoad(() => api.reports('daily'), [])
   const profile = useLoad(() => api.profile(), [])
   const plan = useLoad(() => api.plan(today), [today])
+  useEffect(() => {
+    window.addEventListener('samuel:plan-changed', plan.reload)
+    return () => window.removeEventListener('samuel:plan-changed', plan.reload)
+  }, [plan.reload])
   const [todayData, yesterdayData] = days.data ?? [null, null]
 
   const name = status?.name

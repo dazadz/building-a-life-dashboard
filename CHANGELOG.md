@@ -10,12 +10,17 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 - **Plan builder:** a new coach skill that turns your profile and notes into a plan, or breaks one goal into milestones and session-sized tasks (`/plan-builder goal <id>`). Chat replies can propose suggestions too.
 - **Your own habits:** add and rename habits next to the ten defaults.
 - **About me page:** what Samuel knows about you: your pains and goals (filter, sort, edit, resolve, remove with undo), your notes, your profile progress, and a button to have Samuel build your plan.
+- **Repeating routines by day type:** blocks run on day types such as Office day and Home day (switch one date with a tap) or on their own weekdays. Each block has a kind, an optional goal or habit, steps, and reminders 5 minutes before and at the start. Blocks can run past midnight. Done ticks the linked habit; skipped asks what got in the way, and Samuel sees the last 14 days.
+- **Routine page:** a week strip, tabs per day type, and a block editor (kind, days or day type, goal, habit, what to do, steps, reminders). Day types are managed on the same page; Settings links to it.
+- **Block reminders:** a corner card and Windows notification 5 minutes before a block ("Up next") and when it starts ("Now", with the task and steps), with Snooze 15 min and Skip, which asks what got in the way. Today's plan shows done and skipped marks and each block's task.
+- **Tasks queued for a block:** a task can belong to a routine block. It shows when the block runs and rolls on to the next run if it isn't done.
 - **Samuel suggests card:** on About me, and on Today whenever something is waiting, with Accept, Edit (then accept) and Dismiss, accept-selected, and a count badge in the sidebar. Settings → Profile can add your own habits.
 
 ### Changed
 - **Settings matches its design:** section tabs (Profile, Appearance, Coach, Data & privacy). Appearance has an accent ring you can drag or move with the arrow keys, vibe tiles, a live preview of Samuel, and a Theme card for darkness and surface tint.
 
 ### Fixed
+- **Full export:** `samuel export --all` and import now include pains and goals, suggestions, day types and the block log. A test now fails when a new table isn't covered.
 - **Taskbar pinning:** `samuel app --shortcut` now gives the shortcut the same taskbar ID as Samuel's window and adds a Start menu entry. A pinned Samuel keeps its icon and opens Samuel, instead of opening a plain Edge page. Run `samuel app --shortcut` again, then re-pin.
 
 ## [0.4.0] - 2026-10-24

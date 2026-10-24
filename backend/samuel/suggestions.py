@@ -81,7 +81,8 @@ def check(conn: sqlite3.Connection, kind: str, payload) -> tuple[str, dict]:
 
     if kind == "task":
         fields = _pick(payload, tasks.FIELDS)
-        fields.pop("goal_id", None)  # linked by title below, never by id
+        fields.pop("goal_id", None)  # linked by title or name below, never by id
+        fields.pop("routine_id", None)
         clean = tasks.validate(conn, fields)
         if "title" not in clean:
             raise ValueError("a task needs a title")
@@ -90,15 +91,30 @@ def check(conn: sqlite3.Connection, kind: str, payload) -> tuple[str, dict]:
                 or any(not isinstance(s, str) or not s.strip() or len(s) > 200 for s in subtasks)):
             raise ValueError(f"a task can have up to {MAX_SUBTASKS} subtasks of 1 to 200 characters")
         clean["subtasks"] = [s.strip() for s in subtasks]
-        if isinstance(payload.get("goal_title"), str) and payload["goal_title"].strip():
-            clean["goal_title"] = payload["goal_title"].strip()[:120]
+        _names(payload, clean, ("goal_title", "block"))
         return clean["title"], clean
 
-    clean = routines.validate(_pick(payload, routines.FIELDS))
+    fields = {k: v for k, v in _pick(payload, routines.FIELDS).items() if k not in ("goal_id", "habit_key", "day_type_id")}
+    clean = routines.validate(fields)
     if not {"name", "start", "end"} <= set(clean):
         raise ValueError("a routine block needs a name, a start and an end")
     clean.setdefault("weekdays", list(range(7)))
+    _names(payload, clean, ("goal_title", "habit_name", "day_type"))
     return clean["name"], clean
+
+
+def _names(payload: dict, clean: dict, keys) -> None:
+    """Keep the names that link a suggestion to a goal, habit, day type or block once accepted."""
+    for key in keys:
+        if isinstance(payload.get(key), str) and payload[key].strip():
+            clean[key] = payload[key].strip()[:120]
+
+
+def _routine_id(conn: sqlite3.Connection, name) -> int | None:
+    if not isinstance(name, str) or not name.strip():
+        return None
+    row = conn.execute("SELECT id FROM routines WHERE lower(name) = lower(?) ORDER BY id", (name.strip(),)).fetchone()
+    return row["id"] if row else None
 
 
 def _known(conn: sqlite3.Connection) -> set[tuple[str, str]]:
@@ -182,10 +198,18 @@ def _apply(conn: sqlite3.Connection, kind: str, clean: dict, reason: str | None,
     if kind == "habit":
         return conn.execute("SELECT id FROM habits WHERE key = ?", (settings.add_habit(conn, clean["name"]),)).fetchone()["id"]
     if kind == "task":
-        fields = {k: v for k, v in clean.items() if k != "goal_title"}
+        fields = {k: v for k, v in clean.items() if k not in ("goal_title", "block")}
         fields["goal_id"] = _goal_id(conn, clean.get("goal_title"))
+        fields["routine_id"] = _routine_id(conn, clean.get("block"))
         return tasks.add(conn, fields)
-    return routines.add(conn, clean)
+    fields = {k: v for k, v in clean.items() if k not in ("goal_title", "habit_name", "day_type")}
+    fields["goal_id"] = _goal_id(conn, clean.get("goal_title"))
+    fields["habit_key"] = settings.habit_key_by_name(conn, clean["habit_name"]) if clean.get("habit_name") else None
+    if clean.get("day_type"):
+        # A day type Samuel names is created on accept, with the block's weekdays as its days.
+        fields["day_type_id"] = (routines.day_type_id_by_name(conn, clean["day_type"])
+                                 or routines.add_day_type(conn, clean["day_type"], clean["weekdays"]))
+    return routines.add(conn, fields)
 
 
 def _now() -> str:
