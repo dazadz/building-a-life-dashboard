@@ -171,10 +171,13 @@ export function ChatPanel({ installed, openId, onShowReports }: Props) {
 }
 
 function Thread({ chat }: { chat: Chat }) {
-  const end = useRef<HTMLDivElement>(null)
-  useEffect(() => { end.current?.scrollIntoView?.({ block: 'nearest' }) }, [chat.messages.length, chat.pending])
+  // Scroll the thread itself to the newest message, never the page.
+  const box = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (box.current) box.current.scrollTop = box.current.scrollHeight
+  }, [chat.messages.length, chat.pending])
   return (
-    <div className="chat-thread" aria-live="polite">
+    <div className="chat-thread" aria-live="polite" ref={box}>
       {chat.report_id != null && <div className="faint">About a report · Samuel can see it</div>}
       {chat.messages.map((m) => (
         <div key={m.id} className={`chat-msg ${m.role}`}>
@@ -183,7 +186,6 @@ function Thread({ chat }: { chat: Chat }) {
         </div>
       ))}
       {chat.pending && <Thinking />}
-      <div ref={end} />
     </div>
   )
 }

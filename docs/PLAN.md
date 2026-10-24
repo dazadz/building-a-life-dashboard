@@ -168,7 +168,7 @@ design/    canvas source (kept in sync)
 4. **v0.1 (core loop, released):** short onboarding, the full daily check-in, habits with auto-ticking and streaks, Home with the score strip, the Coach screen and daily reports, backups.
 5. **v0.2 (planning, released):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and the full 45-question onboarding. Push notifications moved to the Phone milestone, since they need HTTPS on the phone.
 6. **v0.3 (released):** Health & energy, monthly evolution, tasks with reminders, and Settings → Appearance theming.
-7. **v0.4 (closing the gaps):** what the three sources have that Samuel doesn't yet, found in the review on 2026-10-24 and shaped by how the user uses the app (on and off all day):
+7. **v0.4 (closing the gaps, built on `main`, not yet released):** what the three sources have that Samuel doesn't yet, found in the review on 2026-10-24 and shaped by how the user uses the app (on and off all day):
    - **Chat with Samuel:** the prompt's coach mode as a conversation with follow-ups, on the Coach page. Each turn is a coach run that sees the conversation so far.
    - **Ctrl+K palette:** jump to any screen or action, and search goals, tasks and reports.
    - **Today digest:** a compact card at the top of Home all day: yesterday's score, today's plan, what's due and one focus.
