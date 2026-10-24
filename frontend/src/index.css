@@ -866,3 +866,15 @@ select.input option { background: var(--card); color: var(--text); }
 .move-btns { display: inline-flex; gap: 4px; }
 .move-btns .btn { width: 30px; padding: 0; justify-content: center; }
 .move-btns .btn:disabled { opacity: 0.35; cursor: default; }
+
+/* Type colours: each routine block and task type has its own colour on its tag and timeline dot */
+[data-type='focus'] { --type: var(--accent); }
+[data-type='fixed'] { --type: var(--text-muted); }
+[data-type='work'] { --type: var(--blue); }
+[data-type='faith'] { --type: var(--violet); }
+[data-type='health'] { --type: var(--rose); }
+[data-type='habit'] { --type: var(--green); }
+[data-type='recovery'] { --type: var(--amber); }
+[data-type='leisure'] { --type: var(--orange); }
+.type-tag { margin-left: 0; color: var(--type); border-color: color-mix(in srgb, var(--type) 45%, var(--border)); background: color-mix(in srgb, var(--type) 8%, transparent); }
+.type-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: var(--type); box-shadow: 0 0 6px color-mix(in srgb, var(--type) 60%, transparent); }

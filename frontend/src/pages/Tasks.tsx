@@ -198,7 +198,7 @@ function TaskRow({ task: t, today, open, stamp, onToggle, onEdit, write }: {
           onChange={() => void write(() => api.updateTask(now(), t.id, { done: !done }))} />
         <button type="button" className="row-link task-title" aria-expanded={open} onClick={onToggle} data-done={done}>{t.title}</button>
         {t.subtasks.length > 0 && <span className="faint mono">{t.subtasks.filter((x) => x.done).length}/{t.subtasks.length}</span>}
-        {t.type && <span className="tag kind-tag" data-kind={t.type}>{KIND_LABEL[t.type]}</span>}
+        {t.type && <span className="tag type-tag" data-type={t.type}>{KIND_LABEL[t.type]}</span>}
         {t.priority === 'high' && <span className="tag priority-high" style={{ marginLeft: 0 }}>High</span>}
         <span className={`mono task-when ${t.view === 'overdue' ? 'warn-text' : 'faint'}`}>{when(t, today)}</span>
       </div>

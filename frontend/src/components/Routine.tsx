@@ -1,5 +1,5 @@
 import type { Plan } from '../api'
-import { DAY_NAMES, inText, nowAndNext, span, worksOn } from '../blocks'
+import { DAY_NAMES, KIND_LABEL, inText, nowAndNext, span, worksOn } from '../blocks'
 import { Card } from './Card'
 import { Loading, NeedsSetup } from './States'
 
@@ -32,7 +32,7 @@ export function TodaysPlan({ now, plan }: { now: Date; plan: Plan | null }) {
             const detail = task ? `Task: ${task.title}` : worksOn(b)
             return (
               <li key={b.id} data-past={end <= at || b.status !== null} data-now={b === current && !b.status}>
-                <span className="mono plan-time">{b.start}</span>
+                <span className="mono plan-time"><span className="type-dot" data-type={b.kind} title={KIND_LABEL[b.kind]} aria-hidden="true" />{b.start}</span>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span className="item-name">{b.name}</span>
                   {detail && <span className="faint plan-detail">{detail}</span>}

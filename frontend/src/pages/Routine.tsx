@@ -138,7 +138,7 @@ export function RoutinePage({ coach, status }: { coach: ReturnType<typeof useCoa
                     <tr key={r.id} data-selected={editing !== 'new' && editing?.id === r.id}>
                       <td className="mono">{r.start}–{r.end}</td>
                       <th scope="row"><button type="button" className="row-link item-name" onClick={() => setEditing(r)}>{r.name}</button></th>
-                      <td><span className="tag kind-tag" data-kind={r.kind}>{KIND_LABEL[r.kind]}</span></td>
+                      <td><span className="tag type-tag" data-type={r.kind}>{KIND_LABEL[r.kind]}</span></td>
                       <td className="muted">{worksOn(r) ?? '—'}</td>
                       <td className="mono faint">{r.day_type ?? (r.weekdays.length === 7 ? 'Every day' : r.weekdays.map((x) => DAY_SHORT[x]).join(' '))}</td>
                       <td className="mono faint remind-col">{remindText(r)}</td>
