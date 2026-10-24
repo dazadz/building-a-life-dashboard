@@ -83,8 +83,8 @@ Each suggestion is a `kind:` line, a `reason:` line and its fields, one `key: va
   - `area` is one of `fitness`, `financial`, `career`, `learning`, `business`, `social`, `relationships`, `health`, `faith`, `other`.
 - **`milestone`**: `title`, `due_date` and `goal_title` (an active goal's exact title).
 - **`habit`**: `name` (at most 60 characters).
-- **`task`**: `title`, `due_date`, and optionally `type` (focus, fixed, work, faith, habit, recovery or leisure), `due_time`, `notes`, `priority` (high, normal or low), `goal_title`, `block` (the exact name of the routine block it belongs to; the Now card shows it there) and `subtasks` (titles separated by `|`).
-- **`routine`**: `name`, `start` and `end` (`HH:MM`; an end before the start runs past midnight), `weekdays` (numbers separated by spaces, 0 = Monday … 6 = Sunday), `note`, and optionally `type` (focus, fixed, work, faith, habit, recovery or leisure), `steps` (up to 8 short steps shown when it starts, separated by `|`), `goal_title`, `habit_name` and `day_type` (e.g. "Office day"; it is created with the block's weekdays if it doesn't exist yet). Use day types when their days differ, and give blocks of one type the same weekdays.
+- **`task`**: `title`, `due_date`, and optionally `type` (focus, fixed, work, faith, health, habit, recovery or leisure), `due_time`, `notes`, `priority` (high, normal or low), `goal_title`, `block` (the exact name of the routine block it belongs to; the Now card shows it there) and `subtasks` (titles separated by `|`).
+- **`routine`**: `name`, `start` and `end` (`HH:MM`; an end before the start runs past midnight), `weekdays` (numbers separated by spaces, 0 = Monday … 6 = Sunday), `note`, and optionally `type` (focus, fixed, work, faith, health, habit, recovery or leisure), `steps` (up to 8 short steps shown when it starts, separated by `|`), `goal_title`, `habit_name` and `day_type` (e.g. "Office day"; it is created with the block's weekdays if it doesn't exist yet). Use day types when their days differ, and give blocks of one type the same weekdays.
 
 Dates are `YYYY-MM-DD` and on or after `today`.
 

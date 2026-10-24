@@ -233,3 +233,11 @@ def test_faith_migration_renames_spiritual_everywhere(tmp_path):
     assert json.loads(conn.execute("SELECT payload FROM suggestions").fetchone()[0])["kind"] == "faith"
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute("INSERT INTO tasks (title, type) VALUES ('x', 'spiritual')")
+
+
+
+def test_health_is_a_type_for_blocks_and_tasks(conn):
+    block = routines.add(conn, {"name": "Physio exercises", "start": "18:00", "end": "18:20", "kind": "health"})
+    assert next(b for b in routines.list_routines(conn) if b["id"] == block)["kind"] == "health"
+    tid = tasks.add(conn, {"title": "Book a check-up", "type": "health"})
+    assert conn.execute("SELECT type FROM tasks WHERE id = ?", (tid,)).fetchone()[0] == "health"
