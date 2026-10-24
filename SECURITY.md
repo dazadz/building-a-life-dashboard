@@ -10,7 +10,7 @@ Samuel holds personal data: check-ins, mood, sleep, health notes and goals. It i
 - **No outside requests.** No analytics, no CDNs, and fonts are bundled.
 - **The coach.** Reports are written by Claude Code under your own account. The only data that leaves your computer is what it sends to Anthropic when you ask for a report. It may only run `samuel export` and `samuel report add`, with Bash as its only tool and without your own Claude Code settings or connected services. Inside a coach run, `samuel export` refuses full exports and `report add` won't read files, so text in a check-in can't steer it into copying your data somewhere. Check-in text is passed to it as data, not instructions.
 - **Commits.** A pre-commit hook and a CI check reject database files, Samuel exports, secrets, local paths and personal email addresses.
-- **Dependencies.** CI checks Python and npm packages for known vulnerabilities, Dependabot proposes updates monthly, bundled into a few pull requests, and GitHub Actions are pinned to exact commits.
+- **Dependencies.** CI checks Python and npm packages for known vulnerabilities, Dependabot alerts on known vulnerabilities and opens a pull request only to fix one, and GitHub Actions are pinned to exact commits.
 
 Phone access (planned) will need a passcode, and will run over a private Tailscale HTTPS link, never the open internet.
 
