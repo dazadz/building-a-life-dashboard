@@ -73,7 +73,7 @@ export type SettingsChange = Partial<Pick<Settings, 'name' | 'onboarded' | 'text
 
 export interface Report {
   id: number
-  kind: 'daily' | 'weekly' | 'monthly' | 'onboarding' | 'ask'
+  kind: 'daily' | 'weekly' | 'monthly' | 'onboarding' | 'ask' | 'plan'
   date: string
   markdown: string
   created_at: string

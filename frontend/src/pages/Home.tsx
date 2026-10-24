@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import Markdown from 'react-markdown'
-import { api, type Day, type HabitStatus, type Report, type Status } from '../api'
+import { api, type Day, type HabitStatus, type Plan, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
 import { TodaysPlan } from '../components/Routine'
 import { EnergyTapCard } from '../components/Energy'
 import { DigestCard } from '../components/Digest'
 import { SuggestionsCard } from '../components/Suggestions'
+import { NowCard } from '../components/NowCard'
+import { FocusAreasCard, GoalsCard } from '../components/Focus'
+import { dayMode, nowAndNext, type DayMode } from '../blocks'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, answeredCount, deltaText, greeting, isoDate, localStamp, localTime, longDate, scoreText } from '../format'
 import { useLoad, useNow } from '../hooks'
@@ -22,6 +25,14 @@ const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
 
 const SCORES_DOC = 'https://github.com/dazadz/building-a-life-dashboard/blob/main/docs/scores.md'
 
+// Home follows the time of day: what matters now is always at the top (see dayMode in blocks.ts).
+const ORDER: Record<DayMode, string[]> = {
+  morning: ['now', 'glance', 'scores', 'energy', 'plan', 'focus', 'goals', 'suggest', 'habits', 'checkin', 'report'],
+  day: ['now', 'scores', 'plan', 'focus', 'goals', 'suggest', 'glance', 'habits', 'energy', 'checkin', 'report'],
+  evening: ['checkin', 'now', 'scores', 'plan', 'habits', 'focus', 'goals', 'suggest', 'report', 'energy', 'glance'],
+}
+const MODE_LABEL: Record<DayMode, string> = { morning: 'Morning mode', day: 'Day mode', evening: 'Evening mode' }
+
 export function HomePage({ status, onChanged }: { status: Status | null; onChanged: () => void }) {
   const now = useNow()
   const today = isoDate(now)
@@ -29,6 +40,7 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
   const days = useLoad(() => Promise.all([api.day(today), api.day(yesterday)]), [today])
   const reports = useLoad(() => api.reports('daily'), [])
   const profile = useLoad(() => api.profile(), [])
+  const settings = useLoad(() => api.settings(today), [today])
   const plan = useLoad(() => api.plan(today), [today])
   useEffect(() => {
     window.addEventListener('samuel:plan-changed', plan.reload)
@@ -38,26 +50,38 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
 
   const name = status?.name
   const yScore = yesterdayData?.summary.scores.day
-  // Before tonight's check-in, the strip shows yesterday's scores.
-  const scoreDay = todayData?.checkin ? todayData : yesterdayData
-  const scoreLabel = todayData?.checkin ? 'Today' : 'Yesterday'
+  const at = now.getHours() * 60 + now.getMinutes()
+  const mode: DayMode = settings.data ? dayMode(at, settings.data.wake_target, settings.data.sleep_target_hours) : 'day'
+
+  const cards: Record<string, ReactNode> = {
+    now: <NowCard key="now" now={now} plan={plan.data} onPlan={plan.setData} />,
+    glance: <DigestCard key="glance" stamp={localStamp(now)} />,
+    scores: <ScoreStrip key="scores" today={todayData} yesterday={yesterdayData} />,
+    plan: <TodaysPlan key="plan" now={now} plan={plan.data} />,
+    focus: <FocusAreasCard key="focus" today={today} />,
+    goals: <GoalsCard key="goals" today={today} />,
+    suggest: <SuggestionsCard key="suggest" limit={5} hideWhenEmpty onChanged={onChanged} action={<a href="#/about">Review all →</a>} />,
+    checkin: <CheckinCard key="checkin" day={todayData} yesterday={yesterdayData} loading={!days.data && !days.error} />,
+    habits: <HabitsCard key="habits" day={todayData} onChange={(d) => days.setData([d, yesterdayData!])} />,
+    energy: <EnergyTapCard key="energy" today={today} hhmm={localTime(now)} />,
+    report: <LatestReport key="report" reports={reports} />,
+  }
 
   return (
     <div className="page home">
-      <header className="page-head">
-        <div className="eyebrow">
-          {longDate(today)} <span className="faint">//</span> <time dateTime={now.toISOString()}>{localTime(now)}</time>
-        </div>
-        <h1>{name ? `${greeting(now.getHours())}, ${name}` : greeting(now.getHours())}</h1>
-        <p>
-          {yScore != null
+      <header className="page-head home-head">
+        <div className="home-title">
+          <div className="eyebrow">
+            {longDate(today)} <span className="faint">//</span> <time dateTime={now.toISOString()}>{localTime(now)}</time>{' '}
+            <span className="faint">//</span> <span className="accent-text">{MODE_LABEL[mode]}</span>
+          </div>
+          <h1>{name ? `${greeting(now.getHours())}, ${name}` : greeting(now.getHours())}</h1>
+          <p>{headline(plan.data, at) ?? (yScore != null
             ? `Yesterday scored ${yScore}. Tonight's check-in takes about a minute.`
-            : 'Check in tonight to get your first day score.'}
-        </p>
+            : 'Check in tonight to get your first day score.')}</p>
+        </div>
+        {plan.data && plan.data.day_types.length > 0 && <DaySwitch plan={plan.data} onPlan={plan.setData} />}
       </header>
-
-      <DigestCard stamp={localStamp(now)} />
-      <SuggestionsCard limit={5} hideWhenEmpty onChanged={onChanged} action={<a href="#/about">Review all →</a>} />
 
       {days.error && <ErrorLine message={days.error} onRetry={days.reload} />}
       {profile.data && profile.data.answered < profile.data.total && (
@@ -70,42 +94,81 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
         </NeedsSetup>
       )}
 
-      <section className="scores" aria-label={`Scores · ${scoreLabel}`}>
-        {STRIP.map(({ key, label }) => {
-          const value = scoreDay?.summary.scores[key] ?? null
-          const delta = scoreDay?.summary.change[key] ?? null
-          return (
-            <div className="meter" key={key}>
-              <div className="meter-top">
-                <span className="meter-label">{label}</span>
-                {deltaText(delta) && (
-                  <span className={delta! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(delta)}</span>
-                )}
-                <span className="meter-value">{scoreText(value)}</span>
-              </div>
-              <div className="meter-track" role="img" aria-label={`${label} ${scoreText(value)} of 100`}>
-                {SEGMENTS.map((i) => <span key={i} className="meter-seg" data-on={value != null && i < Math.round(value / 5)} />)}
-              </div>
-            </div>
-          )
-        })}
-        <div className="faint" style={{ flex: '0 0 auto' }}>
-          {scoreLabel}
-          <br />
-          <a href={SCORES_DOC} target="_blank" rel="noreferrer">How scores work →</a>
-        </div>
-      </section>
-
-      <div className="row">
-        <TodaysPlan now={now} plan={plan.data} />
-        <CheckinCard day={todayData} yesterday={yesterdayData} loading={!days.data && !days.error} />
-      </div>
-      <div className="row">
-        <EnergyTapCard today={today} hhmm={localTime(now)} />
-        <LatestReport reports={reports} />
-        <HabitsCard day={todayData} onChange={(d) => days.setData([d, yesterdayData!])} />
-      </div>
+      <div className="row home-cards">{ORDER[mode].map((key) => cards[key])}</div>
     </div>
+  )
+}
+
+/** One line on where the day stands, from today's routine. */
+function headline(plan: Plan | null, at: number): string | null {
+  if (!plan || !plan.blocks.length) return null
+  const done = plan.blocks.filter((b) => b.status === 'done').length
+  const { current } = nowAndNext(plan.blocks, at)
+  const tally = `${done} of ${plan.blocks.length} blocks done.`
+  if (current && !current.status) {
+    const task = current.tasks[0]
+    return `${current.name} is on.${task ? ` Today's task: ${task.title}.` : ''} ${tally}`
+  }
+  return tally
+}
+
+/** "Today is: Office day / Home day", one tap to switch when a shift moves. */
+function DaySwitch({ plan, onPlan }: { plan: Plan; onPlan: (p: Plan) => void }) {
+  const [error, setError] = useState<string | null>(null)
+  const set = async (id: number | null) => {
+    setError(null)
+    try {
+      onPlan(await api.setDayType(plan.date, id))
+      window.dispatchEvent(new Event('samuel:plan-changed'))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
+  return (
+    <div className="day-switch">
+      <div className="pills" role="group" aria-label="Today is">
+        <span className="meter-label day-switch-label">Today is</span>
+        {plan.day_types.map((t) => (
+          <button key={t.id} type="button" className="pill" aria-pressed={plan.day_type?.id === t.id}
+            onClick={() => { if (plan.day_type?.id !== t.id) void set(t.id) }}>{t.name}</button>
+        ))}
+      </div>
+      {plan.day_type?.overridden && <button type="button" className="link-btn" onClick={() => void set(null)}>Back to the usual day</button>}
+      {error && <span className="warn-text hint">{error}</span>}
+    </div>
+  )
+}
+
+function ScoreStrip({ today, yesterday }: { today: Day | null; yesterday: Day | null }) {
+  // Before tonight's check-in, the strip shows yesterday's scores.
+  const scoreDay = today?.checkin ? today : yesterday
+  const scoreLabel = today?.checkin ? 'Today' : 'Yesterday'
+  return (
+    <section className="scores" aria-label={`Scores · ${scoreLabel}`}>
+      {STRIP.map(({ key, label }) => {
+        const value = scoreDay?.summary.scores[key] ?? null
+        const delta = scoreDay?.summary.change[key] ?? null
+        return (
+          <div className="meter" key={key}>
+            <div className="meter-top">
+              <span className="meter-label">{label}</span>
+              {deltaText(delta) && (
+                <span className={delta! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(delta)}</span>
+              )}
+              <span className="meter-value">{scoreText(value)}</span>
+            </div>
+            <div className="meter-track" role="img" aria-label={`${label} ${scoreText(value)} of 100`}>
+              {SEGMENTS.map((i) => <span key={i} className="meter-seg" data-on={value != null && i < Math.round(value / 5)} />)}
+            </div>
+          </div>
+        )
+      })}
+      <div className="faint" style={{ flex: '0 0 auto' }}>
+        {scoreLabel}
+        <br />
+        <a href={SCORES_DOC} target="_blank" rel="noreferrer">How scores work →</a>
+      </div>
+    </section>
   )
 }
 

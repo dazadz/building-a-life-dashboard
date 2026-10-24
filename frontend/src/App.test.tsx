@@ -113,6 +113,7 @@ const tasksBody = {
 
 let dueReminders: unknown[] = []
 let blockReminders: unknown[] = []
+let planOverride: unknown = null
 
 const healthBody = {
   date: '2026-10-24', days: 30, sleep_target: 7.5,
@@ -196,7 +197,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true, sug
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
     else if (url.startsWith('/api/profile')) body = profileBody
     else if (url.startsWith('/api/weekly')) body = weeklyBody
-    else if (url.startsWith('/api/plan/')) body = planBody
+    else if (url.startsWith('/api/plan/')) body = planOverride ?? planBody
     else if (url.startsWith('/api/tasks')) body = tasksBody
     else if (url.startsWith('/api/health')) body = healthBody
     else if (url.startsWith('/api/monthly')) body = monthlyBody
@@ -212,7 +213,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true, sug
 
 describe('App', () => {
   beforeEach(() => { window.location.hash = '' })
-  afterEach(() => vi.unstubAllGlobals())
+  afterEach(() => { vi.unstubAllGlobals(); planOverride = null; blockReminders = [] })
 
   it('greets the user and shows dashes before any scores', async () => {
     mockServer(true)
@@ -323,6 +324,32 @@ describe('App', () => {
     expect(screen.getByText('Done', { selector: '.status-done' })).toBeInTheDocument()
     expect(screen.getByText(/Task: Lay out running kit/)).toBeInTheDocument()
     expect(screen.getByText('1 of 2 done')).toBeInTheDocument()
+  })
+
+  it('shows the block running now with its task and steps, and marks it done', async () => {
+    planOverride = { ...planBody, day_type: { id: 1, name: 'Office day', overridden: false }, day_types: [{ id: 1, name: 'Office day' }, { id: 2, name: 'Home day' }],
+      blocks: [{ ...block, id: 5, name: 'Deep work 2', start: '00:00', end: '23:59', weekdays: [0, 1, 2, 3, 4, 5, 6], note: null,
+        goal_title: 'Side project', steps: ['Phone in another room'],
+        tasks: [{ id: 9, title: 'Write the CSV loader', due_date: '2026-10-23', notes: null, rolled: 1 }] }] }
+    mockServer(true)
+    render(<App />)
+    await screen.findByText('Write the CSV loader')
+    const now = screen.getByRole('region', { name: 'Now' })
+    expect(now).toHaveTextContent('waited 1 run')
+    expect(now).toHaveTextContent('Goal · Side project')
+    expect(screen.getByLabelText('Phone in another room')).not.toBeChecked()
+    expect(screen.getByText(/Deep work 2 is on/)).toBeInTheDocument()
+    fireEvent.click(within(now).getByRole('button', { name: 'Done' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/\/api\/plan\/[\d-]+\/blocks\/5$/), expect.objectContaining({
+        method: 'PUT', body: '{"status":"done","reason":null}',
+      })),
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Home day' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/day-type$/), expect.objectContaining({ body: '{"day_type_id":2}' })),
+    )
+    planOverride = null
   })
 
   it('edits the routine by day type and removes a block', async () => {
