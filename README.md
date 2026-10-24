@@ -6,11 +6,17 @@ Building a life dashboard using Claude Code.
 
 ## Status
 
-**v0.3.0.** Tell Samuel about your life in a 45-question profile, check in each evening, track 10 daily habits, keep a to-do list with reminders, set goals with milestones, follow today's plan from your routine, watch your sleep, energy, recovery and burnout risk, run weekly and monthly reviews, theme the app from any accent, and have Samuel (Claude Code) write your daily, weekly and monthly reports. It runs on a PC; phone access comes later. See [CHANGELOG.md](CHANGELOG.md) for what's in each release, [docs/PLAN.md](docs/PLAN.md) for the full build plan, [docs/scores.md](docs/scores.md) for how scores work, and [docs/adr/](docs/adr/) for the key decisions.
+**v0.3.0, plus the v0.4 work on `main`.** Chat with Samuel about your own data, see today at a glance, search everything with Ctrl+K, tap your energy through the day for an energy curve, find your time leaks and what moves your energy and mood, and undo deletes. Before that: tell Samuel about your life in a 45-question profile, check in each evening, track 10 daily habits, keep a to-do list with reminders, set goals with milestones, follow today's plan from your routine, watch your sleep, energy, recovery and burnout risk, run weekly and monthly reviews, theme the app from any accent, and have Samuel (Claude Code) write your daily, weekly and monthly reports. It runs on a PC; phone access comes later. See [CHANGELOG.md](CHANGELOG.md) for what's in each release, [docs/PLAN.md](docs/PLAN.md) for the full build plan, [docs/scores.md](docs/scores.md) for how scores work, and [docs/adr/](docs/adr/) for the key decisions.
 
 Screenshots use the made-up demo persona Jordan.
 
-![Home: greeting, score strip, tonight's check-in and today's habits](docs/screenshots/home.png)
+![Home: today at a glance (focus, due, next up, yesterday), the score strip and today's plan](docs/screenshots/home.png)
+
+![Coach: a chat with Samuel, answered from Jordan's own data](docs/screenshots/coach.png)
+
+![Health & energy: sleep and energy, recovery, burnout risk, what moves your energy and mood](docs/screenshots/health.png)
+
+![Weekly review: by the numbers, wins, slips and time leaks](docs/screenshots/review.png)
 
 ![Daily check-in with yesterday's summary](docs/screenshots/checkin.png)
 
