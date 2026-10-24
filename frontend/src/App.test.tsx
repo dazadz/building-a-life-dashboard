@@ -405,7 +405,7 @@ describe('App', () => {
     expect(screen.queryByRole('textbox', { name: 'Quick add' })).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: '+ New task' }))
-    fireEvent.change(screen.getByLabelText('Task'), { target: { value: 'Rewrite my resume' } })
+    fireEvent.change(screen.getByLabelText('Task'), { target: { value: 'Draft the Q4 budget summary' } })
     fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'work' } })
     fireEvent.change(await screen.findByLabelText('Goal it achieves'), { target: { value: '1' } })
     fireEvent.change(screen.getByLabelText('Due date'), { target: { value: '2026-10-26' } })
@@ -416,7 +416,7 @@ describe('App', () => {
     )
     const post = vi.mocked(fetch).mock.calls.find(([u, i]) => String(u).startsWith('/api/tasks?') && i?.method === 'POST')!
     expect(JSON.parse(String(post[1]!.body))).toMatchObject({
-      title: 'Rewrite my resume', type: 'work', goal_id: 1, due_date: '2026-10-26', due_time: '21:00',
+      title: 'Draft the Q4 budget summary', type: 'work', goal_id: 1, due_date: '2026-10-26', due_time: '21:00',
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add hiring costs' }))

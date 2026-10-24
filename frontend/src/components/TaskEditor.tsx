@@ -42,7 +42,7 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
       <div className="form" style={{ gap: 14 }}>
         <div className="field">
           <label htmlFor="task-title">Task</label>
-          <input id="task-title" className="input" maxLength={200} value={f.title} autoFocus placeholder="e.g. Rewrite my resume"
+          <input id="task-title" className="input" maxLength={200} value={f.title} autoFocus placeholder="e.g. Draft the Q4 budget summary"
             onChange={(e) => set('title', e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') void save() }} />
         </div>
         <div className="fields">

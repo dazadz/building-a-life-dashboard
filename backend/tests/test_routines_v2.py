@@ -178,7 +178,7 @@ def test_types_migration_keeps_links_and_maps_work_tasks(tmp_path):
     assert tuple(conn.execute("SELECT routine_id, type FROM tasks WHERE id = 8").fetchone()) == (3, "work")
     assert conn.execute("SELECT type FROM tasks WHERE id = 9").fetchone()[0] is None
     assert conn.execute("SELECT status FROM routine_logs WHERE routine_id = 3").fetchone()[0] == "done"
-    routines.add(conn, {"name": "Prayer", "start": "06:30", "end": "06:45", "kind": "spiritual"})
+    routines.add(conn, {"name": "Meditation", "start": "06:30", "end": "06:45", "kind": "spiritual"})
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute("INSERT INTO routines (name, start, end, kind) VALUES ('x', '01:00', '02:00', 'nap')")
 
@@ -193,6 +193,6 @@ def test_tasks_take_a_type(conn):
 
 def test_suggestions_set_a_type_with_type_lines(conn):
     batch, items = suggestions.parse_text(
-        "kind: routine\nname: Prayer\nstart: 06:30\nend: 06:45\ntype: Spiritual\n---\nkind: task\ntitle: Resume\ntype: work"
+        "kind: routine\nname: Meditation\nstart: 06:30\nend: 06:45\ntype: Spiritual\n---\nkind: task\ntitle: Budget report\ntype: work"
     )
     assert items[0]["payload"]["kind"] == "spiritual" and items[1]["payload"]["type"] == "work"
