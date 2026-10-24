@@ -4,6 +4,10 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-24
+
+Your plan: pains and goals, Samuel's suggestions, repeating routines by day type with reminders, goal breakdowns, and a Home built around what's on now.
+
 ### Added
 - **Pains and goals:** an About me store for what holds you back and what you're working towards, plus notes in your own words that Samuel plans around.
 - **Samuel suggests, you decide:** coach runs can propose goals, milestones, habits, tasks, routine blocks and pains with `samuel suggest add`. They wait for you to accept, edit or dismiss them, and are checked again when accepted (ADR 0004).
@@ -102,6 +106,7 @@ The core loop: check in each evening, see your scores, and have Samuel write you
 - Protection against DNS rebinding and cross-site writes. Coach runs can only use the `samuel` CLI.
 - A pre-commit hook and a CI check block database files, secrets, local paths and personal email addresses.
 
+[0.5.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.5.0
 [0.4.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.4.0
 [0.3.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.3.0
 [0.2.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.2.0
