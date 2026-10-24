@@ -5,7 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
-- **Type colours:** each type has its own colour (Focus cyan, Fixed grey, Work blue, Faith violet, Health rose, Habit green, Recovery amber, Leisure orange) on its tag in Tasks and Routine, on the Now card, and as a dot beside each block in Today's plan.
+- **Type colours:** each type has its own colour (Focus cyan, Fixed grey, Work blue, Faith violet, Health green, Habit red, Recovery amber, Leisure orange) on its tag in Tasks and Routine, on the Now card, and as a dot beside each block in Today's plan.
 - **Health** is a Type for routine blocks and tasks (Focus, Fixed, Work, Faith, Health, Habit, Recovery, Leisure).
 - **Reorder habits:** "Reorder ↕" on the Daily trackers card (or Edit habits) gives each habit up and down buttons. The order is used everywhere habits are listed.
 - **Faith instead of Spiritual:** routine block and task types, goal areas and the area of a pain or goal now say Faith. Existing Spiritual items, and suggestions waiting for review, become Faith (your data is backed up first).
