@@ -108,7 +108,7 @@ export default function App() {
         ) : route === '/profile' ? (
           <ProfilePage coach={coach} status={status.data} />
         ) : route === '/settings' ? (
-          <SettingsPage onSaved={status.reload} onRestored={() => setEpoch((e) => e + 1)} />
+          <SettingsPage status={status.data} onSaved={status.reload} onRestored={() => setEpoch((e) => e + 1)} />
         ) : route === '/coach' ? (
           <CoachPage coach={coach} status={status.data} />
         ) : (
