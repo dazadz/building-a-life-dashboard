@@ -1,19 +1,30 @@
-# Weekly checks for outdated or vulnerable dependencies. Each update arrives as a pull request
-# that must pass CI like any other change.
+# Monthly checks for outdated dependencies, bundled so there are only a few pull requests a month:
+# one per area for the small (minor and patch) updates, and one per area for the big (major) ones,
+# which need a closer look. Each arrives as a pull request that must pass CI like any other change.
 version: 2
 updates:
   - package-ecosystem: pip
     directory: /backend
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      backend-small:
+        update-types: [minor, patch]
+      backend-major:
+        update-types: [major]
   - package-ecosystem: npm
     directory: /frontend
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
-      minor-and-patch:
+      frontend-small:
         update-types: [minor, patch]
+      frontend-major:
+        update-types: [major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
