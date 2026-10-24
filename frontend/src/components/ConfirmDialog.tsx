@@ -11,7 +11,7 @@ interface ConfirmDialogProps {
   onCancel: () => void
 }
 
-/** A modal check before something can't be undone. Cancel has focus, so Enter never deletes by accident. */
+/** A modal check before deleting. Cancel has focus, so Enter never deletes by accident. */
 export function ConfirmDialog({ open, title, children, confirmLabel, busy, onConfirm, onCancel }: ConfirmDialogProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
@@ -42,7 +42,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, busy, onCon
         </div>
         <div id={`${id}-body`} className="confirm-body">
           {children}
-          <p className="confirm-warn">This can't be undone.</p>
+          <p className="confirm-warn">Restore it from Settings → Recently deleted for 30 days.</p>
         </div>
         <div className="confirm-actions">
           <button ref={cancelRef} type="button" className="btn" onClick={onCancel}>Cancel</button>
