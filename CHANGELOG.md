@@ -4,6 +4,12 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Added
+- **Pains and goals:** an About me store for what holds you back and what you're working towards, plus notes in your own words that Samuel plans around.
+- **Samuel suggests, you decide:** coach runs can propose goals, milestones, habits, tasks, routine blocks and pains with `samuel suggest add`. They wait for you to accept, edit or dismiss them, and are checked again when accepted (ADR 0004).
+- **Plan builder:** a new coach skill that turns your profile and notes into a plan, or breaks one goal into milestones and session-sized tasks (`/plan-builder goal <id>`). Chat replies can propose suggestions too.
+- **Your own habits:** add and rename habits next to the ten defaults.
+
 ### Fixed
 - **Taskbar pinning:** `samuel app --shortcut` now gives the shortcut the same taskbar ID as Samuel's window and adds a Start menu entry. A pinned Samuel keeps its icon and opens Samuel, instead of opening a plain Edge page. Run `samuel app --shortcut` again, then re-pin.
 

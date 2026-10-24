@@ -11,7 +11,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, chats, db, energy, health, profile, reports, routines, scores, tasks
+from . import backups, chats, db, energy, health, profile, reports, routines, scores, settings, suggestions, tasks
 from .checkins import log_habit, save_checkin
 
 
@@ -85,6 +85,11 @@ def cmd_export(args) -> None:
     conn = db.connect()
     if not args.all:
         data = reports.export(conn, args.since, args.until, args.sensitive, args.month)
+        if args.goal is not None:
+            try:
+                data["breakdown_goal"] = reports.breakdown_goal(conn, args.goal)
+            except LookupError as exc:
+                sys.exit(f"error: {exc}")
         if args.chat is not None:
             try:
                 data["chat"] = chats.for_coach(conn, args.chat)
@@ -142,6 +147,23 @@ def cmd_report_add(args) -> None:
     except ValueError as exc:
         sys.exit(f"error: {exc}")
     print(f"Saved {args.kind} report #{report_id}")
+
+
+def cmd_suggest_add(args) -> None:
+    """Store Samuel's suggestions for the user to accept or dismiss. Read from stdin only."""
+    raw = sys.stdin.buffer.read().decode("utf-8-sig") if hasattr(sys.stdin, "buffer") else sys.stdin.read()
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        sys.exit(f"error: suggestions must be JSON ({exc.msg})")
+    items = data.get("suggestions") if isinstance(data, dict) else data
+    batch = data.get("batch") if isinstance(data, dict) else None
+    try:
+        result = suggestions.add_many(db.connect(), items, batch)
+    except ValueError as exc:
+        sys.exit(f"error: {exc}")
+    skipped = f" ({result['skipped']} already suggested before)" if result["skipped"] else ""
+    print(f"Saved {result['added']} suggestions for the user to review{skipped}")
 
 
 def cmd_report_list(args) -> None:
@@ -213,6 +235,37 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
         routines.add_suggested(conn, end.isoformat())
     seed_demo_tasks(conn, end)
     seed_demo_energy(conn, end)
+    seed_demo_plan(conn, end)
+
+
+def seed_demo_plan(conn, end: date) -> None:
+    """What Jordan told Samuel, Jordan's pains and goals, and a few suggestions waiting for review."""
+    from . import about
+
+    on = lambda n: (end + timedelta(days=n)).isoformat()  # noqa: E731
+    about.set_notes(conn, "Office Mon–Wed in the city, home Thu–Fri.\nRun club Saturdays at 08:00. Family dinner Sundays at 18:00.\n"
+                          "I think best before lunch; after 15:00 I only manage admin.\nMy knee gets sore past 15 km.")
+    walk = settings.add_habit(conn, "Walk after lunch")
+    lights = settings.add_habit(conn, "Lights out by 23:00")
+    goal_ids = {r["title"]: r["id"] for r in conn.execute("SELECT id, title FROM goals")}
+    for item in (
+        {"kind": "pain", "text": "Afternoon slump after lunch", "area": "Energy", "evidence": "Energy taps fall from 7 to 4 after 14:00", "habit_key": walk},
+        {"kind": "pain", "text": "Evenings lost to the phone", "area": "Focus", "evidence": "Phone is the top distraction on 9 of 21 days", "habit_key": "no_social_media"},
+        {"kind": "pain", "text": "Late to bed on weeknights", "area": "Sleep", "evidence": "Under 6.5 h of sleep on 4 of the last 7 nights", "habit_key": lights},
+        {"kind": "goal", "text": "Promotion to senior analyst", "area": "Career", "evidence": "Top goal for the next 3 months", "goal_id": goal_ids.get("Promotion to senior analyst")},
+        {"kind": "goal", "text": "Half marathon in March", "area": "Fitness", "evidence": "Runs 3–4 times a week already", "goal_id": goal_ids.get("Half marathon in March")},
+    ):
+        about.add(conn, item)
+    suggestions.add_many(conn, [
+        {"kind": "routine", "reason": "Focus scored higher on days you started before 09:00.",
+         "payload": {"name": "Deep work 1", "start": "08:30", "end": "10:30", "weekdays": [3, 4], "note": "Phone in another room"}},
+        {"kind": "routine", "reason": "Your energy taps drop between 14:00 and 16:00.",
+         "payload": {"name": "Walk and coffee outside", "start": "15:30", "end": "15:45", "weekdays": [0, 1, 2]}},
+        {"kind": "habit", "reason": "You want two phone-free evenings a week.", "payload": {"name": "Phone on the charger in the hall"}},
+        {"kind": "task", "reason": "Next step for the side project; fits Deep work on Friday.",
+         "payload": {"title": "Write the landing page copy", "due_date": on(2), "goal_title": "Launch side-project MVP", "notes": "Block: Deep work 1"}},
+        {"kind": "task", "reason": "You noted knee soreness after long runs twice.", "payload": {"title": "Book a physio check", "due_date": on(4)}},
+    ], batch="plan")
 
 
 def seed_demo_energy(conn, end: date) -> None:
@@ -332,9 +385,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--out", help="with --all: write to this file instead of the screen")
     p.add_argument("--force", action="store_true", help="allow --out inside a git repository")
     p.add_argument("--sensitive", action="store_true",
-                   help="include the health and mental health profile answers (onboarding insights only)")
+                   help="include the health and mental health profile answers (onboarding insights and plan builder only)")
     p.add_argument("--month", action="store_true", help="include this month compared with last month")
     p.add_argument("--chat", type=int, help="include this chat's conversation (for the ask skill)")
+    p.add_argument("--goal", type=int, help="include this goal in full, to break it down (for the plan builder)")
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("import", help="restore an export made with export --all into an empty database")
@@ -353,6 +407,12 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--kind", choices=reports.KINDS)
     r.add_argument("--limit", type=int, default=10)
     r.set_defaults(func=cmd_report_list)
+
+    p = sub.add_parser("suggest", help="propose goals, habits, tasks and routine blocks for the user to approve")
+    ssub = p.add_subparsers(dest="suggest_command", required=True)
+    r = ssub.add_parser("add", help='read {"batch": ..., "suggestions": [...]} as JSON from stdin')
+    r.add_argument("--file", default="-", choices=["-"], help="always - (stdin)")
+    r.set_defaults(func=cmd_suggest_add)
 
     p = sub.add_parser("scores", help="print the scores for a day")
     p.add_argument("--date", type=_date, default=date.today().isoformat())

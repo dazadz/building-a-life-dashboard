@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, tasks, trash, weekly
+from . import about, backups, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, suggestions, tasks, trash, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -50,8 +50,13 @@ class SettingsIn(BaseModel):
     theme: dict | None = None
 
 
-class HabitActiveIn(BaseModel):
-    active: bool
+class HabitSettingIn(BaseModel):
+    active: bool | None = None
+    name: str | None = Field(None, max_length=settings.HABIT_NAME_MAX)
+
+
+class HabitNewIn(BaseModel):
+    name: str = Field(max_length=settings.HABIT_NAME_MAX)
 
 
 class HabitIn(BaseModel):
@@ -178,6 +183,34 @@ class ChatMessageIn(BaseModel):
 
 class CoachRunIn(BaseModel):
     skill: str = "daily-report"
+    goal_id: int | None = None
+
+
+class AboutIn(BaseModel):
+    notes: str | None = Field(None, max_length=about.NOTES_MAX)
+
+
+class PainGoalIn(BaseModel):
+    kind: Literal["pain", "goal"]
+    text: str = Field(max_length=about.TEXT_MAX["text"])
+    area: str | None = Field(None, max_length=about.TEXT_MAX["area"])
+    evidence: str | None = Field(None, max_length=about.TEXT_MAX["evidence"])
+    goal_id: int | None = None
+    habit_key: str | None = None
+
+
+class PainGoalChange(BaseModel):
+    kind: Literal["pain", "goal"] | None = None
+    text: str | None = Field(None, max_length=about.TEXT_MAX["text"])
+    area: str | None = Field(None, max_length=about.TEXT_MAX["area"])
+    evidence: str | None = Field(None, max_length=about.TEXT_MAX["evidence"])
+    goal_id: int | None = None
+    habit_key: str | None = None
+    status: Literal["active", "resolved"] | None = None
+
+
+class SuggestionAcceptIn(BaseModel):
+    payload: dict | None = None  # the user's edited version, if they changed it
 
 
 def get_conn():
@@ -270,13 +303,82 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             raise HTTPException(422, str(exc))
         return settings.public(conn, day)
 
-    @app.put("/api/habit-settings/{key}")
-    def put_habit_setting(key: str, body: HabitActiveIn, conn=Depends(get_conn)):
+    @app.post("/api/habit-settings")
+    def post_habit_setting(body: HabitNewIn, conn=Depends(get_conn)):
         try:
-            settings.set_habit_active(conn, key, body.active)
+            settings.add_habit(conn, body.name)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return settings.habit_list(conn)
+
+    @app.put("/api/habit-settings/{key}")
+    def put_habit_setting(key: str, body: HabitSettingIn, conn=Depends(get_conn)):
+        try:
+            if body.name is not None:
+                settings.rename_habit(conn, key, body.name)
+            if body.active is not None:
+                settings.set_habit_active(conn, key, body.active)
         except KeyError:
             raise HTTPException(404, "unknown habit")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
         return settings.habit_list(conn)
+
+    def about_write(work):
+        try:
+            work()
+        except KeyError:
+            raise HTTPException(404, "no such pain or goal")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    # About me: every write returns the whole page.
+    @app.get("/api/about")
+    def get_about(conn=Depends(get_conn)):
+        return about.summary(conn)
+
+    @app.put("/api/about")
+    def put_about(body: AboutIn, conn=Depends(get_conn)):
+        about_write(lambda: about.set_notes(conn, body.notes))
+        return about.summary(conn)
+
+    @app.post("/api/pains-goals")
+    def post_pain_goal(body: PainGoalIn, conn=Depends(get_conn)):
+        about_write(lambda: about.add(conn, body.model_dump()))
+        return about.summary(conn)
+
+    @app.put("/api/pains-goals/{item_id}")
+    def put_pain_goal(item_id: int, body: PainGoalChange, conn=Depends(get_conn)):
+        about_write(lambda: about.update(conn, item_id, body.model_dump(exclude_unset=True)))
+        return about.summary(conn)
+
+    @app.delete("/api/pains-goals/{item_id}")
+    def delete_pain_goal(item_id: int, response: Response, conn=Depends(get_conn)):
+        undoable(response, conn, "pain_goal", item_id, lambda: about_write(lambda: about.delete(conn, item_id)))
+        return about.summary(conn)
+
+    def suggestion_write(work):
+        try:
+            return work()
+        except KeyError:
+            raise HTTPException(404, "no such suggestion")
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    @app.get("/api/suggestions")
+    def get_suggestions(conn=Depends(get_conn)):
+        return suggestions.summary(conn)
+
+    @app.post("/api/suggestions/{suggestion_id}/accept")
+    def accept_suggestion(suggestion_id: int, body: SuggestionAcceptIn, today: str | None = None, conn=Depends(get_conn)):
+        day = _day(today) if today else date.today().isoformat()
+        suggestion_write(lambda: suggestions.accept(conn, suggestion_id, day, body.payload))
+        return suggestions.summary(conn)
+
+    @app.post("/api/suggestions/{suggestion_id}/dismiss")
+    def dismiss_suggestion(suggestion_id: int, conn=Depends(get_conn)):
+        suggestion_write(lambda: suggestions.dismiss(conn, suggestion_id))
+        return suggestions.summary(conn)
 
     def goals_today(today: str | None) -> str:
         return _day(today) if today else date.today().isoformat()
@@ -541,7 +643,7 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     @app.post("/api/coach/run", status_code=202)
     def run_coach(body: CoachRunIn, conn=Depends(get_conn)):
         try:
-            return {"job_id": coach.start(conn, body.skill)}
+            return {"job_id": coach.start(conn, body.skill, goal_id=body.goal_id)}
         except ValueError as exc:
             raise HTTPException(422, str(exc))
         except coach.NothingToReport as exc:
