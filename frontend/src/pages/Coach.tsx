@@ -8,11 +8,11 @@ import { longDate } from '../format'
 import { useLoad, useQuery, type useCoachJob } from '../hooks'
 
 const KINDS = [
-  ['', 'All'], ['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly'], ['onboarding', 'Profile'],
+  ['', 'All'], ['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly'], ['onboarding', 'Profile'], ['plan', 'Plan'],
 ] as const
 const KIND_LABEL: Record<Report['kind'], string> = {
   daily: 'Daily report', weekly: 'Weekly review', monthly: 'Monthly evolution',
-  onboarding: 'Onboarding', ask: 'Asked',
+  onboarding: 'Onboarding', ask: 'Asked', plan: 'Your plan',
 }
 const VISIBLE = 8
 

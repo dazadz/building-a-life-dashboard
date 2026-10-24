@@ -48,3 +48,20 @@ export function nowAndNext(blocks: PlanBlock[], at: number): { current?: PlanBlo
   const next = blocks.find((b) => span(b)[0] > at)
   return { current, next }
 }
+
+export type DayMode = 'morning' | 'day' | 'evening'
+
+/**
+ * Home's card order follows the time of day: morning from the wake-up target for 3 hours,
+ * evening from 3 hours before bedtime (wake-up target minus sleep target), day in between.
+ */
+export function dayMode(at: number, wakeTarget: string, sleepHours: number): DayMode {
+  const day = 24 * 60
+  const wake = minutes(wakeTarget)
+  const bed = (wake - Math.round(sleepHours * 60) + day) % day
+  const since = (from: number) => (at - from + day) % day
+  if (since(wake) < 3 * 60) return 'morning'
+  // From 3 h before bed until wake-up counts as evening (late nights included).
+  if (since((bed - 3 * 60 + day) % day) < (wake - bed + 3 * 60 + day) % day) return 'evening'
+  return 'day'
+}
