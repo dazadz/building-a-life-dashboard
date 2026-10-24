@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api, type Plan, type PlanBlock } from '../api'
 import { Card } from './Card'
 import { ErrorLine, Loading, NeedsSetup } from './States'
-import { inText, nowAndNext, span } from '../blocks'
+import { KIND_LABEL, inText, nowAndNext, span } from '../blocks'
 
 const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
 
@@ -87,6 +87,7 @@ function BlockNow({ block, live, at, plan, after, onPlan }: {
           <div className="now-tags">
             <span className={live ? 'now-badge' : 'tag'}>{live ? 'NOW' : `UP NEXT · ${inText(start - at)}`}</span>
             <span className="mono muted">{block.start}–{block.end}</span>
+            <span className="tag type-tag" data-type={block.kind}>{KIND_LABEL[block.kind]}</span>
             {block.goal_title && <span className="tag">Goal · {block.goal_title}</span>}
             {!block.goal_title && block.habit_name && <span className="tag">Habit · {block.habit_name}</span>}
           </div>
