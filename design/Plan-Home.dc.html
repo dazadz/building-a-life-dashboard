@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home, your plan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000000}
+a{color:#7DE9EC;text-decoration:none}a:hover{color:#B8F5F6}
+.c{position:relative}
+.c::before,.c::after{content:'';position:absolute;width:10px;height:10px;pointer-events:none}
+.c::before{top:-1px;left:-1px;border-top:1px solid #22E0E6;border-left:1px solid #22E0E6}
+.c::after{bottom:-1px;right:-1px;border-bottom:1px solid #22E0E6;border-right:1px solid #22E0E6}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #000000; color: #E4EAF2; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch;">
+
+  <nav aria-label="Main" style="flex: 1 1 220px; box-sizing: border-box; background: #000000; border-right: 1px solid #1B222D; padding: 18px 12px; display: flex; flex-direction: column; gap: 4px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px;">
+      <div style="width: 30px; height: 30px; border: 1px solid {{accent}}; border-radius: 2px; color: {{accent}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; box-shadow: 0 0 14px {{accentGlow}};">S</div>
+      <span style="font-family: 'Michroma', sans-serif; font-size: 14px; letter-spacing: 0.14em; text-shadow: 0 2px 22px {{accentGlow}};">SAMUEL</span>
+    </div>
+    <button type="button" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 10px; margin-bottom: 10px; background: #05070A; border: 1px solid #1B222D; border-radius: 2px; color: #93A0B2; font: inherit; font-size: 13px; text-align: left; cursor: pointer;">
+      <span style="flex: 1;">Search or jump to…</span>
+      <kbd style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2; border: 1px solid #2B3546; border-radius: 2px; padding: 1px 6px;">Ctrl K</kbd>
+    </button>
+    <a href="Plan-Home.dc.html" aria-current="page" style="display: flex; align-items: center; height: 40px; padding: 0 12px; border-radius: 2px; background: {{accentSoft}}; border: 1px solid {{accentLine}}; color: #E4EAF2; font-weight: 600; box-shadow: 0 0 14px {{accentGlow}};">Today</a>
+    <a href="Plan-About.dc.html" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; color: #C3CCD8;"><span style="flex: 1;">About me</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #071016; background: {{accent}}; border-radius: 2px; padding: 0 6px;">6</span></a>
+    <a href="Checkin.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Check-in</a>
+    <a href="Plan-Routine.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Routine</a>
+    <a href="Tasks.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Tasks</a>
+    <a href="Habits.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Habits</a>
+    <a href="Goals.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Goals</a>
+    <a href="Health.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Health</a>
+    <a href="Review.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Review</a>
+    <a href="Coach.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Coach</a>
+    <div style="flex: 1; min-height: 24px;"></div>
+    <a href="Settings.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #93A0B2; border-top: 1px solid #141A23;">Settings</a>
+  </nav>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 48px;">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px;">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;">
+        <div style="flex: 1 1 420px; min-width: 0;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #93A0B2;">Wed 28 Oct <span style="color: #7F8C9F;">//</span> 14:10 <span style="color: #7F8C9F;">//</span> <span style="color: {{accent}};">Day mode</span></div>
+          <h1 style="margin: 6px 0 4px; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 0.04em; text-transform: uppercase; text-shadow: 0 2px 22px {{accentGlow}};">Good afternoon, Jordan</h1>
+          <p style="margin: 0; color: #C3CCD8;">Deep work 2 is on. One task in it today: the CSV loader. 3 of 8 blocks done.</p>
+        </div>
+        <div role="group" aria-label="Today is" style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">Today is</span>
+          <button type="button" aria-pressed="true" style="height: 36px; padding: 0 14px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accentSoft}}; color: #E4EAF2; font: inherit; font-size: 13px; font-weight: 600; box-shadow: 0 0 14px {{accentGlow}}; cursor: pointer;">Office day</button>
+          <button type="button" aria-pressed="false" style="height: 36px; padding: 0 14px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 13px; cursor: pointer;">Home day</button>
+        </div>
+      </header>
+
+      <section class="c" aria-label="Now" style="background: #0A0D12; border: 1px solid {{accentLine}}; border-radius: 2px; padding: 20px 22px; display: flex; flex-wrap: wrap; gap: 24px; box-shadow: 0 0 14px {{accentGlow}};">
+        <div style="flex: 2 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #071016; background: {{accent}}; border-radius: 2px; padding: 2px 8px;">NOW</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #C3CCD8;">14:00–15:30</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2; border: 1px solid #2B3546; border-radius: 2px; padding: 1px 8px;">Goal · Python analytics project</span>
+          </div>
+          <h2 style="margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Deep work 2</h2>
+          <div style="background: #05070A; border: 1px solid #1B222D; border-radius: 2px; padding: 12px 14px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">Today's task · session 2 of 3</div>
+            <div style="font-size: 16px; font-weight: 600; margin-top: 2px;">Write the CSV loader and its tests</div>
+            <div style="font-size: 13px; color: #93A0B2;">Milestone: Ingest step working · due Fri</div>
+          </div>
+          <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px;">
+            <legend style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2; padding: 0 0 6px;">Steps</legend>
+            <label style="display: flex; align-items: center; gap: 10px; min-height: 32px;"><input type="checkbox" checked="checked" style="accent-color: {{accent}}; width: 16px; height: 16px;"> <span style="color: #93A0B2; text-decoration: line-through;">Phone in another room</span></label>
+            <label style="display: flex; align-items: center; gap: 10px; min-height: 32px;"><input type="checkbox" checked="checked" style="accent-color: {{accent}}; width: 16px; height: 16px;"> <span style="color: #93A0B2; text-decoration: line-through;">Open the project board</span></label>
+            <label style="display: flex; align-items: center; gap: 10px; min-height: 32px;"><input type="checkbox" style="accent-color: {{accent}}; width: 16px; height: 16px;"> <span>Three 25-minute sessions, 5-minute breaks</span></label>
+          </fieldset>
+        </div>
+        <div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 14px; border-left: 1px solid #141A23; padding-left: 22px;">
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">Time left</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 600; color: {{accent}}; text-shadow: 0 0 10px {{accentGlow}};">1:20</div>
+            <div style="display: flex; gap: 3px; margin-top: 6px;" role="img" aria-label="Block 11 percent done">
+              <sc-for list="{{blockOn}}" as="s" hint-placeholder-count="2"><span style="flex: 1; height: 8px; border-radius: 1px; background: {{accent}}; box-shadow: 0 0 6px {{accentGlow}};"></span></sc-for>
+              <sc-for list="{{blockOff}}" as="s" hint-placeholder-count="18"><span style="flex: 1; height: 8px; border-radius: 1px; background: #141A23;"></span></sc-for>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button type="button" style="height: 44px; padding: 0 18px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accent}}; color: #071016; font: inherit; font-weight: 700; cursor: pointer;">Done</button>
+            <button type="button" style="height: 44px; padding: 0 16px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; cursor: pointer;">Skip…</button>
+          </div>
+          <div style="border-top: 1px solid #141A23; padding-top: 12px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">Next · in 1 h 20 min</div>
+            <div style="font-weight: 600;">15:30 Walk and coffee outside</div>
+            <div style="font-size: 13px; color: #93A0B2;">Reminder at 15:25 and 15:30</div>
+          </div>
+          <a href="Plan-Routine.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: auto;">Today's routine →</a>
+        </div>
+      </section>
+
+      <section aria-label="Scores" class="c" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 22px; align-items: center;">
+        <sc-for list="{{scores}}" as="m" hint-placeholder-count="4">
+          <div style="flex: 1 1 160px; min-width: 0; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span style="flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">{{m.label}}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; text-shadow: 0 0 10px {{accentGlow}};">{{m.value}}</span>
+            </div>
+            <div style="display: flex; gap: 2px;" role="img" aria-label="{{m.label}} {{m.value}} of 100">
+              <sc-for list="{{m.on}}" as="s" hint-placeholder-count="12"><span style="flex: 1; height: 6px; border-radius: 1px; background: {{accent}};"></span></sc-for>
+              <sc-for list="{{m.off}}" as="s" hint-placeholder-count="8"><span style="flex: 1; height: 6px; border-radius: 1px; background: #141A23;"></span></sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7F8C9F;">Yesterday<br><a href="#scores">How scores work →</a></span>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px;">
+
+        <section class="c" aria-label="Today's timeline" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Today · office day</h2>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2;">3 of 8 done</span>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
+            <sc-for list="{{timeline}}" as="b" hint-placeholder-count="8">
+              <li style="display: flex; align-items: center; gap: 10px; min-height: 40px; border-bottom: 1px solid #141A23; {{b.rowStyle}}">
+                <span style="width: 44px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #93A0B2;">{{b.time}}</span>
+                <span style="flex: 1; min-width: 0;">
+                  <span style="font-weight: 600;">{{b.name}}</span>
+                  <span style="display: block; font-size: 12px; color: #93A0B2;">{{b.detail}}</span>
+                </span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; padding: 1px 6px; {{b.tagStyle}}">{{b.state}}</span>
+              </li>
+            </sc-for>
+          </ul>
+          <a href="Plan-Routine.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;">Edit routine →</a>
+        </section>
+
+        <section class="c" aria-label="Your focus areas" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Your focus areas</h2>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2;">From what Samuel knows</span>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px;">
+            <sc-for list="{{areas}}" as="a" hint-placeholder-count="4">
+              <li style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; align-items: baseline; gap: 8px;">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; padding: 1px 6px; {{a.kindStyle}}">{{a.kind}}</span>
+                  <span style="flex: 1; min-width: 0; font-weight: 600;">{{a.text}}</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">{{a.value}}</span>
+                </div>
+                <div style="display: flex; gap: 2px;" role="img" aria-label="{{a.metric}} {{a.value}}">
+                  <sc-for list="{{a.on}}" as="s" hint-placeholder-count="10"><span style="flex: 1; height: 6px; border-radius: 1px; {{a.segStyle}}"></span></sc-for>
+                  <sc-for list="{{a.off}}" as="s" hint-placeholder-count="10"><span style="flex: 1; height: 6px; border-radius: 1px; background: #141A23;"></span></sc-for>
+                </div>
+                <span style="font-size: 12px; color: #93A0B2;">{{a.metric}}</span>
+              </li>
+            </sc-for>
+          </ul>
+          <a href="Plan-About.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: auto;">What Samuel knows →</a>
+        </section>
+
+        <section class="c" aria-label="Goals" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Goals</h2>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2;">3 active</span>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;">
+            <sc-for list="{{goals}}" as="g" hint-placeholder-count="3">
+              <li style="display: flex; flex-direction: column; gap: 4px; padding: 10px 0; border-bottom: 1px solid #141A23;">
+                <div style="display: flex; align-items: baseline; gap: 8px;">
+                  <span style="flex: 1; min-width: 0; font-weight: 600;">{{g.title}}</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: {{accent}};">{{g.pct}}</span>
+                </div>
+                <div style="font-size: 12px; color: #93A0B2;">This week: {{g.next}}</div>
+              </li>
+            </sc-for>
+          </ul>
+          <a href="Goals.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: auto;">All goals →</a>
+        </section>
+
+        <section class="c" aria-label="Samuel suggests" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; grid-column: 1 / -1;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+            <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Samuel suggests</h2>
+            <div role="group" aria-label="Filter suggestions" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button type="button" aria-pressed="true" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accentSoft}}; color: #E4EAF2; font: inherit; font-size: 12px; cursor: pointer;">All 6</button>
+              <button type="button" aria-pressed="false" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 12px; cursor: pointer;">Routine 2</button>
+              <button type="button" aria-pressed="false" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 12px; cursor: pointer;">Habits 1</button>
+              <button type="button" aria-pressed="false" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 12px; cursor: pointer;">Tasks 3</button>
+            </div>
+          </div>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px;">
+              <thead>
+                <tr style="text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #93A0B2;">
+                  <th scope="col" style="padding: 6px 8px 6px 0; font-weight: 500;">Kind</th>
+                  <th scope="col" style="padding: 6px 8px; font-weight: 500;">Suggestion</th>
+                  <th scope="col" style="padding: 6px 8px; font-weight: 500;">Why</th>
+                  <th scope="col" style="padding: 6px 0 6px 8px; font-weight: 500;"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{suggestions}}" as="s" hint-placeholder-count="5">
+                  <tr style="border-top: 1px solid #141A23;">
+                    <td style="padding: 10px 8px 10px 0; white-space: nowrap;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #5CB8FF; border: 1px solid #23415C; border-radius: 2px; padding: 1px 6px;">{{s.kind}}</span></td>
+                    <td style="padding: 10px 8px; font-weight: 600;">{{s.title}}</td>
+                    <td style="padding: 10px 8px; color: #93A0B2;">{{s.why}}</td>
+                    <td style="padding: 10px 0 10px 8px; white-space: nowrap; text-align: right;">
+                      <button type="button" style="height: 32px; padding: 0 12px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accent}}; color: #071016; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;">Accept</button>
+                      <button type="button" style="height: 32px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; font-size: 12px; cursor: pointer;">Edit</button>
+                      <button type="button" style="height: 32px; padding: 0 10px; border-radius: 2px; border: 0; background: transparent; color: #93A0B2; font: inherit; font-size: 12px; cursor: pointer;">Dismiss</button>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button type="button" style="height: 32px; padding: 0; border: 0; background: transparent; color: #93A0B2; font: inherit; font-size: 13px; cursor: pointer;">Show 1 more</button>
+            <span style="flex: 1;"></span>
+            <a href="Plan-Breakdown.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;">Review all suggestions →</a>
+          </div>
+        </section>
+
+        <section class="c" aria-label="Tonight's check-in" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Tonight's check-in</h2>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #FFC24D;">Due 21:30</span>
+          </div>
+          <p style="margin: 0; color: #C3CCD8;">Samuel pre-fills it from today: 3 blocks done, 2 h 10 of deep work, 1 block skipped. You review and save.</p>
+          <a href="Checkin.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: auto;">Start check-in →</a>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22E0E6","options":["#22E0E6","#5CB8FF","#9B87FF","#FF7EB3"]},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#22E0E6';
+    const n = parseInt(accent.slice(1), 16);
+    const rgb = ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
+    const segs = (v) => {
+      const on = Math.round(v / 5);
+      return { on: Array.from({ length: on }, (_, i) => ({ i })), off: Array.from({ length: 20 - on }, (_, i) => ({ i })) };
+    };
+    const done = 'color: #5BE38A; border: 1px solid #24563A;';
+    const now = 'color: #071016; background: ' + accent + ';';
+    const skip = 'color: #FFC24D; border: 1px solid #5C4A1F;';
+    const later = 'color: #7F8C9F; border: 1px solid #1B222D;';
+    const faded = 'opacity: 0.72;';
+    const block = segs(11);
+    return {
+      accent,
+      accentSoft: 'rgba(' + rgb + ',0.12)',
+      accentLine: 'rgba(' + rgb + ',0.55)',
+      accentGlow: 'rgba(' + rgb + ',0.45)',
+      blockOn: block.on,
+      blockOff: block.off,
+      scores: [
+        { label: 'Productivity', value: 72, ...segs(72) },
+        { label: 'Discipline', value: 64, ...segs(64) },
+        { label: 'Energy', value: 58, ...segs(58) },
+        { label: 'Focus', value: 69, ...segs(69) },
+      ],
+      timeline: [
+        { time: '06:45', name: 'Morning launch', detail: 'Water, daylight, plan the day', state: 'Done', tagStyle: done, rowStyle: faded },
+        { time: '07:30', name: 'Commute · podcast', detail: 'Fixed', state: 'Done', tagStyle: done, rowStyle: faded },
+        { time: '09:00', name: 'Deep work 1', detail: 'Task: budget model v2', state: 'Done', tagStyle: done, rowStyle: faded },
+        { time: '12:30', name: 'Lunch away from screens', detail: 'Recovery', state: 'Skipped', tagStyle: skip, rowStyle: faded },
+        { time: '14:00', name: 'Deep work 2', detail: 'Task: CSV loader and tests', state: 'Now', tagStyle: now, rowStyle: '' },
+        { time: '15:30', name: 'Walk and coffee outside', detail: 'Habit: walk after lunch', state: '15:30', tagStyle: later, rowStyle: '' },
+        { time: '18:30', name: 'Run · 8 km easy', detail: 'Goal: half-marathon under 2 h', state: '18:30', tagStyle: later, rowStyle: '' },
+        { time: '22:15', name: 'Wind down', detail: 'Phone on the charger in the hall', state: '22:15', tagStyle: later, rowStyle: '' },
+      ],
+      areas: [
+        { kind: 'Pain', kindStyle: skip, text: 'Afternoon slump after lunch', value: '5 / 7', metric: 'Habit · walk after lunch, last 7 days', segStyle: 'background: #FFC24D;', ...segs(71) },
+        { kind: 'Pain', kindStyle: skip, text: 'Evenings lost to the phone', value: '3 / 7', metric: 'Habit · phone out of the bedroom, last 7 days', segStyle: 'background: #FFC24D;', ...segs(43) },
+        { kind: 'Goal', kindStyle: done, text: 'Senior analyst by June', value: '40%', metric: 'Goal · 2 of 5 milestones', segStyle: 'background: #5BE38A;', ...segs(40) },
+        { kind: 'Goal', kindStyle: done, text: 'Half-marathon under 2 h', value: '55%', metric: 'Goal · long run at 16 km of 21', segStyle: 'background: #5BE38A;', ...segs(55) },
+      ],
+      goals: [
+        { title: 'Python analytics project', pct: '30%', next: 'Ingest step working · Fri' },
+        { title: 'Senior analyst by June', pct: '40%', next: 'Present the Q4 budget · Thu' },
+        { title: 'Half-marathon under 2 h', pct: '55%', next: '16 km long run · Sun' },
+      ],
+      suggestions: [
+        { kind: 'Routine', title: 'Move Deep work 1 to 08:30 on home days', why: 'Your focus scored 15 higher on days you started before 09:00.' },
+        { kind: 'Habit', title: 'Lights out by 23:00', why: 'You slept under 6.5 h on 4 of the last 7 nights.' },
+        { kind: 'Task', title: 'Write the README for the analytics project', why: 'Next step after the CSV loader; fits Deep work 2 on Fri.' },
+        { kind: 'Task', title: 'Book the physio check before week 6', why: 'You noted knee soreness after long runs twice.' },
+        { kind: 'Routine', title: 'Add a 10-minute reset at 17:30 on office days', why: 'Your energy taps drop from 7 to 4 between 16:00 and 18:00.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

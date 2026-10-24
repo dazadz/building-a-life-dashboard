@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Samuel's plan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000000}
+a{color:#7DE9EC;text-decoration:none}a:hover{color:#B8F5F6}
+.c{position:relative}
+.c::before,.c::after{content:'';position:absolute;width:10px;height:10px;pointer-events:none}
+.c::before{top:-1px;left:-1px;border-top:1px solid #22E0E6;border-left:1px solid #22E0E6}
+.c::after{bottom:-1px;right:-1px;border-bottom:1px solid #22E0E6;border-right:1px solid #22E0E6}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #000000; color: #E4EAF2; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch;">
+
+  <nav aria-label="Main" style="flex: 1 1 220px; box-sizing: border-box; background: #000000; border-right: 1px solid #1B222D; padding: 18px 12px; display: flex; flex-direction: column; gap: 4px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px;">
+      <div style="width: 30px; height: 30px; border: 1px solid {{accent}}; border-radius: 2px; color: {{accent}}; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; box-shadow: 0 0 14px {{accentGlow}};">S</div>
+      <span style="font-family: 'Michroma', sans-serif; font-size: 14px; letter-spacing: 0.14em; text-shadow: 0 2px 22px {{accentGlow}};">SAMUEL</span>
+    </div>
+    <a href="Plan-Home.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Today</a>
+    <a href="Plan-About.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: 2px; background: {{accentSoft}}; border: 1px solid {{accentLine}}; color: #E4EAF2; font-weight: 600; box-shadow: 0 0 14px {{accentGlow}};"><span style="flex: 1;">About me</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #071016; background: {{accent}}; border-radius: 2px; padding: 0 6px;">9</span></a>
+    <a href="Checkin.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Check-in</a>
+    <a href="Plan-Routine.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Routine</a>
+    <a href="Tasks.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Tasks</a>
+    <a href="Habits.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Habits</a>
+    <a href="Goals.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Goals</a>
+    <a href="Health.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Health</a>
+    <a href="Review.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Review</a>
+    <a href="Coach.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #C3CCD8;">Coach</a>
+    <div style="flex: 1; min-height: 24px;"></div>
+    <a href="Settings.dc.html" style="display: flex; align-items: center; height: 40px; padding: 0 12px; color: #93A0B2; border-top: 1px solid #141A23;">Settings</a>
+  </nav>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 48px;">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px;">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;">
+        <div style="flex: 1 1 420px; min-width: 0;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #93A0B2;"><a href="Plan-About.dc.html">About me</a> <span style="color: #7F8C9F;">//</span> Built Mon 26 Oct, 19:42 <span style="color: #7F8C9F;">//</span> 9 waiting</div>
+          <h1 style="margin: 6px 0 4px; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 0.04em; text-transform: uppercase; text-shadow: 0 2px 22px {{accentGlow}};">Samuel's plan for you</h1>
+          <p style="margin: 0; color: #C3CCD8; max-width: 720px;">Nothing changes until you accept it. Edit anything first; dismissed ideas don't come back.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" style="height: 44px; padding: 0 16px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accent}}; color: #071016; font: inherit; font-weight: 700; cursor: pointer;">Accept 6 selected</button>
+          <button type="button" style="height: 44px; padding: 0 14px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; cursor: pointer;">Dismiss the rest</button>
+        </div>
+      </header>
+
+      <section class="c" aria-label="Samuel's summary" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px;">
+        <h2 style="margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">The short version</h2>
+        <p style="margin: 0; color: #C3CCD8; max-width: 860px;">Jordan, your side project keeps slipping because it has no fixed slot and no next step. This plan gives it Deep work 2 on office days and Deep work 1 on home days, with one 25-minute-sized task each session. Lights out moves to 23:00 so the 06:45 wake-up stops costing you sleep.</p>
+        <a href="Coach.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;">Ask Samuel about this plan →</a>
+      </section>
+
+      <section class="c" aria-label="Project breakdown" style="background: #0A0D12; border: 1px solid {{accentLine}}; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 0 14px {{accentGlow}};">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;">
+          <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Break down · Python analytics project</h2>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93A0B2;">4 milestones · 11 sessions · ends Fri 20 Nov</span>
+        </div>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px;">
+          <sc-for list="{{milestones}}" as="m" hint-placeholder-count="3">
+            <li style="border: 1px solid #1B222D; border-radius: 2px; background: #05070A; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 10px; min-height: 32px;">
+                <input type="checkbox" checked="checked" style="accent-color: {{accent}}; width: 16px; height: 16px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #5CB8FF; border: 1px solid #23415C; border-radius: 2px; padding: 1px 6px;">Milestone</span>
+                <span style="flex: 1; min-width: 0; font-weight: 600;">{{m.title}}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #93A0B2;">due {{m.due}}</span>
+              </label>
+              <ul style="list-style: none; margin: 0; padding: 0 0 0 26px; display: flex; flex-direction: column;">
+                <sc-for list="{{m.tasks}}" as="t" hint-placeholder-count="3">
+                  <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; min-height: 36px; border-top: 1px solid #141A23;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #93A0B2;">Task</span>
+                    <span style="flex: 1 1 240px; min-width: 0;">{{t.title}}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{accent}};">{{t.block}}</span>
+                    <span style="width: 72px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #93A0B2;">{{t.day}}</span>
+                  </li>
+                </sc-for>
+              </ul>
+            </li>
+          </sc-for>
+        </ol>
+        <p style="margin: 0; font-size: 13px; color: #93A0B2;">Why: you wrote "I start projects and never finish them". Small tasks with a fixed slot make it obvious what to do when Deep work starts, and a skipped one rolls to the next slot instead of disappearing.</p>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+          <button type="button" style="height: 36px; padding: 0 12px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; font-size: 13px; cursor: pointer;">Edit breakdown</button>
+          <button type="button" style="height: 36px; padding: 0 12px; border: 0; background: transparent; color: #93A0B2; font: inherit; font-size: 13px; cursor: pointer;">Make it smaller</button>
+          <span style="flex: 1;"></span>
+          <a href="Goals.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;">Open the goal →</a>
+        </div>
+      </section>
+
+      <section class="c" aria-label="Other suggestions" style="background: #0A0D12; border: 1px solid #1B222D; border-radius: 2px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+          <h2 style="flex: 1; margin: 0; font-family: 'Michroma', sans-serif; font-weight: 400; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 10px {{accentGlow}};">Routine, habits and tasks</h2>
+          <div role="group" aria-label="Filter" style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button type="button" aria-pressed="true" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid {{accent}}; background: {{accentSoft}}; color: #E4EAF2; font: inherit; font-size: 12px; cursor: pointer;">All 5</button>
+            <button type="button" aria-pressed="false" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 12px; cursor: pointer;">Routine 2</button>
+            <button type="button" aria-pressed="false" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 12px; cursor: pointer;">Habits 2</button>
+            <button type="button" aria-pressed="false" style="height: 30px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #C3CCD8; font: inherit; font-size: 12px; cursor: pointer;">Tasks 1</button>
+          </div>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0;">
+          <sc-for list="{{others}}" as="s" hint-placeholder-count="5">
+            <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #141A23;">
+              <input type="checkbox" checked="{{s.checked}}" aria-label="Select {{s.title}}" style="accent-color: {{accent}}; width: 16px; height: 16px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #5CB8FF; border: 1px solid #23415C; border-radius: 2px; padding: 1px 6px;">{{s.kind}}</span>
+              <span style="flex: 1 1 320px; min-width: 0;"><span style="font-weight: 600;">{{s.title}}</span><span style="display: block; font-size: 12px; color: #93A0B2;">{{s.why}}</span></span>
+              <button type="button" style="height: 32px; padding: 0 10px; border-radius: 2px; border: 1px solid #2B3546; background: transparent; color: #E4EAF2; font: inherit; font-size: 12px; cursor: pointer;">Edit</button>
+              <button type="button" style="height: 32px; padding: 0 10px; border: 0; background: transparent; color: #93A0B2; font: inherit; font-size: 12px; cursor: pointer;">Dismiss</button>
+            </li>
+          </sc-for>
+        </ul>
+        <a href="Plan-Routine.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;">See them in your routine →</a>
+      </section>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#22E0E6","options":["#22E0E6","#5CB8FF","#9B87FF","#FF7EB3"]},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#22E0E6';
+    const n = parseInt(accent.slice(1), 16);
+    const rgb = ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
+    return {
+      accent,
+      accentSoft: 'rgba(' + rgb + ',0.12)',
+      accentLine: 'rgba(' + rgb + ',0.55)',
+      accentGlow: 'rgba(' + rgb + ',0.45)',
+      milestones: [
+        { title: 'Pick the dataset and write the question', due: 'Fri 30 Oct', tasks: [
+          { title: 'Shortlist 3 public transport datasets', block: 'Deep work 2', day: 'Wed' },
+          { title: 'Write the one-line question the project answers', block: 'Deep work 1', day: 'Thu' },
+        ] },
+        { title: 'Ingest step working', due: 'Fri 6 Nov', tasks: [
+          { title: 'Write the CSV loader and its tests', block: 'Deep work 2', day: 'Mon' },
+          { title: 'Clean the date columns', block: 'Deep work 2', day: 'Tue' },
+          { title: 'Load into SQLite and check row counts', block: 'Deep work 1', day: 'Thu' },
+        ] },
+        { title: 'First chart and finding', due: 'Fri 13 Nov', tasks: [
+          { title: 'One query per question, saved as SQL files', block: 'Deep work 2', day: 'Mon' },
+          { title: 'Draw the weekly trend chart', block: 'Deep work 1', day: 'Thu' },
+          { title: 'Write the finding in three sentences', block: 'Deep work 1', day: 'Fri' },
+        ] },
+        { title: 'Publish it', due: 'Fri 20 Nov', tasks: [
+          { title: 'Write the README with the finding up top', block: 'Deep work 2', day: 'Tue' },
+          { title: 'Push to GitHub and share it with Marcus', block: 'Deep work 1', day: 'Fri' },
+        ] },
+      ],
+      others: [
+        { kind: 'Routine', title: 'Move Deep work 1 to 08:30 on home days', why: 'Focus scored 15 higher on days you started before 09:00.', checked: true },
+        { kind: 'Routine', title: 'Add Walk and coffee outside, 15:30, office days', why: 'Your energy taps fall from 7 to 4 between 14:00 and 16:00.', checked: true },
+        { kind: 'Habit', title: 'Lights out by 23:00', why: 'Under 6.5 h of sleep on 4 of the last 7 nights.', checked: true },
+        { kind: 'Habit', title: 'Phone on the charger in the hall', why: 'You want two phone-free evenings a week.', checked: false },
+        { kind: 'Task', title: 'Set up the 20% auto-transfer on payday', why: 'Your money goal has no first step yet.', checked: false },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

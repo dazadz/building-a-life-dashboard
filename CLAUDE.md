@@ -46,7 +46,7 @@ As you work, commit to Git and push to GitHub regularly, so there is always a sa
 
 ## Design
 
-`design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Onboarding, Home with Needs a reply, Check-in, Habits, Health & energy, Goals, Weekly and Monthly reviews, Coach, Tasks, Ctrl+K palette, Settings → Appearance). Keep the files and the canvas in sync when designs change, and build the app to match them.
+`design/*.dc.html` and `design/canvas.json` are the source of the design canvas at https://claude.ai/artifact/1DUdad1m3RYN15j932Dagj (Onboarding, Home with Needs a reply, Check-in, Habits, Health & energy, Goals, Weekly and Monthly reviews, Coach, Tasks, Ctrl+K palette, Settings → Appearance, and the v0.5 row: Home with your plan, About me, Routine, Samuel's plan with the project breakdown, and block reminders). Keep the files and the canvas in sync when designs change, and build the app to match them.
 
 Design rules:
 - Tech style (since 2026-10-24, this overrides the canvas's colours and fonts; the canvas still defines layout): a pure black page and sidebar (#000000, the user's choice) with cards a hair above it (card #0A0D12, border #1B222D) and one electric cyan accent (default #22E0E6). Status colours: green #5BE38A, amber #FFC24D, blue #5CB8FF. Every text colour passes WCAG AA on every surface.
