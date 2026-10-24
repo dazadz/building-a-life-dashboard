@@ -4,6 +4,10 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-24
+
+Chat with Samuel, today at a glance, energy taps, time leaks and what moves your energy and mood.
+
 ### Added
 - **Undo for deletes:** deleting a goal (with its milestones), a milestone, a task (with its subtasks), a routine block or a chat shows Undo for 10 seconds. Settings → Recently deleted keeps them for 30 days on this computer, with Restore and Empty now.
 - **Lifestyle score:** the prompt's lifestyle score, from sleep, workouts (rest days count), healthy eating and water. Health & energy shows it next to Balance as 7-day averages with the change from the week before, and Samuel's reports see both. The rule is in `docs/scores.md`.
@@ -18,6 +22,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 - **Coach runs are locked down further.** Bash is the only tool, and only `samuel export` and `samuel report add` may run. Runs no longer load your own Claude Code settings or MCP servers. Inside a run, `samuel export` refuses full exports and `report add` won't read files.
 - **Exports can't be committed.** The privacy check stops any Samuel export file.
 - **Dependencies are watched.** CI checks Python and npm packages for known vulnerabilities, Dependabot alerts on known vulnerabilities and opens a pull request only for security fixes, and CI actions are pinned to exact versions.
+
+### Changed
+- **Delete confirmations:** deleting a goal or task asks in an in-app dialog that matches the app, instead of the browser's plain popup. It names what will go (including a goal's milestones), says it can be restored from Recently deleted for 30 days, and starts on Cancel so Enter never deletes by accident.
 
 ### Fixed
 - **Health:** "1 points lower" now reads "1 point lower".
@@ -71,6 +78,7 @@ The core loop: check in each evening, see your scores, and have Samuel write you
 - Protection against DNS rebinding and cross-site writes. Coach runs can only use the `samuel` CLI.
 - A pre-commit hook and a CI check block database files, secrets, local paths and personal email addresses.
 
+[0.4.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.4.0
 [0.3.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.3.0
 [0.2.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.2.0
 [0.1.0]: https://github.com/dazadz/building-a-life-dashboard/releases/tag/v0.1.0
