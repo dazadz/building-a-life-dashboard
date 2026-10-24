@@ -396,7 +396,7 @@ export interface Task {
   routine_id: number | null
   done_at: string | null
   view: 'today' | 'upcoming' | 'someday' | 'overdue' | 'done'
-  subtasks: { id: number; title: string; done: boolean }[]
+  subtasks: { id: number; title: string; done: boolean; due_date: string | null }[]
 }
 
 export interface TasksSummary {
@@ -405,6 +405,11 @@ export interface TasksSummary {
   this_week: number
   lists: string[]
   reminders: { id: number; title: string; remind_at: string }[]
+}
+
+export interface NewSubtask {
+  title: string
+  due_date: string | null
 }
 
 export interface NewTask {
@@ -418,7 +423,7 @@ export interface NewTask {
   goal_id?: number | null
   type?: BlockKind | null
   routine_id?: number | null
-  subtasks?: string[]
+  subtasks?: (string | NewSubtask)[]
 }
 
 export interface DueReminder {
@@ -660,10 +665,12 @@ export const api = {
     request<TasksSummary>(`/api/tasks/${id}/snooze?now=${now}`, { method: 'POST', body: JSON.stringify({ how }) }),
   deleteTask: (now: string, id: number) =>
     request<TasksSummary>(`/api/tasks/${id}?now=${now}`, { method: 'DELETE', body: '{}' }),
-  addSubtask: (now: string, taskId: number, title: string) =>
-    request<TasksSummary>(`/api/tasks/${taskId}/subtasks?now=${now}`, { method: 'POST', body: JSON.stringify({ title }) }),
+  addSubtask: (now: string, taskId: number, title: string, dueDate: string | null = null) =>
+    request<TasksSummary>(`/api/tasks/${taskId}/subtasks?now=${now}`, { method: 'POST', body: JSON.stringify({ title, due_date: dueDate }) }),
   setSubtask: (now: string, id: number, done: boolean) =>
     request<TasksSummary>(`/api/subtasks/${id}?now=${now}`, { method: 'PUT', body: JSON.stringify({ done }) }),
+  setSubtaskDue: (now: string, id: number, dueDate: string | null) =>
+    request<TasksSummary>(`/api/subtasks/${id}?now=${now}`, { method: 'PUT', body: JSON.stringify({ due_date: dueDate }) }),
   deleteSubtask: (now: string, id: number) =>
     request<TasksSummary>(`/api/subtasks/${id}?now=${now}`, { method: 'DELETE', body: '{}' }),
   dueReminders: (now: string) => request<DueReminder[]>(`/api/reminders/due?now=${now}`),

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { BlockKind, Goal, NewTask, Priority, Routine, Task } from '../api'
+import type { BlockKind, Goal, NewSubtask, NewTask, Priority, Routine, Task } from '../api'
+import { dayDate } from '../format'
 import { KIND_LABEL } from '../blocks'
 import { Card } from './Card'
 import { ErrorLine } from './States'
@@ -14,20 +15,22 @@ type Fields = Required<Pick<NewTask, 'title' | 'type' | 'goal_id' | 'due_date' |
 /** Create a task, or edit one: its time, type, the goal it moves forward and the routine block it belongs to. */
 export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
   task?: Task; title?: string; goals: Goal[]; routines: Routine[]
-  onSave: (fields: Fields, subtasks: string[]) => Promise<boolean>; onClose: () => void
+  onSave: (fields: Fields, subtasks: NewSubtask[]) => Promise<boolean>; onClose: () => void
 }) {
   const [f, setF] = useState<Fields>({
     title: task?.title ?? title ?? '', type: task?.type ?? null, goal_id: task?.goal_id ?? null,
     due_date: task?.due_date ?? null, due_time: task?.due_time ?? null, remind_at: task?.remind_at ?? null,
     priority: task?.priority ?? 'normal', routine_id: task?.routine_id ?? null, notes: task?.notes ?? null,
   })
-  const [subtasks, setSubtasks] = useState<string[]>([])
+  const [subtasks, setSubtasks] = useState<NewSubtask[]>([])
   const [subtask, setSubtask] = useState('')
+  const [subtaskDue, setSubtaskDue] = useState('')
   const [problem, setProblem] = useState<string | null>(null)
   const addSubtask = () => {
     if (!subtask.trim()) return
-    setSubtasks((s) => [...s, subtask.trim()])
+    setSubtasks((s) => [...s, { title: subtask.trim(), due_date: subtaskDue || null }])
     setSubtask('')
+    setSubtaskDue('')
   }
   const [saving, setSaving] = useState(false)
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) => setF((x) => ({ ...x, [key]: value }))
@@ -37,7 +40,7 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
     if (f.due_time && !f.due_date) return setProblem('Pick a date for the time.')
     setProblem(null)
     setSaving(true)
-    const pending = subtask.trim() ? [...subtasks, subtask.trim()] : subtasks
+    const pending = subtask.trim() ? [...subtasks, { title: subtask.trim(), due_date: subtaskDue || null }] : subtasks
     const ok = await onSave({ ...f, title: f.title.trim(), notes: f.notes?.trim() || null }, pending)
     setSaving(false)
     if (ok) onClose()
@@ -103,7 +106,7 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
           {(task?.subtasks.length ?? 0) > 0 && (
             <ul className="list">
               {task!.subtasks.map((x) => (
-                <li key={x.id}><span className={x.done ? 'muted' : undefined} style={{ flex: 1 }}>{x.title}</span><span className="faint mono">{x.done ? 'done' : 'open'}</span></li>
+                <li key={x.id}><span className={x.done ? 'muted' : undefined} style={{ flex: 1 }}>{x.title}</span><span className="faint mono">{x.due_date ? dayDate(x.due_date) : x.done ? 'done' : 'open'}</span></li>
               ))}
             </ul>
           )}
@@ -111,16 +114,18 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
             <ul className="list">
               {subtasks.map((x, i) => (
                 <li key={i}>
-                  <span style={{ flex: 1 }}>{x}</span>
-                  <button type="button" className="link-btn" aria-label={`Remove ${x}`} onClick={() => setSubtasks((s) => s.filter((_, j) => j !== i))}>Remove</button>
+                  <span style={{ flex: 1 }}>{x.title}</span>
+                  <span className="faint mono">{x.due_date ? dayDate(x.due_date) : 'No date'}</span>
+                  <button type="button" className="link-btn" aria-label={`Remove ${x.title}`} onClick={() => setSubtasks((s) => s.filter((_, j) => j !== i))}>Remove</button>
                 </li>
               ))}
             </ul>
           )}
-          <div className="inline-add" style={{ gridTemplateColumns: 'minmax(0, 1fr) auto' }}>
+          <div className="inline-add" style={{ gridTemplateColumns: 'minmax(0, 1fr) 160px auto' }}>
             <input className="input" aria-label="New subtask" placeholder="Add a subtask, then Enter" maxLength={200} value={subtask}
               onChange={(e) => setSubtask(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask() } }} />
+            <input type="date" className="input" aria-label="New subtask due date" value={subtaskDue} onChange={(e) => setSubtaskDue(e.target.value)} />
             <button type="button" className="btn" disabled={!subtask.trim()} onClick={addSubtask}>Add subtask</button>
           </div>
         </fieldset>

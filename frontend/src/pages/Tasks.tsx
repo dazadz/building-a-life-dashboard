@@ -102,7 +102,7 @@ export function TasksPage() {
             const now = localStamp(new Date())
             if (editing === 'new') return api.addTask(now, { ...fields, subtasks })
             let summary = await api.updateTask(now, editing, fields)
-            for (const title of subtasks) summary = await api.addSubtask(now, editing, title)
+            for (const s of subtasks) summary = await api.addSubtask(now, editing, s.title, s.due_date)
             return summary
           })}
         />
@@ -182,6 +182,11 @@ function TaskRow({ task: t, today, open, stamp, onToggle, onEdit, write }: {
   write: (work: () => Promise<TasksSummary>) => Promise<boolean>
 }) {
   const [subtask, setSubtask] = useState('')
+  const [subtaskDue, setSubtaskDue] = useState('')
+  const addSub = () => {
+    if (!subtask.trim()) return
+    void write(() => api.addSubtask(now(), t.id, subtask.trim(), subtaskDue || null)).then((ok) => { if (ok) { setSubtask(''); setSubtaskDue('') } })
+  }
   const [notes, setNotes] = useState(t.notes ?? '')
   const [confirming, setConfirming] = useState(false)
   const done = !!t.done_at
@@ -209,17 +214,20 @@ function TaskRow({ task: t, today, open, stamp, onToggle, onEdit, write }: {
                   <input type="checkbox" className="check" checked={x.done} aria-label={`${x.title} done`}
                     onChange={() => void write(() => api.setSubtask(now(), x.id, !x.done))} />
                   <span style={{ flex: 1 }} className={x.done ? 'muted' : undefined}>{x.title}</span>
+                  <input type="date" className="input subtask-date" aria-label={`${x.title} due date`} value={x.due_date ?? ''}
+                    data-late={!x.done && !!x.due_date && x.due_date < today}
+                    onChange={(e) => void write(() => api.setSubtaskDue(now(), x.id, e.target.value || null))} />
                   <button type="button" className="link-btn" aria-label={`Remove ${x.title}`} onClick={() => void write(() => api.deleteSubtask(now(), x.id))}>Remove</button>
                 </li>
               ))}
             </ul>
           )}
-          <div className="inline-add" style={{ gridTemplateColumns: 'minmax(0, 1fr) auto' }}>
+          <div className="inline-add" style={{ gridTemplateColumns: 'minmax(0, 1fr) 160px auto' }}>
             <input className="input" aria-label="New subtask" placeholder="Add a subtask" maxLength={200} value={subtask}
               onChange={(e) => setSubtask(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && subtask.trim()) { e.preventDefault(); void write(() => api.addSubtask(now(), t.id, subtask.trim())).then((ok) => ok && setSubtask('')) } }} />
-            <button type="button" className="btn" disabled={!subtask.trim()}
-              onClick={() => void write(() => api.addSubtask(now(), t.id, subtask.trim())).then((ok) => ok && setSubtask(''))}>Add</button>
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSub() } }} />
+            <input type="date" className="input" aria-label="New subtask due date" value={subtaskDue} onChange={(e) => setSubtaskDue(e.target.value)} />
+            <button type="button" className="btn" disabled={!subtask.trim()} onClick={addSub}>Add</button>
           </div>
           <div className="task-meta faint">
             {t.remind_at ? `Reminder ${t.remind_at.slice(0, 10) === today ? 'at' : shortDate(t.remind_at.slice(0, 10)) + ' at'} ${t.remind_at.slice(11)}${t.remind_at < stamp ? ' (passed)' : ''}` : 'No reminder'}

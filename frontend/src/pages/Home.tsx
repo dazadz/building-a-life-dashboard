@@ -96,8 +96,8 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
         <ScoreStrip today={todayData} yesterday={yesterdayData} />
       </div>
       <div className="home-grid">{order.top.map((key) => cards[key])}</div>
-      {cards.suggest}
       <div className="home-grid home-grid-4">{order.bottom.map((key) => cards[key])}</div>
+      {cards.suggest}
     </div>
   )
 }
