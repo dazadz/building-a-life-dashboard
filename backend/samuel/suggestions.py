@@ -253,3 +253,80 @@ def for_coach(conn: sqlite3.Connection) -> dict:
         return [{"kind": r["kind"], "title": r["title"]} for r in rows]
 
     return {"pending": titles("pending", 50), "dismissed": titles("dismissed", 60), "accepted": titles("accepted", 30)}
+
+
+LIST_KEYS = ("steps", "subtasks")  # several values on one line, separated by |
+INT_KEYS = ("impact", "effort")
+BOOL_KEYS = ("remind_before", "remind_start")
+
+
+def parse_text(text: str) -> tuple[str | None, list[dict]]:
+    """Read suggestions written as plain `key: value` lines, the format coach runs use.
+
+    Claude Code blocks shell commands that contain JSON braces, so the coach sends this instead:
+
+        batch: plan
+        ---
+        kind: routine
+        reason: Your energy dips after 14:00.
+        name: Walk outside
+        start: 15:30
+        end: 15:45
+        weekdays: 0 1 2
+        steps: Leave the phone | Walk 10 minutes
+        ---
+        kind: goal
+        title: Run a half marathon
+        area: fitness
+        milestone: 10 km in under an hour | 2026-11-20
+
+    Each suggestion starts with `kind:`; `---` lines are optional separators. `milestone:` repeats.
+    """
+    batch: str | None = None
+    items: list[dict] = []
+    current: dict | None = None
+    for n, raw in enumerate(text.splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith("#") or line == "---":
+            if line == "---":
+                current = None
+            continue
+        key, sep, value = line.partition(":")
+        key, value = key.strip().lower(), value.strip()
+        if not sep or not key:
+            raise ValueError(f"line {n}: write it as 'key: value'")
+        if key == "batch" and not items:
+            batch = value or None
+        elif key == "kind":
+            current = {"kind": value, "payload": {}}
+            items.append(current)
+        elif current is None:
+            raise ValueError(f"line {n}: start each suggestion with 'kind:'")
+        elif key == "reason":
+            current["reason"] = value
+        elif key == "block_kind":  # a routine block's own kind; `kind:` starts a new suggestion
+            current["payload"]["kind"] = value
+        elif key == "milestone":
+            title, _, due = value.partition("|")
+            milestone = {"title": title.strip()}
+            if due.strip():
+                milestone["due_date"] = due.strip()
+            current["payload"].setdefault("milestones", []).append(milestone)
+        elif key in LIST_KEYS:
+            current["payload"][key] = [part.strip() for part in value.split("|") if part.strip()]
+        elif key == "weekdays":
+            try:
+                current["payload"][key] = [int(d) for d in value.replace(",", " ").split()]
+            except ValueError:
+                raise ValueError(f"line {n}: weekdays are numbers, 0 = Monday … 6 = Sunday") from None
+        elif key in INT_KEYS:
+            if not value.isdigit():
+                raise ValueError(f"line {n}: {key} is a number from 1 to 5")
+            current["payload"][key] = int(value)
+        elif key in BOOL_KEYS:
+            if value.lower() not in ("yes", "no", "true", "false"):
+                raise ValueError(f"line {n}: {key} is yes or no")
+            current["payload"][key] = value.lower() in ("yes", "true")
+        else:
+            current["payload"][key] = value
+    return batch, items
