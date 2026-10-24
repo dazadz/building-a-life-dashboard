@@ -862,3 +862,7 @@ select.input option { background: var(--card); color: var(--text); }
 .block-table .edit-col { width: 1%; white-space: nowrap; text-align: right; padding-left: 12px; }
 .block-table th .row-link { text-align: left; }
 .habit-edit-row .link-btn { margin-left: 8px; }
+
+.move-btns { display: inline-flex; gap: 4px; }
+.move-btns .btn { width: 30px; padding: 0; justify-content: center; }
+.move-btns .btn:disabled { opacity: 0.35; cursor: default; }
