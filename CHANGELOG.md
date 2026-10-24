@@ -17,7 +17,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ### Security
 - **Coach runs are locked down further.** Bash is the only tool, and only `samuel export` and `samuel report add` may run. Runs no longer load your own Claude Code settings or MCP servers. Inside a run, `samuel export` refuses full exports and `report add` won't read files.
 - **Exports can't be committed.** The privacy check stops any Samuel export file.
-- **Dependencies are watched.** CI checks Python and npm packages for known vulnerabilities, Dependabot proposes updates once a month in a few bundled pull requests, and CI actions are pinned to exact versions.
+- **Dependencies are watched.** CI checks Python and npm packages for known vulnerabilities, Dependabot alerts on known vulnerabilities and opens a pull request only for security fixes, and CI actions are pinned to exact versions.
 
 ### Fixed
 - **Health:** "1 points lower" now reads "1 point lower".
