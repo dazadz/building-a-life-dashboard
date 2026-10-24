@@ -66,7 +66,7 @@ export function HabitsPage() {
 
       {editing && <EditHabits today={today} onChanged={history.reload} onClose={() => setEditing(false)} />}
 
-      <Trackers history={h} onLog={log} />
+      <Trackers history={h} onLog={log} onReorder={() => setEditing(true)} />
 
       <div className="row">
         <Patterns history={h} />
@@ -76,7 +76,9 @@ export function HabitsPage() {
   )
 }
 
-function Trackers({ history, onLog }: { history: HabitHistory | null; onLog: (key: string, date: string, s: HabitStatus | null) => void }) {
+function Trackers({ history, onLog, onReorder }: {
+  history: HabitHistory | null; onLog: (key: string, date: string, s: HabitStatus | null) => void; onReorder: () => void
+}) {
   const [sort, setSort] = useState<{ key: SortKey; desc: boolean }>({ key: 'position', desc: false })
   if (!history) return <Card title="Daily trackers" action={<a href="#/checkin">Check-in →</a>}><Loading lines={6} /></Card>
 
@@ -99,7 +101,7 @@ function Trackers({ history, onLog }: { history: HabitHistory | null; onLog: (ke
   return (
     <Card
       title="Daily trackers"
-      meta="Click a square to log"
+      meta={<>Click a square to log · <button type="button" className="link-btn" onClick={onReorder}>Reorder ↕</button></>}
       secondary={
         <span className="legend">
           {(['done', 'missed', 'skipped', 'none'] as const).map((s) => (
@@ -258,8 +260,14 @@ function EditHabits({ today, onChanged, onClose }: { today: string; onChanged: (
       action={<a href="#/routine">Link a habit to a routine block →</a>}>
       {!habits ? <Loading lines={5} /> : (
         <ul className="list">
-          {habits.map((x) => (
+          {habits.map((x, i) => (
             <li key={`${x.key}-${x.name}`} className="habit-edit-row">
+              <span className="move-btns">
+                <button type="button" className="btn btn-small" aria-label={`Move ${x.name} up`} disabled={i === 0}
+                  onClick={() => void write(() => api.moveHabit(x.key, 'up'))}>↑</button>
+                <button type="button" className="btn btn-small" aria-label={`Move ${x.name} down`} disabled={i === habits.length - 1}
+                  onClick={() => void write(() => api.moveHabit(x.key, 'down'))}>↓</button>
+              </span>
               <input className="input" aria-label={`${x.name} name`} maxLength={60} defaultValue={x.name}
                 onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== x.name) void write(() => api.renameHabit(x.key, v)) }}
                 onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }} />

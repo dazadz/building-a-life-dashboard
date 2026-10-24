@@ -16,7 +16,7 @@ const emptyDay = (date: string) => ({
 
 const settingsBody = {
   name: null, onboarded: false, text_size: 'medium', theme: null, wake_target: '07:00', sleep_target_hours: 7.5, deep_work_target_hours: 3,
-  habits: [{ key: 'reading', name: 'Reading done', auto: 0, active: true }],
+  habits: [{ key: 'reading', name: 'Reading done', auto: 0, active: true }, { key: 'water', name: 'Water target', auto: 0, active: true }],
 }
 
 const habitHistory = {
@@ -576,6 +576,18 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add habit' }))
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith('/api/habit-settings', expect.objectContaining({ method: 'POST', body: '{"name":"Stretch"}' })),
+    )
+  })
+
+  it('reorders habits from the Daily trackers card', async () => {
+    mockServer(true)
+    window.location.hash = '#/habits'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Reorder ↕' }))
+    expect(await screen.findByRole('button', { name: 'Move Reading done up' })).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Move Reading done down' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/habit-settings/reading', expect.objectContaining({ method: 'PUT', body: '{"move":"down"}' })),
     )
   })
 

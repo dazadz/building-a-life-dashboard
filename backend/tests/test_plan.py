@@ -349,3 +349,17 @@ def test_deleting_a_habit_removes_its_history_and_unlinks_it(conn):
     assert about.list_items(conn)[0]["habit_key"] is None
     with pytest.raises(KeyError):
         settings.delete_habit(conn, key)
+
+
+
+def test_habits_move_up_and_down(conn):
+    first, second = [h["key"] for h in settings.habit_list(conn)][:2]
+    settings.move_habit(conn, second, "up")
+    assert [h["key"] for h in settings.habit_list(conn)][:2] == [second, first]
+    settings.move_habit(conn, second, "up")  # already first: stays put
+    assert settings.habit_list(conn)[0]["key"] == second
+    last = settings.habit_list(conn)[-1]["key"]
+    settings.move_habit(conn, last, "down")
+    assert settings.habit_list(conn)[-1]["key"] == last
+    with pytest.raises(ValueError):
+        settings.move_habit(conn, first, "sideways")

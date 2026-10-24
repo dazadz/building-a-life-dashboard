@@ -595,6 +595,8 @@ export const api = {
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ active }) }),
   renameHabit: (key: string, name: string) =>
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ name }) }),
+  moveHabit: (key: string, move: 'up' | 'down') =>
+    request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ move }) }),
   deleteHabit: (key: string) => request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'DELETE', body: '{}' }),
   addHabit: (name: string) =>
     request<Settings['habits']>('/api/habit-settings', { method: 'POST', body: JSON.stringify({ name }) }),

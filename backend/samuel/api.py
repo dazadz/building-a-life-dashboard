@@ -54,6 +54,7 @@ class SettingsIn(BaseModel):
 class HabitSettingIn(BaseModel):
     active: bool | None = None
     name: str | None = Field(None, max_length=settings.HABIT_NAME_MAX)
+    move: Literal["up", "down"] | None = None
 
 
 class HabitNewIn(BaseModel):
@@ -373,6 +374,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS, started_by: str =
                 settings.rename_habit(conn, key, body.name)
             if body.active is not None:
                 settings.set_habit_active(conn, key, body.active)
+            if body.move is not None:
+                settings.move_habit(conn, key, body.move)
         except KeyError:
             raise HTTPException(404, "unknown habit")
         except ValueError as exc:

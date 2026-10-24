@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Reorder habits:** "Reorder ↕" on the Daily trackers card (or Edit habits) gives each habit up and down buttons. The order is used everywhere habits are listed.
 - **Faith instead of Spiritual:** routine block and task types, goal areas and the area of a pain or goal now say Faith. Existing Spiritual items, and suggestions waiting for review, become Faith (your data is backed up first).
 - **Routine page:** each block's Edit is a clear button in its own column, and clicking a block's name opens it too.
 - **Delete habits** in Edit habits, after a confirm. Unticking Tracking still hides a habit and keeps its history.

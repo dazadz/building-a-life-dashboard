@@ -159,3 +159,19 @@ def delete_habit(conn: sqlite3.Connection, key: str) -> None:
         conn.execute("UPDATE routines SET habit_key = NULL WHERE habit_key = ?", (key,))
         conn.execute("UPDATE pains_goals SET habit_key = NULL WHERE habit_key = ?", (key,))
         conn.execute("DELETE FROM habits WHERE id = ?", (row["id"],))
+
+
+def move_habit(conn: sqlite3.Connection, key: str, direction: str) -> None:
+    """Move a habit one place up or down the list. Every list of habits follows this order."""
+    if direction not in ("up", "down"):
+        raise ValueError("move a habit up or down")
+    keys = [r["key"] for r in conn.execute("SELECT key FROM habits ORDER BY position, id")]
+    if key not in keys:
+        raise KeyError(key)
+    i = keys.index(key)
+    j = i - 1 if direction == "up" else i + 1
+    if 0 <= j < len(keys):
+        keys[i], keys[j] = keys[j], keys[i]
+    with conn:
+        for position, k in enumerate(keys, 1):
+            conn.execute("UPDATE habits SET position = ? WHERE key = ?", (position, k))
