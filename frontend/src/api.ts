@@ -106,6 +106,13 @@ export interface Chat {
   awaiting_reply: boolean
 }
 
+export interface TrashItem {
+  id: number
+  kind: 'goal' | 'milestone' | 'task' | 'routine' | 'chat'
+  title: string
+  deleted_at: string
+}
+
 export interface Links {
   days: number
   min_days: number
@@ -459,6 +466,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const detail = typeof body?.detail === 'string' ? body.detail : `Request failed (${res.status})`
     throw new ApiError(res.status, detail)
   }
+  // A delete that can be undone says so in headers; the Undo toast picks it up.
+  const undo = res.headers?.get?.('X-Samuel-Undo')
+  if (undo) {
+    const title = decodeURIComponent(res.headers.get('X-Samuel-Undo-Title') ?? '')
+    window.dispatchEvent(new CustomEvent('samuel:undo', { detail: { id: Number(undo), title } }))
+  }
   return res.json() as Promise<T>
 }
 
@@ -481,6 +494,9 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  trash: () => request<TrashItem[]>('/api/trash'),
+  restore: (id: number) => request<{ kind: string; id: number; title: string }>(`/api/trash/${id}/restore`, { method: 'POST', body: '{}' }),
+  emptyTrash: () => request<TrashItem[]>('/api/trash', { method: 'DELETE', body: '{}' }),
   links: (day: string, days: number) => request<Links>(`/api/links/${day}?days=${days}`),
   leaks: (day: string, days: number) => request<TimeLeaks>(`/api/leaks/${day}?days=${days}`),
   digest: (now: string) => request<Digest>(`/api/digest?now=${now}`),

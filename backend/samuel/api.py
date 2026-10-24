@@ -2,16 +2,17 @@
 
 import re
 import time
+from urllib.parse import quote
 from datetime import date, datetime
 from pathlib import Path
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, tasks, weekly
+from . import backups, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, tasks, trash, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -200,6 +201,15 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     security.protect(app, allowed_hosts)
     app.state.last_request = time.monotonic()
 
+    def undoable(response: Response, conn, kind: str, row_id: int, delete) -> None:
+        """Copy the item to Recently deleted, delete it, and tell the app it can be undone."""
+        trash_id = trash.capture(conn, kind, row_id)
+        delete()
+        if trash_id is not None:
+            title = conn.execute("SELECT title FROM trash WHERE id = ?", (trash_id,)).fetchone()["title"]
+            response.headers["X-Samuel-Undo"] = str(trash_id)
+            response.headers["X-Samuel-Undo-Title"] = quote(title)
+
     @app.middleware("http")
     async def note_activity(request, call_next):
         app.state.last_request = time.monotonic()
@@ -298,8 +308,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return goals.summary(conn, day)
 
     @app.delete("/api/goals/{goal_id}")
-    def delete_goal(goal_id: int, today: str | None = None, conn=Depends(get_conn)):
-        goal_write(lambda: goals.delete_goal(conn, goal_id))
+    def delete_goal(goal_id: int, response: Response, today: str | None = None, conn=Depends(get_conn)):
+        undoable(response, conn, "goal", goal_id, lambda: goal_write(lambda: goals.delete_goal(conn, goal_id)))
         return goals.summary(conn, goals_today(today))
 
     @app.post("/api/goals/{goal_id}/milestones")
@@ -314,8 +324,9 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return goals.summary(conn, day)
 
     @app.delete("/api/milestones/{milestone_id}")
-    def delete_milestone(milestone_id: int, today: str | None = None, conn=Depends(get_conn)):
-        goal_write(lambda: goals.delete_milestone(conn, milestone_id))
+    def delete_milestone(milestone_id: int, response: Response, today: str | None = None, conn=Depends(get_conn)):
+        undoable(response, conn, "milestone", milestone_id,
+                 lambda: goal_write(lambda: goals.delete_milestone(conn, milestone_id)))
         return goals.summary(conn, goals_today(today))
 
     @app.put("/api/vision")
@@ -380,8 +391,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return routines.list_routines(conn)
 
     @app.delete("/api/routines/{routine_id}")
-    def delete_routine(routine_id: int, conn=Depends(get_conn)):
-        routine_write(lambda: routines.delete(conn, routine_id))
+    def delete_routine(routine_id: int, response: Response, conn=Depends(get_conn)):
+        undoable(response, conn, "routine", routine_id, lambda: routine_write(lambda: routines.delete(conn, routine_id)))
         return routines.list_routines(conn)
 
     @app.get("/api/plan/{day}")
@@ -428,8 +439,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return tasks.summary(conn, at)
 
     @app.delete("/api/tasks/{task_id}")
-    def delete_task(task_id: int, now: str | None = None, conn=Depends(get_conn)):
-        task_write(lambda: tasks.delete(conn, task_id))
+    def delete_task(task_id: int, response: Response, now: str | None = None, conn=Depends(get_conn)):
+        undoable(response, conn, "task", task_id, lambda: task_write(lambda: tasks.delete(conn, task_id)))
         return tasks.summary(conn, _now(now))
 
     @app.post("/api/tasks/{task_id}/subtasks")
@@ -590,9 +601,29 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return chat_answer(conn, chat_id)
 
     @app.delete("/api/chats/{chat_id}")
-    def delete_chat(chat_id: int, conn=Depends(get_conn)):
-        chat_write(lambda: chats.delete(conn, chat_id))
+    def delete_chat(chat_id: int, response: Response, conn=Depends(get_conn)):
+        if chats.pending(conn, chat_id):
+            raise HTTPException(409, "Samuel is still answering. Delete the chat once the reply is in.")
+        undoable(response, conn, "chat", chat_id, lambda: chat_write(lambda: chats.delete(conn, chat_id)))
         return chats.list_chats(conn)
+
+    @app.get("/api/trash")
+    def get_trash(conn=Depends(get_conn)):
+        return trash.list_trash(conn)
+
+    @app.post("/api/trash/{trash_id}/restore")
+    def post_restore(trash_id: int, conn=Depends(get_conn)):
+        try:
+            return trash.restore(conn, trash_id)
+        except LookupError as exc:
+            raise HTTPException(404, str(exc))
+        except ValueError as exc:
+            raise HTTPException(409, str(exc))
+
+    @app.delete("/api/trash")
+    def delete_trash(conn=Depends(get_conn)):
+        trash.empty(conn)
+        return []
 
     @app.get("/api/coach/jobs/{job_id}")
     def get_job(job_id: int, conn=Depends(get_conn)):
