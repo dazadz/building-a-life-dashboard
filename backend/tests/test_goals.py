@@ -108,3 +108,8 @@ def test_goals_are_in_full_exports(conn):
     tables = backups.export_all(conn)["tables"]
     assert tables["goals"][0]["title"] == "Ship it" and tables["milestones"] == []
     assert not backups.is_empty(conn)
+
+
+def test_goals_can_be_spiritual(conn):
+    gid = goals.add_goal(conn, {"title": "Daily quiet time", "area": "spiritual"}, "2026-10-26")
+    assert next(g for g in goals.list_goals(conn) if g["id"] == gid)["area"] == "spiritual"

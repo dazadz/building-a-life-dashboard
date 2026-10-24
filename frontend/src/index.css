@@ -804,3 +804,12 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 [data-score='low'] { --score: var(--red); }
 .meter-value[data-score], .score-text[data-score] { color: var(--score); text-shadow: 0 0 10px color-mix(in srgb, var(--score) 50%, transparent); }
 .meter-track[data-score] .meter-seg[data-on='true'] { background: var(--score); box-shadow: 0 0 6px color-mix(in srgb, var(--score) 45%, transparent); }
+
+/* Goals: days left and priority */
+.days-left { color: var(--text-muted); white-space: nowrap; }
+.days-left.soon { color: var(--amber); }
+.days-left.late { color: var(--red); }
+.priority-select { height: 30px; padding: 0 6px; font-size: 12px; width: auto; }
+.priority-select[data-priority='5'], .priority-select[data-priority='4'] { color: var(--orange); border-color: color-mix(in srgb, var(--orange) 45%, var(--border-strong)); }
+.task-subtasks { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.task-subtasks legend { font-size: 13px; color: var(--text-body); padding: 0 0 4px; }

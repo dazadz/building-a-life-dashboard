@@ -80,7 +80,7 @@ Each suggestion is a `kind:` line, a `reason:` line and its fields, one `key: va
 - **`reason`** (at most 300 characters): the "why", citing their own answers or numbers, e.g. "Your energy taps drop from 7 to 4 after 14:00."
 - **`pain`**: `text`, `area` (e.g. Career, Sleep, Focus, Energy, Fitness, Money), `evidence`, and optionally `habit_name` or `goal_title`.
 - **`goal`**: `title`, `area`, `impact` and `effort` (1–5), `target_date`, and one `milestone: <title> | <YYYY-MM-DD>` line per milestone.
-  - `area` is one of `fitness`, `financial`, `career`, `learning`, `business`, `social`, `relationships`, `health`, `other`.
+  - `area` is one of `fitness`, `financial`, `career`, `learning`, `business`, `social`, `relationships`, `health`, `spiritual`, `other`.
 - **`milestone`**: `title`, `due_date` and `goal_title` (an active goal's exact title).
 - **`habit`**: `name` (at most 60 characters).
 - **`task`**: `title`, `due_date`, and optionally `type` (focus, fixed, work, spiritual, habit, recovery or leisure), `due_time`, `notes`, `priority` (high, normal or low), `goal_title`, `block` (the exact name of the routine block it belongs to; the Now card shows it there) and `subtasks` (titles separated by `|`).

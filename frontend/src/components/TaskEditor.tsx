@@ -14,14 +14,21 @@ type Fields = Required<Pick<NewTask, 'title' | 'type' | 'goal_id' | 'due_date' |
 /** Create a task, or edit one: its time, type, the goal it moves forward and the routine block it belongs to. */
 export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
   task?: Task; title?: string; goals: Goal[]; routines: Routine[]
-  onSave: (fields: Fields) => Promise<boolean>; onClose: () => void
+  onSave: (fields: Fields, subtasks: string[]) => Promise<boolean>; onClose: () => void
 }) {
   const [f, setF] = useState<Fields>({
     title: task?.title ?? title ?? '', type: task?.type ?? null, goal_id: task?.goal_id ?? null,
     due_date: task?.due_date ?? null, due_time: task?.due_time ?? null, remind_at: task?.remind_at ?? null,
     priority: task?.priority ?? 'normal', routine_id: task?.routine_id ?? null, notes: task?.notes ?? null,
   })
+  const [subtasks, setSubtasks] = useState<string[]>([])
+  const [subtask, setSubtask] = useState('')
   const [problem, setProblem] = useState<string | null>(null)
+  const addSubtask = () => {
+    if (!subtask.trim()) return
+    setSubtasks((s) => [...s, subtask.trim()])
+    setSubtask('')
+  }
   const [saving, setSaving] = useState(false)
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) => setF((x) => ({ ...x, [key]: value }))
 
@@ -30,7 +37,8 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
     if (f.due_time && !f.due_date) return setProblem('Pick a date for the time.')
     setProblem(null)
     setSaving(true)
-    const ok = await onSave({ ...f, title: f.title.trim(), notes: f.notes?.trim() || null })
+    const pending = subtask.trim() ? [...subtasks, subtask.trim()] : subtasks
+    const ok = await onSave({ ...f, title: f.title.trim(), notes: f.notes?.trim() || null }, pending)
     setSaving(false)
     if (ok) onClose()
   }
@@ -90,6 +98,32 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
             ))}
           </div>
         </div>
+        <fieldset className="task-subtasks">
+          <legend>Subtasks</legend>
+          {(task?.subtasks.length ?? 0) > 0 && (
+            <ul className="list">
+              {task!.subtasks.map((x) => (
+                <li key={x.id}><span className={x.done ? 'muted' : undefined} style={{ flex: 1 }}>{x.title}</span><span className="faint mono">{x.done ? 'done' : 'open'}</span></li>
+              ))}
+            </ul>
+          )}
+          {subtasks.length > 0 && (
+            <ul className="list">
+              {subtasks.map((x, i) => (
+                <li key={i}>
+                  <span style={{ flex: 1 }}>{x}</span>
+                  <button type="button" className="link-btn" aria-label={`Remove ${x}`} onClick={() => setSubtasks((s) => s.filter((_, j) => j !== i))}>Remove</button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="inline-add" style={{ gridTemplateColumns: 'minmax(0, 1fr) auto' }}>
+            <input className="input" aria-label="New subtask" placeholder="Add a subtask, then Enter" maxLength={200} value={subtask}
+              onChange={(e) => setSubtask(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask() } }} />
+            <button type="button" className="btn" disabled={!subtask.trim()} onClick={addSubtask}>Add subtask</button>
+          </div>
+        </fieldset>
         <div className="field">
           <label htmlFor="task-notes">Notes</label>
           <textarea id="task-notes" className="input" rows={3} maxLength={4000} value={f.notes ?? ''} onChange={(e) => set('notes', e.target.value || null)} />

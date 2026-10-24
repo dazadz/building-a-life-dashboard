@@ -596,6 +596,33 @@ describe('App', () => {
     )
   })
 
+  it('shows days left on goals and changes a goal priority', async () => {
+    mockServer(true)
+    window.location.hash = '#/goals'
+    render(<App />)
+    expect(await screen.findByText(/days left|days late|Due today/)).toBeInTheDocument()
+    expect(screen.getByText(/Sun 14\/03\/2027/)).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Half marathon in March priority'), { target: { value: '5' } })
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/goals\/1\?/), expect.objectContaining({ method: 'PUT', body: '{"impact":5}' })),
+    )
+  })
+
+  it('adds subtasks when creating a task', async () => {
+    mockServer(true)
+    window.location.hash = '#/tasks?new=Plan%20the%20trip'
+    render(<App />)
+    fireEvent.change(await screen.findByLabelText('New subtask'), { target: { value: 'Book flights' } })
+    fireEvent.keyDown(screen.getByLabelText('New subtask'), { key: 'Enter' })
+    fireEvent.change(screen.getByLabelText('New subtask'), { target: { value: 'Pack' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Create task' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\?now=/), expect.objectContaining({ method: 'POST' })),
+    )
+    const post = vi.mocked(fetch).mock.calls.find(([u, i]) => String(u).startsWith('/api/tasks?') && i?.method === 'POST')!
+    expect(JSON.parse(String(post[1]!.body))).toMatchObject({ title: 'Plan the trip', subtasks: ['Book flights', 'Pack'] })
+  })
+
   it('asks Samuel to break a goal down', async () => {
     mockServer(true)
     window.location.hash = '#/goals'

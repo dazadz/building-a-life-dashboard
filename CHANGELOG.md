@@ -5,6 +5,8 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Tasks:** add subtasks while creating a task (and more while editing). Due dates read like "Mon 26/10/2026" (today still says Today).
+- **Goals:** a Days left column (amber within two weeks, red when late), dates like "Sun 14/03/2027", and a Priority you can change right in the list (it's the goal's impact, as on the priority matrix). Both columns sort. Goals can have the area **Spiritual**.
 - **Colours that mean something:** scores are green from 70, amber from 40 and red below that (stress the other way round), on Today, Health, the monthly scorecard, the weekly numbers and the check-in. Each kind of card has its own colour on every page (routine cyan, goals green, pains and risks amber, habits violet, check-in and reviews blue, suggestions pink, tasks orange, health rose), shown on its title and corner brackets.
 - **Today is compact, like its design:** the Now card and scores, then a row of three cards, Samuel's suggestions (3, with Review all), and a row of four small cards. Which cards lead follows the time of day. "Today at a glance" and the latest report leave Today; your focus moves into a "Focus and due" card, and the report stays on the Coach page.
 - **Black gradient background:** a faint accent glow at the top of the page, deepening down. Cards stay flat.

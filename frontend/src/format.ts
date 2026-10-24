@@ -75,3 +75,23 @@ export function scoreTone(value: number | null | undefined, inverse = false): Sc
   if (inverse) return value <= 3.5 ? 'good' : value <= 6.5 ? 'mid' : 'low'
   return value >= 70 ? 'good' : value >= 40 ? 'mid' : 'low'
 }
+
+/** A due date the way the user reads it: "Mon 26/10/2026". */
+export function dayDate(iso: string): string {
+  const d = new Date(`${iso}T12:00:00`)
+  const day = d.toLocaleDateString('en-GB', { weekday: 'short' })
+  return `${day} ${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}`
+}
+
+/** Whole days from `today` until `iso`; negative when it has passed. */
+export function daysUntil(iso: string, today: string): number {
+  return Math.round((Date.parse(`${iso}T12:00:00`) - Date.parse(`${today}T12:00:00`)) / 86_400_000)
+}
+
+/** "12 days left", "Due today" or "3 days late". */
+export function daysLeftText(iso: string, today: string): string {
+  const n = daysUntil(iso, today)
+  if (n === 0) return 'Due today'
+  if (n < 0) return `${-n} ${n === -1 ? 'day' : 'days'} late`
+  return `${n} ${n === 1 ? 'day' : 'days'} left`
+}
