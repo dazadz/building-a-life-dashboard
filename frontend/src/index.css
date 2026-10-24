@@ -872,8 +872,8 @@ select.input option { background: var(--card); color: var(--text); }
 [data-type='fixed'] { --type: var(--text-muted); }
 [data-type='work'] { --type: var(--blue); }
 [data-type='faith'] { --type: var(--violet); }
-[data-type='health'] { --type: var(--rose); }
-[data-type='habit'] { --type: var(--green); }
+[data-type='health'] { --type: var(--green); }
+[data-type='habit'] { --type: var(--red); }
 [data-type='recovery'] { --type: var(--amber); }
 [data-type='leisure'] { --type: var(--orange); }
 .type-tag { margin-left: 0; color: var(--type); border-color: color-mix(in srgb, var(--type) 45%, var(--border)); background: color-mix(in srgb, var(--type) 8%, transparent); }
