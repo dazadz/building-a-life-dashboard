@@ -198,8 +198,10 @@ def test_suggest_add_reads_json_from_stdin(conn, capsys, monkeypatch):
 def test_suggest_add_only_takes_stdin_and_reports_bad_input(capsys, monkeypatch, tmp_path):
     with pytest.raises(SystemExit):
         run_cli(["suggest", "add", "--file", str(tmp_path / "x.json")], capsys, monkeypatch)
+    with pytest.raises(SystemExit, match="key: value"):
+        run_cli(["suggest", "add"], capsys, monkeypatch, "not a suggestion")
     with pytest.raises(SystemExit, match="must be JSON"):
-        run_cli(["suggest", "add"], capsys, monkeypatch, "not json")
+        run_cli(["suggest", "add"], capsys, monkeypatch, "{not json")
 
 
 def test_export_shows_what_samuel_knows_and_suggested(conn):
@@ -269,3 +271,64 @@ def test_plan_builder_breaks_down_only_active_goals(conn):
         coach.start(conn, "plan-builder", goal_id=42)
     with pytest.raises(ValueError, match="only the plan builder"):
         coach.start(conn, "daily-report", goal_id=1)
+
+
+# The plain-text format coach runs use (Claude Code blocks commands with JSON braces)
+
+PLAN_TEXT = """batch: plan
+---
+kind: goal
+reason: Your top goal for the next 3 months.
+title: Python analytics project
+area: career
+target_date: 2026-12-18
+milestone: Pick the dataset | 2026-11-06
+milestone: Publish it
+---
+kind: routine
+reason: Your energy taps drop after 14:00.
+name: Walk outside
+start: 15:30
+end: 15:45
+weekdays: 0 1 2
+block_kind: recovery
+steps: Leave the phone | Walk ten minutes
+remind_before: no
+---
+kind: task
+title: Shortlist three datasets
+due_date: 2026-11-02
+goal_title: Python analytics project
+subtasks: Transport | Weather | Housing
+"""
+
+
+def test_text_format_reads_every_field():
+    batch, items = suggestions.parse_text(PLAN_TEXT)
+    assert batch == "plan" and [i["kind"] for i in items] == ["goal", "routine", "task"]
+    assert items[0]["payload"]["milestones"] == [{"title": "Pick the dataset", "due_date": "2026-11-06"}, {"title": "Publish it"}]
+    walk = items[1]["payload"]
+    assert (walk["start"], walk["weekdays"], walk["kind"], walk["remind_before"]) == ("15:30", [0, 1, 2], "recovery", False)
+    assert walk["steps"] == ["Leave the phone", "Walk ten minutes"]
+    assert items[2]["payload"]["subtasks"] == ["Transport", "Weather", "Housing"]
+    assert "{" not in PLAN_TEXT and '"' not in PLAN_TEXT
+
+
+def test_text_format_reports_bad_lines():
+    with pytest.raises(ValueError, match="start each suggestion"):
+        suggestions.parse_text("name: orphan")
+    with pytest.raises(ValueError, match="line 2: weekdays"):
+        suggestions.parse_text("kind: routine\nweekdays: mon tue")
+    with pytest.raises(ValueError, match="key: value"):
+        suggestions.parse_text("kind: habit\njust words")
+
+
+def test_suggest_add_takes_the_text_format(conn, capsys, monkeypatch):
+    out = run_cli(["suggest", "add"], capsys, monkeypatch, PLAN_TEXT)
+    assert "Saved 3 suggestions" in out
+    for s in suggestions.summary(conn)["pending"]:
+        suggestions.accept(conn, s["id"], TODAY)
+    walk = conn.execute("SELECT kind, steps, remind_before FROM routines WHERE name = 'Walk outside'").fetchone()
+    assert (walk["kind"], json.loads(walk["steps"]), walk["remind_before"]) == ("recovery", ["Leave the phone", "Walk ten minutes"], 0)
+    task = conn.execute("SELECT goal_id FROM tasks WHERE title = 'Shortlist three datasets'").fetchone()
+    assert task["goal_id"] is not None

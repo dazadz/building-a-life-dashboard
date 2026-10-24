@@ -26,13 +26,22 @@ Arguments: $ARGUMENTS
    - `suggestions`: what you suggested before, as `pending` (waiting), `dismissed` (turned down) and `accepted`.
    - With `--goal`: `breakdown_goal` is the goal to break down, with its milestones and open tasks.
 2. Decide the plan (what to suggest, below).
-3. Send all suggestions in **one** command, as JSON on stdin:
+3. Send all suggestions in **one** command, as plain lines on stdin:
    ```
-   samuel suggest add <<'JSON'
-   {"batch": "plan", "suggestions": [ ... ]}
-   JSON
+   samuel suggest add <<'PLAN'
+   batch: plan
+   ---
+   kind: routine
+   reason: ...
+   name: ...
+   ---
+   kind: habit
+   reason: ...
+   name: ...
+   PLAN
    ```
-   For a goal breakdown use `"batch": "breakdown: <goal title>"`. If it says a suggestion is invalid, fix that one and send the batch again.
+   Write one `key: value` per line and start each suggestion with `kind:`. Never use JSON, braces `{` `}` or quote marks around values: Claude Code blocks commands that contain them, and nothing would be saved.
+   For a goal breakdown use `batch: breakdown: <goal title>`. If it says a suggestion is invalid, fix that one and send the batch again.
 4. Save a short report with a single command:
    ```
    samuel report add --kind plan --file - <<'REPORT'
@@ -64,18 +73,18 @@ Arguments: $ARGUMENTS
 - **Tasks:** about 2–4 tasks per milestone, each sized to **one work session** of their focus span. Each one starts with a verb ("Write the CSV loader and its tests"). Give each a `due_date` on a day that has a matching routine block. Set `block` to the routine block it belongs to, e.g. "Deep work 2".
 - **Routine block:** if the goal has no block in their week, suggest one.
 
-## Payloads
+## Fields
 
-Each suggestion is `{"kind": ..., "reason": "...", "payload": {...}}`.
+Each suggestion is a `kind:` line, a `reason:` line and its fields, one `key: value` per line.
 
 - **`reason`** (at most 300 characters): the "why", citing their own answers or numbers, e.g. "Your energy taps drop from 7 to 4 after 14:00."
 - **`pain`**: `text`, `area` (e.g. Career, Sleep, Focus, Energy, Fitness, Money), `evidence`, and optionally `habit_name` or `goal_title`.
-- **`goal`**: `title`, `area`, `impact` and `effort` (1–5), `target_date`, and `milestones` (a list of `{"title", "due_date"}`).
+- **`goal`**: `title`, `area`, `impact` and `effort` (1–5), `target_date`, and one `milestone: <title> | <YYYY-MM-DD>` line per milestone.
   - `area` is one of `fitness`, `financial`, `career`, `learning`, `business`, `social`, `relationships`, `health`, `other`.
 - **`milestone`**: `title`, `due_date` and `goal_title` (an active goal's exact title).
 - **`habit`**: `name` (at most 60 characters).
-- **`task`**: `title`, `due_date`, and optionally `due_time`, `notes`, `priority` (high, normal or low), `goal_title`, `block` (the exact name of the routine block it belongs to; the Now card shows it there) and `subtasks` (a list of titles).
-- **`routine`**: `name`, `start` and `end` (`HH:MM`; an end before the start runs past midnight), `weekdays` (0 = Monday … 6 = Sunday), `note`, and optionally `kind` (focus, fixed, habit, recovery or leisure), `steps` (up to 8 short steps shown when it starts), `goal_title`, `habit_name` and `day_type` (e.g. "Office day"; it is created with the block's weekdays if it doesn't exist yet). Use day types when their days differ, and give blocks of one type the same weekdays.
+- **`task`**: `title`, `due_date`, and optionally `due_time`, `notes`, `priority` (high, normal or low), `goal_title`, `block` (the exact name of the routine block it belongs to; the Now card shows it there) and `subtasks` (titles separated by `|`).
+- **`routine`**: `name`, `start` and `end` (`HH:MM`; an end before the start runs past midnight), `weekdays` (numbers separated by spaces, 0 = Monday … 6 = Sunday), `note`, and optionally `block_kind` (focus, fixed, habit, recovery or leisure), `steps` (up to 8 short steps shown when it starts, separated by `|`), `goal_title`, `habit_name` and `day_type` (e.g. "Office day"; it is created with the block's weekdays if it doesn't exist yet). Use day types when their days differ, and give blocks of one type the same weekdays.
 
 Dates are `YYYY-MM-DD` and on or after `today`.
 

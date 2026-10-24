@@ -20,15 +20,22 @@ The chat id is: $ARGUMENTS
 2. Write your reply (rules below).
    - **If they tell you about themselves, or ask for a goal, habit, task or routine** (e.g. "I'm in the office Monday to Wednesday now", "help me plan my mornings"), you can also propose changes with one command. They are only suggestions, waiting in the app until the user accepts them:
      ```
-     samuel suggest add <<'JSON'
-     {"batch": "chat", "suggestions": [{"kind": "routine", "reason": "...", "payload": {...}}]}
-     JSON
+     samuel suggest add <<'PLAN'
+     batch: chat
+     ---
+     kind: routine
+     reason: ...
+     name: ...
+     start: 07:30
+     end: 08:00
+     weekdays: 0 1 2 3 4
+     PLAN
      ```
-     Payloads by kind:
+     One `key: value` per line; start each suggestion with `kind:`. Never use JSON, braces or quote marks around values: Claude Code blocks commands that contain them. Fields by kind:
      - **habit**: `name`.
-     - **routine**: `name`, `start`, `end` (HH:MM), `weekdays` (0 = Monday … 6 = Sunday), `note`.
+     - **routine**: `name`, `start`, `end` (HH:MM), `weekdays` (numbers separated by spaces, 0 = Monday … 6 = Sunday), `note`, optionally `steps` (separated by `|`).
      - **task**: `title`, `due_date`, and optionally `notes` or `goal_title`.
-     - **goal**: `title`, `area` (fitness, financial, career, learning, business, social, relationships, health, other), `target_date`, `milestones` (a list of `{"title", "due_date"}`).
+     - **goal**: `title`, `area` (fitness, financial, career, learning, business, social, relationships, health, other), `target_date`, and one `milestone: <title> | <YYYY-MM-DD>` line per milestone.
      - **milestone**: `title`, `due_date`, `goal_title`.
      - **pain**: `text`, `area`, `evidence`.
 

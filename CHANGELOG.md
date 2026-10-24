@@ -4,6 +4,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Fixed
+- **Plan builder saves its plan:** Claude Code blocks shell commands that contain JSON braces, so coach runs couldn't send their suggestions. `samuel suggest add` now also reads plain `key: value` lines, which the plan builder, chat and weekly review use. A routine suggestion's reminder settings no longer fail when you accept it.
+
 ## [0.5.0] - 2026-10-24
 
 Your plan: pains and goals, Samuel's suggestions, repeating routines by day type with reminders, goal breakdowns, and a Home built around what's on now.

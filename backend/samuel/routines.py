@@ -62,7 +62,8 @@ def validate(changes: dict, conn: sqlite3.Connection | None = None) -> dict:
                 raise ValueError(f"up to {STEPS_MAX} steps of 1 to {STEP_MAX} characters")
             value = [s.strip() for s in value]
         elif key in ("remind_before", "remind_start"):
-            if not isinstance(value, bool):
+            # 0 and 1 too: a checked suggestion stores them that way, and accepting checks it again.
+            if not isinstance(value, (bool, int)) or value not in (0, 1):
                 raise ValueError(f"{key} must be true or false")
             value = int(value)
         elif key in ("goal_id", "habit_key", "day_type_id"):

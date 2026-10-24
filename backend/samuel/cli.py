@@ -153,11 +153,17 @@ def cmd_suggest_add(args) -> None:
     """Store Samuel's suggestions for the user to accept or dismiss. Read from stdin only."""
     raw = sys.stdin.buffer.read().decode("utf-8-sig") if hasattr(sys.stdin, "buffer") else sys.stdin.read()
     try:
-        data = json.loads(raw)
+        if raw.lstrip().startswith(("{", "[")):
+            data = json.loads(raw)
+            items = data.get("suggestions") if isinstance(data, dict) else data
+            batch = data.get("batch") if isinstance(data, dict) else None
+        else:
+            # Plain `key: value` lines (see suggestions.parse_text): what coach runs send.
+            batch, items = suggestions.parse_text(raw)
     except json.JSONDecodeError as exc:
-        sys.exit(f"error: suggestions must be JSON ({exc.msg})")
-    items = data.get("suggestions") if isinstance(data, dict) else data
-    batch = data.get("batch") if isinstance(data, dict) else None
+        sys.exit(f"error: suggestions must be JSON or key: value lines ({exc.msg})")
+    except ValueError as exc:
+        sys.exit(f"error: {exc}")
     try:
         result = suggestions.add_many(db.connect(), items, batch)
     except ValueError as exc:
@@ -421,7 +427,7 @@ def main(argv: list[str] | None = None) -> None:
 
     p = sub.add_parser("suggest", help="propose goals, habits, tasks and routine blocks for the user to approve")
     ssub = p.add_subparsers(dest="suggest_command", required=True)
-    r = ssub.add_parser("add", help='read {"batch": ..., "suggestions": [...]} as JSON from stdin')
+    r = ssub.add_parser("add", help="read suggestions from stdin, as key: value lines or JSON")
     r.add_argument("--file", default="-", choices=["-"], help="always - (stdin)")
     r.set_defaults(func=cmd_suggest_add)
 
