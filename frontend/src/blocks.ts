@@ -1,6 +1,7 @@
 // Routine block helpers shared by Today, the Routine page and reminders.
 
 import type { BlockKind, PlanBlock, Routine } from './api'
+import { alphabetical } from './format'
 
 export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 export const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -66,3 +67,6 @@ export function dayMode(at: number, wakeTarget: string, sleepHours: number): Day
   if (since((bed - 3 * 60 + day) % day) < (wake - bed + 3 * 60 + day) % day) return 'evening'
   return 'day'
 }
+
+/** The types in the order dropdowns list them: alphabetical by name. */
+export const TYPE_OPTIONS: BlockKind[] = alphabetical(Object.keys(KIND_LABEL) as BlockKind[], (k) => KIND_LABEL[k])

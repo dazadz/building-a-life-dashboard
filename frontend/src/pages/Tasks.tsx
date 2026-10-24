@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
-import { api, type Task, type TasksSummary, type BlockKind } from '../api'
+import { api, type Task, type TasksSummary } from '../api'
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { dayDate, isoDate, localStamp, shortDate } from '../format'
 import { useLoad, useNow, useQuery } from '../hooks'
 import { TaskEditor } from '../components/TaskEditor'
-import { KIND_LABEL } from '../blocks'
+import { KIND_LABEL, TYPE_OPTIONS } from '../blocks'
 
 type View = 'today' | 'upcoming' | 'overdue' | 'all' | 'done'
 type Sort = 'due' | 'priority' | 'title'
@@ -72,7 +72,7 @@ export function TasksPage() {
         : due(a).localeCompare(due(b)))
   }, [s, view, type, filter, sort])
 
-  const types = s ? (Object.keys(KIND_LABEL) as BlockKind[]).map((k) => [k, s.tasks.filter((t) => t.view !== 'done' && t.type === k).length] as const).filter(([, n]) => n > 0) : []
+  const types = s ? TYPE_OPTIONS.map((k) => [k, s.tasks.filter((t) => t.view !== 'done' && t.type === k).length] as const).filter(([, n]) => n > 0) : []
   const editTask = typeof editing === 'number' ? s?.tasks.find((t) => t.id === editing) : undefined
   const [goals, routines] = pickers.data ?? [null, []]
 

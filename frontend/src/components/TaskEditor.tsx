@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import type { BlockKind, Goal, NewSubtask, NewTask, Priority, Routine, Task } from '../api'
-import { dayDate } from '../format'
-import { KIND_LABEL } from '../blocks'
+import { alphabetical, dayDate } from '../format'
+import { KIND_LABEL, TYPE_OPTIONS } from '../blocks'
 import { Card } from './Card'
 import { ErrorLine } from './States'
 
-const TYPES = Object.keys(KIND_LABEL) as BlockKind[]
 const PRIORITIES: { key: Priority; label: string }[] = [
   { key: 'high', label: 'High' }, { key: 'normal', label: 'Normal' }, { key: 'low', label: 'Low' },
 ]
@@ -61,14 +60,14 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
             <label htmlFor="task-type">Type</label>
             <select id="task-type" className="input" value={f.type ?? ''} onChange={(e) => set('type', (e.target.value || null) as BlockKind | null)}>
               <option value="">No type</option>
-              {TYPES.map((t) => <option key={t} value={t}>{KIND_LABEL[t]}</option>)}
+              {TYPE_OPTIONS.map((t) => <option key={t} value={t}>{KIND_LABEL[t]}</option>)}
             </select>
           </div>
           <div className="field">
             <label htmlFor="task-goal">Goal it achieves</label>
             <select id="task-goal" className="input" value={f.goal_id ?? ''} onChange={(e) => set('goal_id', e.target.value ? Number(e.target.value) : null)}>
               <option value="">None</option>
-              {goals.map((g) => <option key={g.id} value={g.id}>{g.title}</option>)}
+              {alphabetical(goals, (g) => g.title).map((g) => <option key={g.id} value={g.id}>{g.title}</option>)}
             </select>
           </div>
           <div className="field">
@@ -88,7 +87,7 @@ export function TaskEditor({ task, title, goals, routines, onSave, onClose }: {
             <label htmlFor="task-block">Do it in routine block</label>
             <select id="task-block" className="input" value={f.routine_id ?? ''} onChange={(e) => set('routine_id', e.target.value ? Number(e.target.value) : null)}>
               <option value="">None</option>
-              {routines.map((r) => <option key={r.id} value={r.id}>{r.name} · {r.start}</option>)}
+              {alphabetical(routines, (r) => r.name).map((r) => <option key={r.id} value={r.id}>{r.name} · {r.start}</option>)}
             </select>
             <span className="hint">It shows on the Now card while that block runs.</span>
           </div>

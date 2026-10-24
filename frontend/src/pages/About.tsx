@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { api, type About, type PainGoal, type PainGoalFields, type Status } from '../api'
 import { Card } from '../components/Card'
+import { alphabetical } from '../format'
 import { SuggestionsCard } from '../components/Suggestions'
 import { DayTypesCard, FixedPartsCard } from '../components/WeekParts'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
@@ -77,7 +78,7 @@ const AREA_OPTIONS = ['Career', 'Faith', 'Sleep', 'Energy', 'Focus', 'Fitness', 
 
 /** The life areas a pain or goal belongs to. A value Samuel wrote that isn't in the list stays selectable. */
 function AreaSelect({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {
-  const options = value && !AREA_OPTIONS.includes(value) ? [value, ...AREA_OPTIONS] : AREA_OPTIONS
+  const options = alphabetical(value && !AREA_OPTIONS.includes(value) ? [value, ...AREA_OPTIONS] : AREA_OPTIONS, (a) => a)
   return (
     <select className="input" aria-label="Area" value={value ?? ''} onChange={(e) => onChange(e.target.value || null)}>
       <option value="">Area…</option>
@@ -140,8 +141,8 @@ function PainsGoalsCard({ about, onChange }: { about: About; onChange: (a: About
       {adding && (
         <div className="pain-add" aria-label="Add a pain or goal">
           <select className="input" aria-label="Kind" value={draft.kind} onChange={(e) => setDraft({ ...draft, kind: e.target.value as PainGoal['kind'] })}>
-            <option value="pain">Pain</option>
             <option value="goal">Goal</option>
+            <option value="pain">Pain</option>
           </select>
           <input className="input" aria-label="What it is" placeholder="e.g. Late to bed on weeknights" maxLength={160}
             value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} />

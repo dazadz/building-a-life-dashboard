@@ -3,7 +3,7 @@ import { api, AREAS, type Area, type Goal, type GoalFields, type GoalsSummary, t
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, dayDate, daysLeftText, daysUntil, isoDate, scoreText, shortDate } from '../format'
+import { addDays, alphabetical, dayDate, daysLeftText, daysUntil, isoDate, scoreText, shortDate } from '../format'
 import { useCoachJob, useLoad, useNow } from '../hooks'
 
 const VISIBLE = 8
@@ -330,7 +330,7 @@ function GoalEditor({ goal, today, write, breakdown, onCreated, onClose }: {
           <div className="field">
             <label htmlFor="goal-area">Area</label>
             <select id="goal-area" className="input" value={fields.area} onChange={(e) => set('area', e.target.value as Area)}>
-              {AREAS.map((a) => <option key={a} value={a}>{areaLabel(a)}</option>)}
+              {alphabetical(AREAS, areaLabel).map((a) => <option key={a} value={a}>{areaLabel(a)}</option>)}
             </select>
           </div>
           <div className="field">

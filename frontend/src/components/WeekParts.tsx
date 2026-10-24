@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { api, type DayType, type Routine, type RoutineFields } from '../api'
 import { DAY_SHORT } from '../blocks'
+import { alphabetical } from '../format'
 import { Card } from './Card'
 import { Weekdays } from './Routine'
 import { ErrorLine, Loading, NeedsSetup } from './States'
@@ -84,7 +85,7 @@ export function FixedPartsCard({ routines, types, onChange }: {
               <select id="fixed-type" className="input" value={draft.day_type_id ?? ''}
                 onChange={(e) => setDraft({ ...draft, day_type_id: e.target.value ? Number(e.target.value) : null })}>
                 <option value="">Days I pick</option>
-                {types.map((t) => <option key={t.id} value={t.id}>{t.name}s</option>)}
+                {alphabetical(types, (t) => t.name).map((t) => <option key={t.id} value={t.id}>{t.name}s</option>)}
               </select>
             </div>
           </div>
