@@ -3,13 +3,14 @@ import { api, type DataInfo, type Settings, type TextSize } from '../api'
 import { Card } from '../components/Card'
 import { RoutineEditor } from '../components/Routine'
 import { AppearanceCard } from '../components/Appearance'
+import { TrashCard } from '../components/Undo'
 import { HabitToggles, NameField, TargetFields } from '../components/SetupFields'
 import { parseTargets, targetsFrom, type Targets } from '../targets'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { isoDate } from '../format'
 import { useLoad } from '../hooks'
 
-export function SettingsPage({ onSaved }: { onSaved: () => void }) {
+export function SettingsPage({ onSaved, onRestored }: { onSaved: () => void; onRestored: () => void }) {
   const [today] = useState(() => isoDate(new Date()))
   const loaded = useLoad(() => api.settings(today), [today])
   return (
@@ -27,7 +28,7 @@ export function SettingsPage({ onSaved }: { onSaved: () => void }) {
       </NeedsSetup>
       {loaded.error ? <ErrorLine message={loaded.error} onRetry={loaded.reload} />
         : !loaded.data ? <Loading lines={4} />
-        : <Forms today={today} initial={loaded.data} onSaved={onSaved} />}
+        : <Forms today={today} initial={loaded.data} onSaved={onSaved} onRestored={onRestored} />}
     </div>
   )
 }
@@ -54,7 +55,7 @@ function Status({ message, error }: { message: string | null; error: string | nu
   return null
 }
 
-function Forms({ today, initial, onSaved }: { today: string; initial: Settings; onSaved: () => void }) {
+function Forms({ today, initial, onSaved, onRestored }: { today: string; initial: Settings; onSaved: () => void; onRestored: () => void }) {
   const [name, setName] = useState(initial.name ?? '')
   const [targets, setTargets] = useState<Targets>(() => targetsFrom(initial))
   const [habits, setHabits] = useState(initial.habits)
@@ -93,6 +94,7 @@ function Forms({ today, initial, onSaved }: { today: string; initial: Settings; 
       <AppearanceCard today={today} saved={initial.theme} onSaved={onSaved} />
       <TextSizeCard today={today} initial={initial.text_size} onSaved={onSaved} />
       <DataCard />
+      <TrashCard onRestored={onRestored} />
       <Card title="Habits" meta={`${habits.filter((h) => h.active).length} of ${habits.length} on`} action={<a href="#/habits">Habits →</a>}>
         <HabitToggles habits={habits} onToggle={toggle} />
         <Status message={tracking.message} error={tracking.error} />

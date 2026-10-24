@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { api, type TextSize } from './api'
 import { applyTheme } from './theme'
 import { ServerDown } from './components/States'
@@ -14,6 +14,7 @@ import { HealthPage } from './pages/Health'
 import { MonthlyPage } from './pages/Monthly'
 import { Palette } from './components/Palette'
 import { Reminders } from './components/Reminders'
+import { UndoToast } from './components/Undo'
 import { HomePage } from './pages/Home'
 import { OnboardingPage } from './pages/Onboarding'
 import { SettingsPage } from './pages/Settings'
@@ -36,6 +37,8 @@ export default function App() {
   // Reload on each screen change, so the Coach page knows about a check-in saved a moment ago.
   const status = useLoad(() => api.status(), [route])
   const coach = useCoachJob()
+  // Bumped after an undo, so the open screen reloads with the restored item.
+  const [epoch, setEpoch] = useState(0)
   // The text size setting scales the whole interface (see --ui-scale in index.css).
   const textSize = status.data?.text_size
   useEffect(() => {
@@ -87,7 +90,7 @@ export default function App() {
           </a>
         </div>
       </nav>
-      <main>
+      <main key={epoch}>
         {route === '/checkin' ? (
           <CheckinPage coach={coach} coachInstalled={status.data?.coach.installed ?? false} />
         ) : route === '/habits' ? (
@@ -105,7 +108,7 @@ export default function App() {
         ) : route === '/profile' ? (
           <ProfilePage coach={coach} status={status.data} />
         ) : route === '/settings' ? (
-          <SettingsPage onSaved={status.reload} />
+          <SettingsPage onSaved={status.reload} onRestored={() => setEpoch((e) => e + 1)} />
         ) : route === '/coach' ? (
           <CoachPage coach={coach} status={status.data} />
         ) : (
@@ -113,6 +116,7 @@ export default function App() {
         )}
       </main>
       <Reminders />
+      <UndoToast onRestored={() => setEpoch((e) => e + 1)} />
       <Palette coachInstalled={status.data?.coach.installed ?? false} />
     </div>
   )

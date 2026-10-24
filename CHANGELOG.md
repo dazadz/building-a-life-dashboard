@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Added
+- **Undo for deletes:** deleting a goal (with its milestones), a milestone, a task (with its subtasks), a routine block or a chat shows Undo for 10 seconds. Settings → Recently deleted keeps them for 30 days on this computer, with Restore and Empty now.
 - **Lifestyle score:** the prompt's lifestyle score, from sleep, workouts (rest days count), healthy eating and water. Health & energy shows it next to Balance as 7-day averages with the change from the week before, and Samuel's reports see both. The rule is in `docs/scores.md`.
 - **What moves your energy and mood:** Health & energy compares your days with and without a condition (sleeping to target, working out, hitting deep work, late caffeine, late screens) against energy, mood, productivity or the next night's sleep, over 30 or 90 days. Each link shows both averages and both day counts, and only shows when both sides have 3 days and the difference is big enough to matter. Samuel's reports and chat can cite them. The rules are in `docs/scores.md`.
 - **Time leaks:** the weekly review lists your biggest distractions over 7 or 30 days, with the deep work lost on those days against your target, deep work on those days versus other days, and the impact. One click asks Samuel about the top leak. Daily reports now include a Time leaks table explained with your own check-in words. The rules are in `docs/scores.md`.

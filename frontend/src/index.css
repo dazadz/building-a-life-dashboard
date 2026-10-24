@@ -494,6 +494,8 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
   border: 1px solid var(--accent-line); box-shadow: var(--glow);
 }
 .toast-head { display: flex; align-items: center; justify-content: space-between; }
+.undo-toasts { right: auto; left: 50%; transform: translateX(-50%); }
+.undo-toasts .toast-head { gap: 16px; }
 
 /* Health */
 .mini-chart { margin: 0; display: flex; flex-direction: column; gap: 6px; }

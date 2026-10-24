@@ -92,6 +92,7 @@ Reports need Claude Code installed and logged in on this computer (run `claude` 
 
 - **Automatic:** while Samuel runs, it saves a copy of your database once a day to `~\.samuel\backups`, keeping the last 14. It also saves one before every update to the database.
 - **Now:** Settings → Your data → **Back up now**, or `.\.venv\Scripts\samuel backup`.
+- **Undo a delete:** deleting a goal, milestone, task, routine block or chat shows **Undo** for 10 seconds. Deleted items stay in Settings → **Recently deleted** for 30 days, on this computer only, where you can restore them or empty the list for good. Backups taken in that time still contain them.
 - **Restore a backup:** stop Samuel, then copy the backup file over `~\.samuel\samuel.db`.
 - **Export everything** (to move to another PC): `.\.venv\Scripts\samuel export --all --out "$HOME\samuel-export.json"`. The file holds all your personal data, so keep it private. Samuel refuses to write it inside a git repository, and the privacy check stops it from being committed.
 - **Import** into a fresh, empty Samuel: `.\.venv\Scripts\samuel import "$HOME\samuel-export.json"`.
