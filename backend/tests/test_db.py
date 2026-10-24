@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from samuel import db
 
 
@@ -25,3 +27,17 @@ def test_backup_before_migration(conn, data_dir, monkeypatch):
     assert len(backups) == 1
     assert conn.execute("PRAGMA user_version").fetchone()[0] == 999
     conn.close()
+
+
+def test_only_the_samuel_command_uses_the_real_data_folder(monkeypatch, tmp_path):
+    monkeypatch.delenv("SAMUEL_DATA_DIR")
+    monkeypatch.setattr(db, "_real_folder_allowed", False)
+    monkeypatch.setattr(db.Path, "home", lambda: tmp_path)
+    with pytest.raises(RuntimeError, match="SAMUEL_DATA_DIR"):
+        db.connect()
+    assert not (tmp_path / ".samuel").exists()
+
+    from samuel import cli
+
+    cli.main(["scores", "--date", "2026-10-24"])
+    assert (tmp_path / ".samuel" / "samuel.db").exists()

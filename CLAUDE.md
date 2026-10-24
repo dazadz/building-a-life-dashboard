@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Privacy is a hard requirement. This repo is public and the author uses the app daily, so personal data must never enter the repo:
 - The database lives in `~/.samuel/`, outside the repo.
+- Only the `samuel` command may open `~/.samuel`. Scripts, tests and one-off checks must set `SAMUEL_DATA_DIR` to another folder, or `db.data_dir()` refuses to run.
 - Screenshots, tests, fixtures and designs use only the fake demo persona, never the author's real name.
 - Never write absolute local paths (e.g. `C:\Users\...`) into tracked files. Use `~` or paths relative to the repo.
 - Commits use the GitHub noreply email (set in this repo's git config), never a personal address.

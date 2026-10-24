@@ -8,10 +8,29 @@ from importlib import resources
 from pathlib import Path
 
 
+# Only the `samuel` command may use the real data folder (~/.samuel). Scripts, tests and one-off
+# checks that open the database must set SAMUEL_DATA_DIR, so they can't touch personal data by accident.
+_real_folder_allowed = False
+
+
+def allow_real_folder() -> None:
+    """Called by the `samuel` command (cli.main) before anything opens the database."""
+    global _real_folder_allowed
+    _real_folder_allowed = True
+
+
 def data_dir() -> Path:
     """The folder holding the database. It lives outside the repo so personal data can't be committed."""
     override = os.environ.get("SAMUEL_DATA_DIR")
-    path = Path(override).expanduser() if override else Path.home() / ".samuel"
+    if override:
+        path = Path(override).expanduser()
+    elif _real_folder_allowed:
+        path = Path.home() / ".samuel"
+    else:
+        raise RuntimeError(
+            "No data folder set. Only the `samuel` command uses your real data in ~/.samuel; "
+            "for scripts and tests, set SAMUEL_DATA_DIR to another folder."
+        )
     path.mkdir(parents=True, exist_ok=True)
     return path
 
