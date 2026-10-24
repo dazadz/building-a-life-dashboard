@@ -16,6 +16,7 @@ KINDS = {
     "task": ("tasks", "title", [("subtasks", "task_id")]),
     "routine": ("routines", "name", []),
     "chat": ("chats", "title", [("chat_messages", "chat_id")]),
+    "pain_goal": ("pains_goals", "text", []),
 }
 
 

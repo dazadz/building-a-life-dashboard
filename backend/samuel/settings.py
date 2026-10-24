@@ -95,6 +95,48 @@ def set_habit_active(conn: sqlite3.Connection, key: str, active: bool) -> None:
         raise KeyError(key)
 
 
+HABIT_NAME_MAX = 60
+CUSTOM_HABITS_MAX = 20
+
+
+def _habit_name(conn: sqlite3.Connection, name, key: str | None = None) -> str:
+    if not isinstance(name, str) or not name.strip() or len(name.strip()) > HABIT_NAME_MAX:
+        raise ValueError(f"a habit name is 1 to {HABIT_NAME_MAX} characters")
+    name = name.strip()
+    clash = conn.execute("SELECT key FROM habits WHERE lower(name) = lower(?)", (name,)).fetchone()
+    if clash and clash["key"] != key:
+        raise ValueError(f"you already have a habit called {name}")
+    return name
+
+
+def habit_key_by_name(conn: sqlite3.Connection, name: str) -> str | None:
+    row = conn.execute("SELECT key FROM habits WHERE lower(name) = lower(?)", (name.strip(),)).fetchone()
+    return row["key"] if row else None
+
+
+def add_habit(conn: sqlite3.Connection, name: str) -> str:
+    """A habit of the user's own, ticked by hand. Its key comes from the name."""
+    name = _habit_name(conn, name)
+    if conn.execute("SELECT COUNT(*) FROM habits WHERE key LIKE 'c\\_%' ESCAPE '\\'").fetchone()[0] >= CUSTOM_HABITS_MAX:
+        raise ValueError(f"you can have up to {CUSTOM_HABITS_MAX} habits of your own")
+    base = "c_" + (re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")[:40] or "habit")
+    key, n = base, 2
+    while conn.execute("SELECT 1 FROM habits WHERE key = ?", (key,)).fetchone():
+        key, n = f"{base}_{n}", n + 1
+    position = conn.execute("SELECT COALESCE(MAX(position), 0) + 1 FROM habits").fetchone()[0]
+    with conn:
+        conn.execute("INSERT INTO habits (key, name, auto, position) VALUES (?, ?, 0, ?)", (key, name, position))
+    return key
+
+
+def rename_habit(conn: sqlite3.Connection, key: str, name: str) -> None:
+    if conn.execute("SELECT 1 FROM habits WHERE key = ?", (key,)).fetchone() is None:
+        raise KeyError(key)
+    name = _habit_name(conn, name, key)
+    with conn:
+        conn.execute("UPDATE habits SET name = ? WHERE key = ?", (name, key))
+
+
 def public(conn: sqlite3.Connection, today: str) -> dict:
     stored = {r["key"]: json.loads(r["value"]) for r in conn.execute("SELECT key, value FROM settings")}
     return {

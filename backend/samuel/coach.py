@@ -1,7 +1,8 @@
 """Runs Claude Code as Samuel's coach.
 
 The backend starts `claude -p "/<skill>"` in the repo, where the coach skills live. Claude may only
-run two `samuel` commands: `samuel export` to read data and `samuel report add` to save a report.
+run three `samuel` commands: `samuel export` to read data, `samuel report add` to save a report, and
+`samuel suggest add` to propose changes the user then accepts or dismisses in the app.
 """
 
 import os
@@ -17,7 +18,7 @@ from . import chats, db
 
 SKILLS = {
     "daily-report": "daily", "onboard-insights": "onboarding", "weekly-review": "weekly",
-    "monthly-evolution": "monthly", "ask": "ask",
+    "monthly-evolution": "monthly", "ask": "ask", "plan-builder": "plan",
 }
 NEEDS_CHECKIN = {"daily-report", "weekly-review", "monthly-evolution"}
 TIMEOUT_SECONDS = 600
@@ -53,21 +54,36 @@ def _env() -> dict:
     return env
 
 
-def command(skill: str, chat_id: int | None = None) -> list[str]:
-    # Only the two commands the skills need: read data, and save a report. Nothing that edits data.
+def _prompt(skill: str, chat_id: int | None, goal_id: int | None) -> str:
+    if chat_id is not None:
+        return f"/{skill} {int(chat_id)}"
+    if goal_id is not None:
+        return f"/{skill} goal {int(goal_id)}"
+    return f"/{skill}"
+
+
+def command(skill: str, chat_id: int | None = None, goal_id: int | None = None) -> list[str]:
+    # Only the commands the skills need: read data, save a report, and propose suggestions the user
+    # must accept. Nothing that edits data.
     # Bash is the only tool, and the user's own settings and MCP servers aren't loaded, so a run
     # can't inherit wider permissions (or connected services) from the person's Claude Code setup.
     return [
-        claude_path() or "claude", "-p", f"/{skill}" if chat_id is None else f"/{skill} {int(chat_id)}",
+        claude_path() or "claude", "-p", _prompt(skill, chat_id, goal_id),
         "--tools", "Bash", "--setting-sources", "project", "--strict-mcp-config",
-        "--allowedTools", "Bash(samuel export *)", "Bash(samuel report add *)",
+        "--allowedTools", "Bash(samuel export *)", "Bash(samuel report add *)", "Bash(samuel suggest add *)",
     ]
 
 
-def start(conn: sqlite3.Connection, skill: str, chat_id: int | None = None) -> int:
-    """Start a coach run in the background and return its job id. `ask` answers a chat."""
+def start(conn: sqlite3.Connection, skill: str, chat_id: int | None = None, goal_id: int | None = None) -> int:
+    """Start a coach run in the background and return its job id. `ask` answers a chat; `plan-builder`
+    with a goal breaks that goal down."""
     if skill not in SKILLS:
         raise ValueError(f"unknown skill {skill}")
+    if goal_id is not None:
+        if skill != "plan-builder":
+            raise ValueError("only the plan builder breaks down a goal")
+        if conn.execute("SELECT 1 FROM goals WHERE id = ? AND done_date IS NULL", (goal_id,)).fetchone() is None:
+            raise ValueError("no such active goal")
     if (skill == "ask") != (chat_id is not None):
         raise ValueError("ask runs answer a chat: use the chat endpoints")
     if claude_path() is None:
@@ -78,17 +94,19 @@ def start(conn: sqlite3.Connection, skill: str, chat_id: int | None = None) -> i
         job_id = conn.execute(
             "INSERT INTO coach_jobs (skill, status, chat_id) VALUES (?, 'running', ?)", (skill, chat_id)
         ).lastrowid
-    threading.Thread(target=_run, args=(job_id, skill, chat_id), daemon=True).start()
+    threading.Thread(target=_run, args=(job_id, skill, chat_id, goal_id), daemon=True).start()
     return job_id
 
 
-def _run(job_id: int, skill: str, chat_id: int | None = None) -> None:
+def _run(job_id: int, skill: str, chat_id: int | None = None, goal_id: int | None = None) -> None:
     conn = db.connect()
     started = conn.execute("SELECT started_at FROM coach_jobs WHERE id = ?", (job_id,)).fetchone()[0]
     error = None
+    cmd = (command(skill, chat_id) if chat_id is not None
+           else command(skill, goal_id=goal_id) if goal_id is not None else command(skill))
     try:
         proc = subprocess.run(
-            command(skill, chat_id) if chat_id is not None else command(skill), cwd=REPO_ROOT, env=_env(), capture_output=True, text=True,
+            cmd, cwd=REPO_ROOT, env=_env(), capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=TIMEOUT_SECONDS,
         )
         if proc.returncode != 0:

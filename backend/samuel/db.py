@@ -31,6 +31,9 @@ def connect(path: Path | None = None) -> sqlite3.Connection:
     return conn
 
 
+FK_OFF = "-- needs: foreign_keys off"
+
+
 def _migrations() -> list[tuple[int, str]]:
     files = resources.files("samuel") / "migrations"
     found = []
@@ -47,7 +50,23 @@ def migrate(conn: sqlite3.Connection, path: Path) -> int:
     if pending and current > 0:
         backup(conn, path.parent / "backups", reason=f"before-v{pending[-1][0]}")
     for version, sql in pending:
-        conn.executescript(f"BEGIN;\n{sql}\nPRAGMA user_version = {version};\nCOMMIT;")
+        # Rebuilding a table that others reference needs foreign keys off (SQLite's own recipe),
+        # then a check that every link still holds before the change is kept.
+        fk_off = FK_OFF in sql
+        if fk_off:
+            conn.execute("PRAGMA foreign_keys = OFF")
+        try:
+            conn.executescript(f"BEGIN;\n{sql}\nPRAGMA user_version = {version};")
+            if fk_off and conn.execute("PRAGMA foreign_key_check").fetchone():
+                raise sqlite3.IntegrityError(f"migration {version} would break links between tables")
+            conn.execute("COMMIT")
+        except Exception:
+            if conn.in_transaction:
+                conn.execute("ROLLBACK")
+            raise
+        finally:
+            if fk_off:
+                conn.execute("PRAGMA foreign_keys = ON")
     return len(pending)
 
 

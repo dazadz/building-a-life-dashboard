@@ -59,10 +59,15 @@ def test_no_cdn_api_docs(local):
     assert local.get("/api/docs").status_code == 404
 
 
-def test_coach_may_only_read_and_save_reports():
+def test_coach_may_only_read_save_reports_and_suggest():
+    # `suggest add` only proposes: nothing changes until the user accepts it in the app (ADR 0004).
     cmd = command("daily-report")
     allowed = cmd[cmd.index("--allowedTools") + 1:]
-    assert allowed == ["Bash(samuel export *)", "Bash(samuel report add *)"]
+    assert allowed == ["Bash(samuel export *)", "Bash(samuel report add *)", "Bash(samuel suggest add *)"]
+
+
+def test_goal_breakdowns_pass_only_a_number():
+    assert command("plan-builder", goal_id=7)[2] == "/plan-builder goal 7"
 
 
 def test_coach_runs_without_the_users_own_settings_or_tools():

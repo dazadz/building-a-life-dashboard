@@ -50,7 +50,7 @@ You log the other six yourself: Reading, Healthy eating, Water target, Meditatio
 | **Productivity** | Productivity rating, Deep work | 50%, 50% |
 | **Focus** | Deep work; No procrastination; No excessive social media | 50%, 25%, 25% |
 | **Energy** | Energy rating, Sleep, Mood | 50%, 30%, 20% |
-| **Discipline** | Share of today's logged habits marked done | 100% |
+| **Discipline** | Share of today's logged habits marked done (the user's own habits count like the defaults) | 100% |
 | **Balance** | Sleep, Workout (rest counts), Overwork, Mood | 25% each |
 | **Lifestyle** | Sleep, Workout (rest counts), Healthy eating habit, Water target habit | 25% each |
 
