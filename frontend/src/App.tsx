@@ -20,18 +20,20 @@ import { AboutPage } from './pages/About'
 import { RoutinePage } from './pages/Routine'
 import { OnboardingPage } from './pages/Onboarding'
 import { SettingsPage } from './pages/Settings'
+import { Icon, type IconName } from './components/Icon'
 
-const NAV = [
-  { href: '#/', route: '/', label: 'Today' },
-  { href: '#/about', route: '/about', label: 'About me' },
-  { href: '#/checkin', route: '/checkin', label: 'Check-in' },
-  { href: '#/routine', route: '/routine', label: 'Routine' },
-  { href: '#/tasks', route: '/tasks', label: 'Tasks' },
-  { href: '#/habits', route: '/habits', label: 'Habits' },
-  { href: '#/goals', route: '/goals', label: 'Goals' },
-  { href: '#/health', route: '/health', label: 'Health' },
-  { href: '#/review', route: '/review', label: 'Review' },
-  { href: '#/coach', route: '/coach', label: 'Coach' },
+// Each icon takes the colour of its page's cards (see Card.tsx), so the sidebar matches the pages.
+const NAV: { href: string; route: string; label: string; icon: IconName; tone: string }[] = [
+  { href: '#/', route: '/', label: 'Today', icon: 'today', tone: 'accent' },
+  { href: '#/about', route: '/about', label: 'About me', icon: 'about', tone: 'pink' },
+  { href: '#/checkin', route: '/checkin', label: 'Check-in', icon: 'checkin', tone: 'blue' },
+  { href: '#/routine', route: '/routine', label: 'Routine', icon: 'routine', tone: 'accent' },
+  { href: '#/tasks', route: '/tasks', label: 'Tasks', icon: 'tasks', tone: 'orange' },
+  { href: '#/habits', route: '/habits', label: 'Habits', icon: 'habits', tone: 'violet' },
+  { href: '#/goals', route: '/goals', label: 'Goals', icon: 'goals', tone: 'green' },
+  { href: '#/health', route: '/health', label: 'Health', icon: 'health', tone: 'rose' },
+  { href: '#/review', route: '/review', label: 'Review', icon: 'review', tone: 'blue' },
+  { href: '#/coach', route: '/coach', label: 'Coach', icon: 'coach', tone: 'blue' },
 ]
 const SETTINGS = { href: '#/settings', route: '/settings', label: 'Settings' }
 const TEXT_SCALE: Record<TextSize, number> = { small: 1, medium: 1.1, large: 1.25, xlarge: 1.4 }
@@ -74,16 +76,18 @@ export default function App() {
           <span className="brand-name">Samuel</span>
         </div>
         <button type="button" className="search-btn" onClick={() => window.dispatchEvent(new Event('samuel:palette'))}>
-          <span>Search</span><kbd>Ctrl K</kbd>
+          <Icon name="search" size={16} /><span style={{ flex: 1 }}>Search</span><kbd>Ctrl K</kbd>
         </button>
         {NAV.map((item) => (
           <a
             key={item.route}
             href={item.href}
             className="nav-link"
+            data-tone={item.tone}
             aria-current={route === item.route || (item.route === '/review' && route === '/monthly') ? 'page' : undefined}
           >
-            {item.label}
+            <Icon name={item.icon} />
+            <span>{item.label}</span>
             {item.route === '/coach' && coach.running && <span className="badge faint">Writing…</span>}
             {item.route === '/about' && (status.data?.suggestions ?? 0) > 0 && (
               <span className="badge count-badge" aria-label={`${status.data!.suggestions} suggestions waiting`}>{status.data!.suggestions}</span>
@@ -92,8 +96,9 @@ export default function App() {
         ))}
         <div className="sidebar-bottom">
           <div className="sidebar-foot">Local · private</div>
-          <a href={SETTINGS.href} className="nav-link" aria-current={route === SETTINGS.route ? 'page' : undefined}>
-            {SETTINGS.label}
+          <a href={SETTINGS.href} className="nav-link" data-tone="accent" aria-current={route === SETTINGS.route ? 'page' : undefined}>
+            <Icon name="settings" />
+            <span>{SETTINGS.label}</span>
           </a>
         </div>
       </nav>

@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Sidebar icons:** each page has a line icon in its card colour (Goals green, Habits violet, Tasks orange and so on), glowing on the current page. Search has one too. They're drawn in the app, so nothing loads from outside.
 - **Rounder and tidier:** cards have 10px corners and fields, dropdowns, buttons and pills 6px; corner brackets follow the curve. Dropdowns now have the app's dark style with a matching arrow. Samuel's suggestions sit under the other cards on Today.
 - **Subtasks have due dates:** set one when adding a subtask (in the task form or under a task), or change it later; a late one shows in red.
 - **Pains and goals:** Area is a dropdown (Career, Spiritual, Sleep, Energy, Focus, Fitness, Health, Money, Relationships, Learning, Other).

@@ -838,3 +838,21 @@ select.input:focus { background-image:
 select.input option { background: var(--card); color: var(--text); }
 .subtask-date { width: 150px; height: 30px; font-size: 12px; }
 .subtask-date[data-late='true'] { color: var(--red); border-color: color-mix(in srgb, var(--red) 45%, var(--border-strong)); }
+
+/* Sidebar icons: each in its page's card colour, brighter on hover and on the current page */
+.icon { flex: 0 0 auto; }
+.nav-link[data-tone='accent'] { --tone: var(--accent); }
+.nav-link[data-tone='green'] { --tone: var(--green); }
+.nav-link[data-tone='violet'] { --tone: var(--violet); }
+.nav-link[data-tone='blue'] { --tone: var(--blue); }
+.nav-link[data-tone='pink'] { --tone: var(--pink); }
+.nav-link[data-tone='orange'] { --tone: var(--orange); }
+.nav-link[data-tone='rose'] { --tone: var(--rose); }
+.nav-link .icon { color: color-mix(in srgb, var(--tone, var(--accent)) 75%, var(--text-muted)); opacity: 0.85; }
+.nav-link:hover .icon, .nav-link[aria-current='page'] .icon {
+  color: var(--tone, var(--accent)); opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tone, var(--accent)) 60%, transparent));
+}
+.search-btn .icon { color: var(--text-faint); }
+@media (max-width: 900px) {
+  .nav-link .icon { display: none; }
+}
