@@ -4,6 +4,25 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Added
+- **Undo for deletes:** deleting a goal (with its milestones), a milestone, a task (with its subtasks), a routine block or a chat shows Undo for 10 seconds. Settings → Recently deleted keeps them for 30 days on this computer, with Restore and Empty now.
+- **Lifestyle score:** the prompt's lifestyle score, from sleep, workouts (rest days count), healthy eating and water. Health & energy shows it next to Balance as 7-day averages with the change from the week before, and Samuel's reports see both. The rule is in `docs/scores.md`.
+- **What moves your energy and mood:** Health & energy compares your days with and without a condition (sleeping to target, working out, hitting deep work, late caffeine, late screens) against energy, mood, productivity or the next night's sleep, over 30 or 90 days. Each link shows both averages and both day counts, and only shows when both sides have 3 days and the difference is big enough to matter. Samuel's reports and chat can cite them. The rules are in `docs/scores.md`.
+- **Time leaks:** the weekly review lists your biggest distractions over 7 or 30 days, with the deep work lost on those days against your target, deep work on those days versus other days, and the impact. One click asks Samuel about the top leak. Daily reports now include a Time leaks table explained with your own check-in words. The rules are in `docs/scores.md`.
+- **Today at a glance:** a card at the top of Home, kept current all day: one focus (your "one improvement" from last night's check-in, else this week's top priority, else a due milestone), what's due or overdue across tasks and milestones, what's on now or next in your routine, and yesterday's score. It updates every minute and has a Refresh link.
+- **Energy taps and the energy curve:** an optional "Energy now" card on Today takes a 1–10 tap for the morning, midday, afternoon or evening. Health & energy draws the average for each part of the day, with your peak and dip, once a part has taps on 3 days. Samuel's reports and chat see the curve. The rules are in `docs/scores.md`.
+- **Ctrl+K palette:** press Ctrl+K (or Search in the sidebar) to jump to any screen, search tasks, goals, milestones, check-ins, reports and chats, create a task with quick-add syntax, or ask Samuel. Type `>` for commands only and `?` to ask Samuel. Search results open the exact report, chat or past check-in.
+- **Chat with Samuel:** the prompt's coach mode as a conversation on the Coach page. Ask about your sleep, energy, habits, goals or plans and get an answer built from your own data, then ask follow-ups; Samuel sees the conversation so far. Start from a suggested question, or ask about the report you're reading. Conversations are kept on this computer, and each answer is a locked-down Claude Code run (the new `ask` skill) with the same two `samuel` commands as reports.
+
+### Security
+- **Coach runs are locked down further.** Bash is the only tool, and only `samuel export` and `samuel report add` may run. Runs no longer load your own Claude Code settings or MCP servers. Inside a run, `samuel export` refuses full exports and `report add` won't read files.
+- **Exports can't be committed.** The privacy check stops any Samuel export file.
+- **Dependencies are watched.** CI checks Python and npm packages for known vulnerabilities, Dependabot alerts on known vulnerabilities and opens a pull request only for security fixes, and CI actions are pinned to exact versions.
+
+### Fixed
+- **Health:** "1 points lower" now reads "1 point lower".
+- **Docs:** two README lines broken by stray control characters, new issue and PR templates, the coach permissions in CLAUDE.md, the plan and ADR 0001, and the README design rules. The README now warns against saving exports in cloud-synced folders.
+
 ## [0.3.0] - 2026-10-24
 
 Tasks, health, the monthly view and your own theme.
@@ -29,9 +48,8 @@ Planning: goals, the full onboarding, the weekly review and today's plan, plus a
 ### Changed
 - **Centred Home:** the greeting, scores and cards sit in a narrower column in the middle of the window.
 - **App icon:** a cyan "S" icon for the desktop shortcut and the browser tab.
-- **Black and Michroma:** the page and sidebar are pure black, and headings use Michroma, a wide, smooth tech font (replacing Chakra Petch, which looked blocky).
-- **Glow and sidebar:** a soft accent glow under headings, labels and key numbers; the background grid is gone; Settings sits at the bottom-left of the sidebar, which now stays in place as the page scrolls.
-- **Mission control look:** Chakra Petch uppercase headings, sharp 2px corners, accent corner brackets on cards, LED-style segmented score meters, a faint grid behind the page, and a soft glow on active items.
+- **Mission control look:** a pure black page and sidebar, Michroma uppercase headings (a wide, smooth tech font), sharp 2px corners, accent corner brackets on cards, LED-style segmented score meters, and a soft accent glow on active items and under headings, labels and key numbers.
+- **Sidebar:** Settings sits at the bottom-left, and the sidebar stays in place as the page scrolls.
 
 ## [0.1.0] - 2026-10-24
 

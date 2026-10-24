@@ -28,7 +28,7 @@ Each answer is first turned into a value from 0 to 1.
 | Workout | Workout completed? | Yes 1, No 0, Rest day 1 for Balance and unknown elsewhere |
 | Habits | Habit log | done 1, missed 0, not logged unknown |
 
-The other questions (main goal, biggest distraction, wins, failures, one improvement) are not scored. Samuel uses them in reports to find time leaks and patterns.
+The other questions (main goal, biggest distraction, wins, failures, one improvement) are not scored. Samuel uses them in reports to find patterns, and the biggest distraction drives Time leaks (below).
 
 ## Habits ticked from the check-in
 
@@ -52,6 +52,9 @@ You log the other six yourself: Reading, Healthy eating, Water target, Meditatio
 | **Energy** | Energy rating, Sleep, Mood | 50%, 30%, 20% |
 | **Discipline** | Share of today's logged habits marked done | 100% |
 | **Balance** | Sleep, Workout (rest counts), Overwork, Mood | 25% each |
+| **Lifestyle** | Sleep, Workout (rest counts), Healthy eating habit, Water target habit | 25% each |
+
+**Lifestyle** is the prompt's lifestyle score: how well you look after your body. Balance is how well work and rest fit together. Health & energy shows both as 7-day averages (the mean of the days that have the score), with the change against the 7 days before when both weeks have one.
 
 **Day score:** the average of whichever of Productivity, Discipline, Energy and Focus exist that day. It needs at least two of the four.
 
@@ -119,6 +122,38 @@ No flags is **Low**, 1 or 2 is **Moderate**, 3 or more is **High**. The screen l
 **Sleep and energy:** the average energy rating on days with less than 6.5 h of sleep, compared with days with 6.5 h or more, over the chosen period. It shows once each side has at least 2 days.
 
 **Daily inputs:** 7-day averages of the health log values that were logged.
+
+**Energy taps:** optional 1–10 ratings during the day, one per slot: **Morning** (before 11:00), **Midday** (11:00–13:59), **Afternoon** (14:00–17:59) and **Evening** (18:00 on). The slot comes from your local time when you tap, and a new tap in the same slot replaces the old one. Taps never change the check-in's energy answer or any score.
+
+**Energy curve:** the average tap for each slot over the chosen period. A slot shows once it has taps on at least 3 days; until then it's a dash. Once at least 2 slots show, the highest is your **peak** and the lowest your **dip** (the earlier slot wins a tie).
+
+## What moves your energy and mood
+
+Plain comparisons over the last 30 or 90 days, never a model. Each **link** compares an outcome on days **with** a habit or condition against days **without** it:
+
+| Condition | Compared with | Outcome | When |
+| --- | --- | --- | --- |
+| Slept to target (sleep ≥ target) | nights under target | Energy, Mood, Productivity | the same day |
+| Workout done (Yes) | No | Mood | the same day |
+| Workout done (Yes) | No | Energy | the next day |
+| Deep work hit target | under target | Mood | the same day |
+| Caffeine after 15:00 (health log) | last cup by 15:00 | Sleep, Energy | the next day |
+| Screens after 22:00 for 30 min or more (health log) | under 30 min | Sleep, Energy | the next day |
+
+Mood counts Low 1, Flat 2, Okay 3, Good 4, Great 5; Energy and Productivity are the 1–10 ratings; Sleep is the next check-in's hours. Days missing either side's answer are left out.
+
+A link shows when each side has **at least 3 days** and the difference is big enough to matter: **0.8 points** for Energy and Productivity, **0.4** for Mood, **0.3 h** for Sleep. Links are ranked by the difference as a share of the outcome's range (9 for Energy and Productivity, 4 for Mood, and 3 h for Sleep), and the top 6 show. Each one shows both averages and both day counts, so you can judge it yourself. These are patterns in your own days, not proof of cause.
+
+## Time leaks
+
+Time leaks come from the check-in's **Biggest distraction** answer over the last 7 or 30 days. For each distraction:
+
+- **Days:** the days it was your biggest distraction.
+- **Deep work lost:** on those days, how far deep work fell short of your target (target − hours, never below 0), added up. Days without a deep work answer are left out of this, not counted as 0.
+- **Deep work on those days:** the average, next to the average on days with a different distraction or none.
+- **Impact:** **High** when it accounts for at least a third of all deep work lost to distractions in the period, **Medium** for at least 15%, otherwise **Low**. With no deep work lost at all, every leak is Low.
+
+Leaks are listed by deep work lost, then by days. A distraction needs at least 2 days to be listed. Samuel's reports explain the top leaks with your own check-in words.
 
 ## Monthly evolution
 

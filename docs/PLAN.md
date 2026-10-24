@@ -80,7 +80,7 @@ design/    canvas source (kept in sync)
   - The Samuel persona rules from the prompt live in the skills: personalised, never generic, dashboard formatting.
 - **In-app trigger:** a "Generate report" button or "Ask Samuel" box calls `POST /coach/run`.
   - The backend runs `claude -p "/weekly-review"` as a subprocess, using the user's logged-in Claude Code.
-  - Tools are limited to the `samuel` CLI (`--allowedTools "Bash(samuel *)"`).
+  - Tools are limited to two `samuel` commands (`--tools Bash --allowedTools "Bash(samuel export *)" "Bash(samuel report add *)"`), without the user's own settings or MCP servers (`--setting-sources project --strict-mcp-config`). Inside a run, `SAMUEL_COACH=1` makes the CLI refuse full exports and file reads.
   - It runs in the background and the UI polls a job status.
   - This also works from the phone.
   - If `claude` isn't installed, the UI shows the needs-setup line instead.
@@ -161,16 +161,24 @@ design/    canvas source (kept in sync)
 ## Milestones
 1. **Designs (done):** the 12 desktop screens on the canvas and in `design/`.
 2. **Design gaps (done):** swap the real name for the demo persona, and write `docs/scores.md`. First-run, empty, loading and error states are designed alongside the screens that need them.
-3. **Walking skeleton (PC):** one thin end-to-end slice that proves the riskiest parts first.
+3. **Walking skeleton (PC, done):** one thin end-to-end slice that proves the riskiest parts first.
    - backend and frontend skeletons, the `samuel` CLI, the data dir outside the repo, migrations and CI
    - save a check-in, calculate a score, run `claude -p` to write a daily report
    - show the report in the browser on the PC
-4. **v0.1 (core loop):** short onboarding, the full daily check-in, habits with auto-ticking and streaks, Home with the score strip, the Coach screen and daily reports, backups.
-5. **v0.2 (planning):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and the full 45-question onboarding. Push notifications moved to the Phone milestone, since they need HTTPS on the phone.
-6. **v0.3:** Health & energy, monthly evolution, tasks with reminders, and Settings → Appearance theming.
-7. **v0.4 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar.
-8. **Phone:** 390px layouts for every screen, then phone access over Tailscale HTTPS with a passcode, the installable PWA and push notifications.
-9. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
+4. **v0.1 (core loop, released):** short onboarding, the full daily check-in, habits with auto-ticking and streaks, Home with the score strip, the Coach screen and daily reports, backups.
+5. **v0.2 (planning, released):** goals with milestones and the roadmap, the weekly review, routines for "Today's plan", and the full 45-question onboarding. Push notifications moved to the Phone milestone, since they need HTTPS on the phone.
+6. **v0.3 (released):** Health & energy, monthly evolution, tasks with reminders, and Settings → Appearance theming.
+7. **v0.4 (closing the gaps, built on `main`, not yet released):** what the three sources have that Samuel doesn't yet, found in the review on 2026-10-24 and shaped by how the user uses the app (on and off all day):
+   - **Chat with Samuel:** the prompt's coach mode as a conversation with follow-ups, on the Coach page. Each turn is a coach run that sees the conversation so far.
+   - **Ctrl+K palette:** jump to any screen or action, and search goals, tasks and reports.
+   - **Today digest:** a compact card at the top of Home all day: yesterday's score, today's plan, what's due and one focus.
+   - **Energy taps and the energy curve:** optional 1–10 taps at morning, midday, afternoon and evening; Health draws the curve once there's enough data.
+   - **Time leaks:** a rule-based table from the "biggest distraction" answers (how often, and deep work lost on those days), with Samuel adding context in reports.
+   - **What predicts your mood and energy:** same-day and next-day links between sleep, workouts, deep work, mood and energy.
+   - **Lifestyle score** from the prompt's first onboarding section, a refresh action on cards with live data, and undo for deletes.
+8. **v0.5 (integrations, optional):** email ("Needs a reply" and Inbox), then a read-only calendar. Health data from a phone health app or smartwatch (sleep, exercise, heart rate) may join later, so keep health inputs pluggable.
+9. **Phone:** 390px layouts for every screen, then phone access over Tailscale HTTPS with a passcode, the installable PWA and push notifications.
+10. **Throughout:** keep CLAUDE.md current with run and test commands, privacy rules and the coach architecture.
 
 ## Verification
 - **Tests:** `pytest` covers scores (nulls aren't treated as 0), the upsert rule, CLI export and import, and the passcode requirement for `--lan`. `npm test` and `npm run build` pass, and CI is green on GitHub.

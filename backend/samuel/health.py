@@ -7,7 +7,7 @@ import re
 import sqlite3
 from datetime import date, timedelta
 
-from . import scores
+from . import energy, scores
 
 LOG_FIELDS = ("water_l", "caffeine_cups", "caffeine_last", "screens_late")
 LIMITS = {"water_l": (0, 10), "caffeine_cups": (0, 20), "screens_late": (0, 600)}
@@ -172,6 +172,18 @@ def inputs_week(conn: sqlite3.Connection, day: str) -> dict:
     }
 
 
+def week_scores(conn: sqlite3.Connection, day: str) -> dict:
+    """Lifestyle and Balance as 7-day averages, with the change against the 7 days before."""
+    out = {}
+    before = (date.fromisoformat(day) - timedelta(days=7)).isoformat()
+    for key in ("lifestyle", "balance"):
+        now = _avg([s for s in (scores.scores_for(conn, d)[key] for d in _back(day, 7)) if s is not None])
+        then = _avg([s for s in (scores.scores_for(conn, d)[key] for d in _back(before, 7)) if s is not None])
+        out[key] = None if now is None else round(now)
+        out[f"{key}_change"] = round(now) - round(then) if now is not None and then is not None else None
+    return out
+
+
 def summary(conn: sqlite3.Connection, day: str, days: int) -> dict:
     week_ago = (date.fromisoformat(day) - timedelta(days=7)).isoformat()
     today_r = recovery(conn, day)
@@ -196,9 +208,17 @@ def summary(conn: sqlite3.Connection, day: str, days: int) -> dict:
         **sleep_energy(conn, day, days),
         "inputs": inputs_week(conn, day),
         "log_today": log_for(conn, day),
+        "energy_curve": energy.curve(conn, day, days),
+        "week_scores": week_scores(conn, day),
+        "taps_today": energy.taps_for(conn, day),
     }
 
 
 def for_coach(conn: sqlite3.Connection, day: str) -> dict:
     s = summary(conn, day, 7)
-    return {"recovery": s["recovery"], "burnout": s["burnout"], "energy_gap_short_sleep": s["energy_gap"], "inputs": s["inputs"]}
+    return {
+        "recovery": s["recovery"], "burnout": s["burnout"], "energy_gap_short_sleep": s["energy_gap"], "inputs": s["inputs"],
+        # Average energy taps by time of day over 30 days (slots with fewer than 3 days are null).
+        "energy_curve_30d": energy.curve(conn, day, 30),
+        "lifestyle_and_balance_7d": s["week_scores"],
+    }

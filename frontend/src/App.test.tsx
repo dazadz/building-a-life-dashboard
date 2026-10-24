@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
@@ -113,6 +113,7 @@ const healthBody = {
   energy_gap: 1.6,
   inputs: { water_l: 1.6, caffeine_cups: 3, caffeine_latest: '16:10', screens_late: 48, workouts: 3, logged_days: 5 },
   log_today: null,
+  week_scores: { lifestyle: 72, lifestyle_change: 5, balance: 64, balance_change: null },
 }
 
 const monthlyBody = {
@@ -127,10 +128,35 @@ const monthlyBody = {
   trend: [{ date: '2026-10-01', discipline: 70, average: 70 }, { date: '2026-10-02', discipline: 80, average: 75 }],
 }
 
+const linksBody = {
+  days: 90, min_days: 3,
+  links: [{ condition: 'sleep_target', condition_label: 'Slept to target', compared_with: 'nights under target', outcome: 'energy',
+    outcome_label: 'Energy', unit: '/10', when: 'same day', with_avg: 7.2, without_avg: 5.4, difference: 1.8, with_days: 12, without_days: 9 }],
+}
+
+const leaksBody = {
+  days: 30, checkins: 20, total_lost: 9.5,
+  leaks: [{ name: 'Phone', days: 6, dates: [], deep_work_lost: 5.5, deep_work_avg: 1.6, deep_work_avg_other_days: 2.4, impact: 'high' }],
+}
+
+const digestBody = {
+  now: '2026-10-24T10:37',
+  focus: { text: 'Phone out of the bedroom', source: "Your improvement from last night's check-in" },
+  due: { overdue: 1, today: 1, items: [
+    { kind: 'task', id: 4, title: 'Send invoice', time: null, overdue: true, high: false },
+    { kind: 'task', id: 5, title: 'Call the bank', time: '16:00', overdue: false, high: false },
+  ] },
+  next: { name: 'Deep work', start: '11:00', end: '13:00', state: 'next' },
+  yesterday: { date: '2026-10-23', score: 65, change: 4 },
+}
+
 function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
     if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded }
+    else if (url.startsWith('/api/digest')) body = digestBody
+    else if (url.startsWith('/api/leaks/')) body = leaksBody
+    else if (url.startsWith('/api/links/')) body = linksBody
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
     else if (url.startsWith('/api/settings')) body = settingsBody
     else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
@@ -237,6 +263,8 @@ describe('App', () => {
     render(<App />)
     expect(await screen.findByText('Sent the brief')).toBeInTheDocument()
     expect(screen.getByText('+4 vs last week')).toBeInTheDocument()
+    expect(await screen.findByRole('rowheader', { name: 'Phone' })).toBeInTheDocument()
+    expect(screen.getByText('5.5 h')).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText(/best focus day/), { target: { value: 'No meetings before 13:00' } })
     fireEvent.change(screen.getByLabelText('Priority 1'), { target: { value: 'Ship the budget' } })
     fireEvent.click(screen.getByRole('checkbox', { name: /Review the doc/ }))
@@ -304,6 +332,9 @@ describe('App', () => {
     render(<App />)
     expect(await screen.findByText('Caffeine after 15:00 on 4 days')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Burnout risk: moderate' })).toBeInTheDocument()
+    expect(await screen.findByText('Slept to target')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Lifestyle 72 of 100' })).toBeInTheDocument()
+    expect(screen.getByText('+1.8')).toBeInTheDocument()
     expect(screen.getByText('Energy is 1.6 points lower on days with less than 6.5 h of sleep.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Show as table' }))
     expect(screen.getByRole('columnheader', { name: 'Sleep (h)' })).toBeInTheDocument()
@@ -341,6 +372,15 @@ describe('App', () => {
     )
   })
 
+  it('shows today at a glance on Home', async () => {
+    mockServer(true)
+    render(<App />)
+    expect(await screen.findByText('Phone out of the bedroom')).toBeInTheDocument()
+    expect(screen.getByText('Send invoice')).toBeInTheDocument()
+    expect(screen.getByText(/1 overdue/)).toBeInTheDocument()
+    expect(screen.getByText('Deep work')).toBeInTheDocument()
+  })
+
   it('reminds the user to finish the profile on Home', async () => {
     mockServer(true)
     render(<App />)
@@ -353,6 +393,65 @@ describe('App', () => {
     render(<App />)
     expect(await screen.findByText('Save a check-in first.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Generate daily report' })).not.toBeInTheDocument()
+  })
+
+  it('chats with Samuel, starting from a suggested question', async () => {
+    mockServer(true)
+    const base = fetch as (url: string, init?: RequestInit) => Promise<Response>
+    const chat = {
+      id: 3, title: 'What should I focus on tomorrow?', report_id: null, created_at: '2026-10-24T09:00:00Z',
+      messages: [{ id: 1, role: 'user', text: 'What should I focus on tomorrow?', created_at: '2026-10-24T09:00:00Z' }],
+      pending: false, error: null, awaiting_reply: false,
+    }
+    const replied = { ...chat, messages: [...chat.messages, { id: 2, role: 'samuel', text: 'The **budget draft**: due Monday.', created_at: '2026-10-24T09:01:00Z' }] }
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === '/api/chats' && init?.method === 'POST') return new Response(JSON.stringify({ ...chat, pending: true }), { status: 201 })
+      if (url === '/api/chats/3') return new Response(JSON.stringify(replied), { status: 200 })
+      return base(url, init)
+    }))
+    window.location.hash = '#/coach'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'What should I focus on tomorrow?' }))
+    expect(await screen.findByText('budget draft')).toBeInTheDocument()
+    expect(fetch).toHaveBeenCalledWith('/api/chats', expect.objectContaining({
+      method: 'POST', body: '{"text":"What should I focus on tomorrow?","report_id":null}',
+    }))
+    expect(screen.getByLabelText('Ask a follow-up')).toBeInTheDocument()
+  })
+
+  it('opens the Ctrl+K palette, searches and jumps to a result', async () => {
+    mockServer(true)
+    const base = fetch as (url: string, init?: RequestInit) => Promise<Response>
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.startsWith('/api/search')) {
+        return new Response(JSON.stringify({ query: 'budget', groups: [{ name: 'Reports', items: [
+          { kind: 'report', id: 12, title: 'Daily report · Thursday 22 October', meta: 'The budget meeting cost you 2 h.', href: '#/coach?report=12' },
+        ] }] }), { status: 200 })
+      }
+      return base(url, init)
+    }))
+    render(<App />)
+    await screen.findByRole('heading', { level: 1, name: /Jordan/ })
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true })
+    const box = await screen.findByRole('combobox', { name: 'Search or run a command' })
+    fireEvent.change(box, { target: { value: 'budget' } })
+    expect(await screen.findByText('Daily report · Thursday 22 October')).toBeInTheDocument()
+    expect(screen.getByText('Create task “budget”')).toBeInTheDocument()
+    expect(screen.getByText('Ask Samuel: “budget”')).toBeInTheDocument()
+    fireEvent.keyDown(box, { key: 'Enter' })
+    await waitFor(() => expect(window.location.hash).toBe('#/coach?report=12'))
+    expect(screen.queryByRole('dialog', { name: 'Command palette' })).not.toBeInTheDocument()
+  })
+
+  it('taps energy on Home for the current part of the day', async () => {
+    mockServer(true)
+    render(<App />)
+    const scale = await screen.findByRole('group', { name: /energy \(1–10\)/ })
+    fireEvent.click(within(scale).getByRole('button', { name: '7' }))
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/^\/api\/energy\/\d{4}-\d{2}-\d{2}\/(morning|midday|afternoon|evening)$/),
+      expect.objectContaining({ method: 'PUT', body: expect.stringContaining('"value":7') }),
+    ))
   })
 
   it('walks a new user through setup', async () => {

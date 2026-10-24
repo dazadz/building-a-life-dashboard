@@ -3,8 +3,10 @@ import Markdown from 'react-markdown'
 import { api, type Day, type HabitStatus, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
 import { TodaysPlan } from '../components/Routine'
+import { EnergyTapCard } from '../components/Energy'
+import { DigestCard } from '../components/Digest'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, longDate, scoreText } from '../format'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localStamp, localTime, longDate, scoreText } from '../format'
 import { useLoad, useNow } from '../hooks'
 
 const STRIP = [
@@ -49,6 +51,8 @@ export function HomePage({ status }: { status: Status | null }) {
         </p>
       </header>
 
+      <DigestCard stamp={localStamp(now)} />
+
       {days.error && <ErrorLine message={days.error} onRetry={days.reload} />}
       {profile.data && profile.data.answered < profile.data.total && (
         <NeedsSetup>
@@ -91,6 +95,7 @@ export function HomePage({ status }: { status: Status | null }) {
         <CheckinCard day={todayData} yesterday={yesterdayData} loading={!days.data && !days.error} />
       </div>
       <div className="row">
+        <EnergyTapCard today={today} hhmm={localTime(now)} />
         <LatestReport reports={reports} />
         <HabitsCard day={todayData} onChange={(d) => days.setData([d, yesterdayData!])} />
       </div>

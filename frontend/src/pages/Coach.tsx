@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import Markdown from 'react-markdown'
-import { api, type Report, type Status } from '../api'
+import { api, ApiError, type Report, type Status } from '../api'
 import { Card } from '../components/Card'
+import { ChatPanel } from '../components/Chat'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { longDate } from '../format'
-import { useLoad, type useCoachJob } from '../hooks'
+import { useLoad, useQuery, type useCoachJob } from '../hooks'
 
 const KINDS = [
-  ['', 'All'], ['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly'], ['ask', 'Asked'],
+  ['', 'All'], ['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly'], ['onboarding', 'Profile'],
 ] as const
 const KIND_LABEL: Record<Report['kind'], string> = {
   daily: 'Daily report', weekly: 'Weekly review', monthly: 'Monthly evolution',
@@ -21,8 +22,18 @@ interface Props {
 }
 
 export function CoachPage({ coach, status }: Props) {
+  // Ctrl+K search links straight to a chat or a report: "#/coach?chat=3", "#/coach?report=12".
+  const query = useQuery()
+  const linkedChat = Number(query.get('chat')) || null
+  const linkedReport = Number(query.get('report')) || null
+  const [view, setView] = useState<'chat' | 'reports'>(linkedReport ? 'reports' : 'chat')
+  const [openChat, setOpenChat] = useState<number | null>(linkedChat)
   const [kind, setKind] = useState('')
-  const [selected, setSelected] = useState<number | null>(null)
+  const [selected, setSelected] = useState<number | null>(linkedReport)
+  useEffect(() => {
+    if (linkedChat) { setOpenChat(linkedChat); setView('chat') }
+    if (linkedReport) { setSelected(linkedReport); setKind(''); setView('reports') }
+  }, [linkedChat, linkedReport])
   const [showAll, setShowAll] = useState(false)
   const reports = useLoad(() => api.reports(kind || undefined), [kind])
   const { job } = coach
@@ -45,7 +56,7 @@ export function CoachPage({ coach, status }: Props) {
       <header className="page-head">
         <div className="eyebrow">Coach</div>
         <h1>Samuel</h1>
-        <p>Samuel reads your logs with Claude Code on this computer and writes reports here.</p>
+        <p>Talk with Samuel about your days, or read the reports. Samuel reads your logs with Claude Code on this computer.</p>
       </header>
 
       {!status ? <Loading lines={1} /> : installed && !status.coach.has_recent_checkin ? (
@@ -75,6 +86,14 @@ export function CoachPage({ coach, status }: Props) {
       {job?.status === 'failed' && <ErrorLine message={`The report didn't finish: ${job.error ?? 'unknown error'}`} />}
       {coach.error && <ErrorLine message={coach.error} />}
 
+      <div className="pills" role="group" aria-label="Coach view">
+        <button type="button" className="pill" aria-pressed={view === 'chat'} onClick={() => setView('chat')}>Chat</button>
+        <button type="button" className="pill" aria-pressed={view === 'reports'} onClick={() => setView('reports')}>Reports</button>
+      </div>
+
+      {view === 'chat' ? (
+        <ChatPanel installed={installed} openId={openChat} onShowReports={() => setView('reports')} />
+      ) : (
       <div className="coach-layout">
         <Card
           title="Reports"
@@ -123,13 +142,49 @@ export function CoachPage({ coach, status }: Props) {
             : <a href="#/checkin">Check-in →</a>}
         >
           {current ? (
-            <article className="report"><Markdown>{current.markdown}</Markdown></article>
+            <>
+              <article className="report"><Markdown>{current.markdown}</Markdown></article>
+              {installed && (
+                <AskAboutReport reportId={current.id} onStarted={(id) => { setOpenChat(id); setView('chat') }} />
+              )}
+            </>
           ) : (
             <p className="muted" style={{ margin: 0 }}>Reports appear here once Samuel has written one.</p>
           )}
         </Card>
       </div>
+      )}
     </div>
+  )
+}
+
+/** Start a chat about the open report, as in the Coach design. */
+function AskAboutReport({ reportId, onStarted }: { reportId: number; onStarted: (chatId: number) => void }) {
+  const [text, setText] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
+  const submit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!text.trim() || sending) return
+    setSending(true)
+    setError(null)
+    try {
+      const chat = await api.startChat(text.trim(), reportId)
+      setText('')
+      onStarted(chat.id)
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : String(err))
+    }
+    setSending(false)
+  }
+  return (
+    <form className="chat-composer" onSubmit={(e) => void submit(e)}>
+      <label htmlFor="ask-report" className="sr-only">Ask Samuel about this report</label>
+      <input id="ask-report" className="input" maxLength={2000} value={text} onChange={(e) => setText(e.target.value)}
+        placeholder="Ask Samuel about this report, e.g. which bottleneck to fix first" />
+      <button type="submit" className="btn btn-primary" disabled={sending || !text.trim()}>Ask</button>
+      {error && <ErrorLine message={error} />}
+    </form>
   )
 }
 

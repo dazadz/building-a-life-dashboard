@@ -43,6 +43,9 @@ pattern='([A-Za-z]:\\Users\\[A-Za-z][A-Za-z0-9._-]*|/Users/[A-Za-z][A-Za-z0-9._-
 words_file="$(git rev-parse --git-dir)/info/private-words"
 for f in $files; do
   case "$f" in scripts/privacy-check.sh|*/package-lock.json|package-lock.json) continue ;; esac
+  if show "$f" 2>/dev/null | head -c 4096 | grep -Iq '"format": *"samuel-export"'; then
+    report "Samuel data export (holds all your personal data): $f"
+  fi
   hits=$(show "$f" 2>/dev/null | grep -IinoE "$pattern" | head -3)
   [ -n "$hits" ] && report "possible personal data or secret in $f: $(echo "$hits" | tr '\n' ' ')"
   if [ -s "$words_file" ]; then

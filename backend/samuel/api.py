@@ -2,16 +2,17 @@
 
 import re
 import time
+from urllib.parse import quote
 from datetime import date, datetime
 from pathlib import Path
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import backups, coach, db, goals, habits, health, monthly, profile, reports, routines, scores, security, settings, tasks, weekly
+from . import backups, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, tasks, trash, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -161,6 +162,20 @@ class HealthLogIn(BaseModel):
     screens_late: int | None = None
 
 
+class EnergyTapIn(BaseModel):
+    value: int | None = Field(None, ge=1, le=10)
+    at: str  # local HH:MM
+
+
+class ChatIn(BaseModel):
+    text: str = Field(max_length=chats.MESSAGE_MAX)
+    report_id: int | None = None
+
+
+class ChatMessageIn(BaseModel):
+    text: str = Field(max_length=chats.MESSAGE_MAX)
+
+
 class CoachRunIn(BaseModel):
     skill: str = "daily-report"
 
@@ -185,6 +200,15 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     app = FastAPI(title="Samuel", docs_url=None, redoc_url=None, openapi_url=None)
     security.protect(app, allowed_hosts)
     app.state.last_request = time.monotonic()
+
+    def undoable(response: Response, conn, kind: str, row_id: int, delete) -> None:
+        """Copy the item to Recently deleted, delete it, and tell the app it can be undone."""
+        trash_id = trash.capture(conn, kind, row_id)
+        delete()
+        if trash_id is not None:
+            title = conn.execute("SELECT title FROM trash WHERE id = ?", (trash_id,)).fetchone()["title"]
+            response.headers["X-Samuel-Undo"] = str(trash_id)
+            response.headers["X-Samuel-Undo-Title"] = quote(title)
 
     @app.middleware("http")
     async def note_activity(request, call_next):
@@ -284,8 +308,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return goals.summary(conn, day)
 
     @app.delete("/api/goals/{goal_id}")
-    def delete_goal(goal_id: int, today: str | None = None, conn=Depends(get_conn)):
-        goal_write(lambda: goals.delete_goal(conn, goal_id))
+    def delete_goal(goal_id: int, response: Response, today: str | None = None, conn=Depends(get_conn)):
+        undoable(response, conn, "goal", goal_id, lambda: goal_write(lambda: goals.delete_goal(conn, goal_id)))
         return goals.summary(conn, goals_today(today))
 
     @app.post("/api/goals/{goal_id}/milestones")
@@ -300,8 +324,9 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return goals.summary(conn, day)
 
     @app.delete("/api/milestones/{milestone_id}")
-    def delete_milestone(milestone_id: int, today: str | None = None, conn=Depends(get_conn)):
-        goal_write(lambda: goals.delete_milestone(conn, milestone_id))
+    def delete_milestone(milestone_id: int, response: Response, today: str | None = None, conn=Depends(get_conn)):
+        undoable(response, conn, "milestone", milestone_id,
+                 lambda: goal_write(lambda: goals.delete_milestone(conn, milestone_id)))
         return goals.summary(conn, goals_today(today))
 
     @app.put("/api/vision")
@@ -366,8 +391,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return routines.list_routines(conn)
 
     @app.delete("/api/routines/{routine_id}")
-    def delete_routine(routine_id: int, conn=Depends(get_conn)):
-        routine_write(lambda: routines.delete(conn, routine_id))
+    def delete_routine(routine_id: int, response: Response, conn=Depends(get_conn)):
+        undoable(response, conn, "routine", routine_id, lambda: routine_write(lambda: routines.delete(conn, routine_id)))
         return routines.list_routines(conn)
 
     @app.get("/api/plan/{day}")
@@ -414,8 +439,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         return tasks.summary(conn, at)
 
     @app.delete("/api/tasks/{task_id}")
-    def delete_task(task_id: int, now: str | None = None, conn=Depends(get_conn)):
-        task_write(lambda: tasks.delete(conn, task_id))
+    def delete_task(task_id: int, response: Response, now: str | None = None, conn=Depends(get_conn)):
+        undoable(response, conn, "task", task_id, lambda: task_write(lambda: tasks.delete(conn, task_id)))
         return tasks.summary(conn, _now(now))
 
     @app.post("/api/tasks/{task_id}/subtasks")
@@ -433,6 +458,10 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         task_write(lambda: tasks.set_subtask(conn, subtask_id, None, delete_it=True))
         return tasks.summary(conn, _now(now))
 
+    @app.get("/api/digest")
+    def get_digest(now: str | None = None, conn=Depends(get_conn)):
+        return digest.digest(conn, _now(now))
+
     @app.get("/api/reminders/due")
     def get_due_reminders(now: str | None = None, conn=Depends(get_conn)):
         return tasks.due_reminders(conn, _now(now))
@@ -447,6 +476,31 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
         if days not in (7, 30, 90):
             raise HTTPException(422, "days must be 7, 30 or 90")
         return health.summary(conn, _day(day), days)
+
+    @app.get("/api/links/{day}")
+    def get_links(day: str, days: int = 90, conn=Depends(get_conn)):
+        if days not in (30, 90):
+            raise HTTPException(422, "days must be 30 or 90")
+        return links.links(conn, _day(day), days)
+
+    @app.get("/api/leaks/{day}")
+    def get_leaks(day: str, days: int = 30, conn=Depends(get_conn)):
+        if days not in (7, 30):
+            raise HTTPException(422, "days must be 7 or 30")
+        return leaks.time_leaks(conn, _day(day), days)
+
+    @app.get("/api/energy/{day}")
+    def get_energy(day: str, conn=Depends(get_conn)):
+        return energy.taps_for(conn, _day(day))
+
+    @app.put("/api/energy/{day}/{slot}")
+    def put_energy(day: str, slot: str, body: EnergyTapIn, conn=Depends(get_conn)):
+        day = _day(day)
+        try:
+            energy.save_tap(conn, day, slot, body.value, body.at)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+        return energy.taps_for(conn, day)
 
     @app.put("/api/health-log/{day}")
     def put_health_log(day: str, body: HealthLogIn, conn=Depends(get_conn)):
@@ -494,6 +548,82 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             raise HTTPException(409, str(exc))
         except RuntimeError as exc:
             raise HTTPException(503, str(exc))
+
+    def chat_answer(conn, chat_id: int) -> dict:
+        """Start Samuel's reply to the chat's latest message and return the chat."""
+        try:
+            coach.start(conn, "ask", chat_id)
+        except RuntimeError as exc:
+            raise HTTPException(503, str(exc))
+        return chats.get(conn, chat_id)
+
+    def chat_write(work):
+        try:
+            return work()
+        except LookupError as exc:
+            raise HTTPException(404, str(exc))
+        except chats.Busy as exc:
+            raise HTTPException(409, str(exc))
+        except ValueError as exc:
+            raise HTTPException(422, str(exc))
+
+    @app.get("/api/search")
+    def get_search(q: str = "", conn=Depends(get_conn)):
+        return search.search(conn, q[:100])
+
+    @app.get("/api/chats")
+    def get_chats(conn=Depends(get_conn)):
+        return chats.list_chats(conn)
+
+    @app.post("/api/chats", status_code=201)
+    def post_chat(body: ChatIn, conn=Depends(get_conn)):
+        if coach.claude_path() is None:
+            raise HTTPException(503, "Claude Code is not installed")
+        chat_id = chat_write(lambda: chats.create(conn, body.text, body.report_id))
+        return chat_answer(conn, chat_id)
+
+    @app.get("/api/chats/{chat_id}")
+    def get_chat(chat_id: int, conn=Depends(get_conn)):
+        return chat_write(lambda: chats.get(conn, chat_id))
+
+    @app.post("/api/chats/{chat_id}/messages")
+    def post_chat_message(chat_id: int, body: ChatMessageIn, conn=Depends(get_conn)):
+        if coach.claude_path() is None:
+            raise HTTPException(503, "Claude Code is not installed")
+        chat_write(lambda: chats.ask(conn, chat_id, body.text))
+        return chat_answer(conn, chat_id)
+
+    @app.post("/api/chats/{chat_id}/retry")
+    def post_chat_retry(chat_id: int, conn=Depends(get_conn)):
+        chat = chat_write(lambda: chats.get(conn, chat_id))
+        if chat["pending"] or not chat["awaiting_reply"]:
+            raise HTTPException(409, "There's no unanswered question to retry.")
+        return chat_answer(conn, chat_id)
+
+    @app.delete("/api/chats/{chat_id}")
+    def delete_chat(chat_id: int, response: Response, conn=Depends(get_conn)):
+        if chats.pending(conn, chat_id):
+            raise HTTPException(409, "Samuel is still answering. Delete the chat once the reply is in.")
+        undoable(response, conn, "chat", chat_id, lambda: chat_write(lambda: chats.delete(conn, chat_id)))
+        return chats.list_chats(conn)
+
+    @app.get("/api/trash")
+    def get_trash(conn=Depends(get_conn)):
+        return trash.list_trash(conn)
+
+    @app.post("/api/trash/{trash_id}/restore")
+    def post_restore(trash_id: int, conn=Depends(get_conn)):
+        try:
+            return trash.restore(conn, trash_id)
+        except LookupError as exc:
+            raise HTTPException(404, str(exc))
+        except ValueError as exc:
+            raise HTTPException(409, str(exc))
+
+    @app.delete("/api/trash")
+    def delete_trash(conn=Depends(get_conn)):
+        trash.empty(conn)
+        return []
 
     @app.get("/api/coach/jobs/{job_id}")
     def get_job(job_id: int, conn=Depends(get_conn)):

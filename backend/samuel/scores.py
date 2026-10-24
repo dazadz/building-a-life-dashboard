@@ -8,7 +8,7 @@ from datetime import date, timedelta
 
 
 MOOD = {"low": 0.0, "flat": 0.25, "okay": 0.5, "good": 0.75, "great": 1.0}
-SCORE_NAMES = ("productivity", "focus", "energy", "discipline", "balance")
+SCORE_NAMES = ("productivity", "focus", "energy", "discipline", "balance", "lifestyle")
 
 
 def _clamp(x: float) -> float:
@@ -75,6 +75,10 @@ def daily_scores(checkin: dict | None, habits: dict[str, str], targets: dict) ->
         "discipline": _pct(logged.count("done") / len(logged)) if logged else None,
         "balance": _pct(weighted([
             (v["sleep"], 0.25), (v["workout_balance"], 0.25), (v["overwork"], 0.25), (v["mood"], 0.25),
+        ])),
+        "lifestyle": _pct(weighted([
+            (v["sleep"], 0.25), (v["workout_balance"], 0.25),
+            (v.get("habit:healthy_eating"), 0.25), (v.get("habit:water"), 0.25),
         ])),
     }
     core = [s[k] for k in ("productivity", "discipline", "energy", "focus") if s[k] is not None]

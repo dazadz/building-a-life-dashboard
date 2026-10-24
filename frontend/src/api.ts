@@ -21,7 +21,7 @@ export interface Checkin {
   improvement: string | null
 }
 
-export type ScoreKey = 'productivity' | 'focus' | 'energy' | 'discipline' | 'balance' | 'day'
+export type ScoreKey = 'productivity' | 'focus' | 'energy' | 'discipline' | 'balance' | 'lifestyle' | 'day'
 export type Scores = Record<ScoreKey, number | null> & { stress: number | null }
 
 export interface Habit {
@@ -76,6 +76,95 @@ export interface Report {
   date: string
   markdown: string
   created_at: string
+}
+
+export interface ChatMessage {
+  id: number
+  role: 'user' | 'samuel'
+  text: string
+  created_at: string
+}
+
+export interface ChatSummary {
+  id: number
+  title: string
+  report_id: number | null
+  created_at: string
+  updated_at: string | null
+  messages: number
+  pending: boolean
+}
+
+export interface Chat {
+  id: number
+  title: string
+  report_id: number | null
+  created_at: string
+  messages: ChatMessage[]
+  pending: boolean
+  error: string | null
+  awaiting_reply: boolean
+}
+
+export interface TrashItem {
+  id: number
+  kind: 'goal' | 'milestone' | 'task' | 'routine' | 'chat'
+  title: string
+  deleted_at: string
+}
+
+export interface Links {
+  days: number
+  min_days: number
+  links: {
+    condition: string
+    condition_label: string
+    compared_with: string
+    outcome: string
+    outcome_label: string
+    unit: string
+    when: 'same day' | 'next day'
+    with_avg: number
+    without_avg: number
+    difference: number
+    with_days: number
+    without_days: number
+  }[]
+}
+
+export interface TimeLeaks {
+  days: number
+  checkins: number
+  total_lost: number
+  leaks: {
+    name: string
+    days: number
+    dates: string[]
+    deep_work_lost: number
+    deep_work_avg: number | null
+    deep_work_avg_other_days: number | null
+    impact: 'high' | 'medium' | 'low'
+  }[]
+}
+
+export interface Digest {
+  now: string
+  focus: { text: string; source: string } | null
+  due: {
+    overdue: number
+    today: number
+    items: { kind: 'task' | 'milestone'; id: number; title: string; time: string | null; overdue: boolean; high: boolean }[]
+  }
+  next: { name: string; start: string; end: string; state: 'now' | 'next' } | null
+  yesterday: { date: string; score: number | null; change: number | null }
+}
+
+export interface SearchResults {
+  query: string
+  groups: {
+    name: string
+    items: { kind: string; id: number | string; title: string; meta: string; href: string }[]
+  }[]
 }
 
 export interface CoachJob {
@@ -290,6 +379,16 @@ export interface HealthLog {
   screens_late: number | null
 }
 
+export type EnergySlot = 'morning' | 'midday' | 'afternoon' | 'evening'
+export type EnergyTaps = Record<EnergySlot, number | null>
+
+export interface EnergyCurve {
+  points: { slot: EnergySlot; average: number | null; days: number }[]
+  peak: EnergySlot | null
+  dip: EnergySlot | null
+  min_days: number
+}
+
 export interface Health {
   date: string
   days: number
@@ -305,6 +404,9 @@ export interface Health {
   burnout: { level: 'low' | 'moderate' | 'high' | null; reasons: string[] }
   series: { date: string; sleep: number | null; energy: number | null }[]
   energy_gap: number | null
+  energy_curve: EnergyCurve
+  week_scores: { lifestyle: number | null; lifestyle_change: number | null; balance: number | null; balance_change: number | null }
+  taps_today: EnergyTaps
   inputs: {
     water_l: number | null
     caffeine_cups: number | null
@@ -364,6 +466,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const detail = typeof body?.detail === 'string' ? body.detail : `Request failed (${res.status})`
     throw new ApiError(res.status, detail)
   }
+  // A delete that can be undone says so in headers; the Undo toast picks it up.
+  const undo = res.headers?.get?.('X-Samuel-Undo')
+  if (undo) {
+    const title = decodeURIComponent(res.headers.get('X-Samuel-Undo-Title') ?? '')
+    window.dispatchEvent(new CustomEvent('samuel:undo', { detail: { id: Number(undo), title } }))
+  }
   return res.json() as Promise<T>
 }
 
@@ -386,6 +494,21 @@ export const api = {
   runCoach: (skill = 'daily-report') =>
     request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
+  trash: () => request<TrashItem[]>('/api/trash'),
+  restore: (id: number) => request<{ kind: string; id: number; title: string }>(`/api/trash/${id}/restore`, { method: 'POST', body: '{}' }),
+  emptyTrash: () => request<TrashItem[]>('/api/trash', { method: 'DELETE', body: '{}' }),
+  links: (day: string, days: number) => request<Links>(`/api/links/${day}?days=${days}`),
+  leaks: (day: string, days: number) => request<TimeLeaks>(`/api/leaks/${day}?days=${days}`),
+  digest: (now: string) => request<Digest>(`/api/digest?now=${now}`),
+  search: (q: string) => request<SearchResults>(`/api/search?q=${encodeURIComponent(q)}`),
+  chats: () => request<ChatSummary[]>('/api/chats'),
+  chat: (id: number) => request<Chat>(`/api/chats/${id}`),
+  startChat: (text: string, reportId?: number) =>
+    request<Chat>('/api/chats', { method: 'POST', body: JSON.stringify({ text, report_id: reportId ?? null }) }),
+  sendChat: (id: number, text: string) =>
+    request<Chat>(`/api/chats/${id}/messages`, { method: 'POST', body: JSON.stringify({ text }) }),
+  retryChat: (id: number) => request<Chat>(`/api/chats/${id}/retry`, { method: 'POST', body: '{}' }),
+  deleteChat: (id: number) => request<ChatSummary[]>(`/api/chats/${id}`, { method: 'DELETE', body: '{}' }),
   // Goals writes return the whole Goals screen. DELETE sends '{}' because every write must be JSON.
   weekly: (today: string, week?: string) =>
     request<WeeklyReview>(`/api/weekly?today=${today}${week ? `&week=${week}` : ''}`),
@@ -417,6 +540,9 @@ export const api = {
   dueReminders: (now: string) => request<DueReminder[]>(`/api/reminders/due?now=${now}`),
   markNotified: (now: string, id: number) =>
     request<{ ok: boolean }>(`/api/tasks/${id}/notified?now=${now}`, { method: 'POST', body: '{}' }),
+  energy: (day: string) => request<EnergyTaps>(`/api/energy/${day}`),
+  tapEnergy: (day: string, slot: EnergySlot, value: number | null, at: string) =>
+    request<EnergyTaps>(`/api/energy/${day}/${slot}`, { method: 'PUT', body: JSON.stringify({ value, at }) }),
   health: (day: string, days: number) => request<Health>(`/api/health/${day}?days=${days}`),
   saveHealthLog: (day: string, log: Partial<HealthLog>) =>
     request<Health>(`/api/health-log/${day}`, { method: 'PUT', body: JSON.stringify(log) }),

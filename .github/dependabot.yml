@@ -1,0 +1,20 @@
+# Security fixes only. Routine version updates are off (open-pull-requests-limit: 0), so Dependabot
+# opens a pull request only when a dependency has a known vulnerability (Dependabot security
+# updates, switched on in the repo settings). Each one must pass CI like any other change.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0

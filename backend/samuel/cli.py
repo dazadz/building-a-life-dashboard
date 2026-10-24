@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import random
 import re
 import subprocess
@@ -10,7 +11,7 @@ import threading
 from pathlib import Path
 from datetime import date, timedelta
 
-from . import backups, db, health, profile, reports, routines, scores, tasks
+from . import backups, chats, db, energy, health, profile, reports, routines, scores, tasks
 from .checkins import log_habit, save_checkin
 
 
@@ -73,10 +74,23 @@ def _backup_hourly() -> None:
         conn.close()
 
 
+def _coach_run() -> bool:
+    """True inside a coach run, where check-in text could try to steer Claude (see coach._env)."""
+    return os.environ.get("SAMUEL_COACH") == "1"
+
+
 def cmd_export(args) -> None:
+    if _coach_run() and (args.all or args.out or args.force):
+        sys.exit("Coach runs may only read recent data: --all, --out and --force are off.")
     conn = db.connect()
     if not args.all:
-        json.dump(reports.export(conn, args.since, args.until, args.sensitive, args.month), sys.stdout, indent=1, ensure_ascii=False)
+        data = reports.export(conn, args.since, args.until, args.sensitive, args.month)
+        if args.chat is not None:
+            try:
+                data["chat"] = chats.for_coach(conn, args.chat)
+            except LookupError as exc:
+                sys.exit(f"error: {exc}")
+        json.dump(data, sys.stdout, indent=1, ensure_ascii=False)
         print()
         return
     data = backups.export_all(conn)
@@ -107,11 +121,22 @@ def cmd_import(args) -> None:
 
 
 def cmd_report_add(args) -> None:
+    if _coach_run() and args.file != "-":
+        sys.exit("Coach runs pass reports on stdin (--file -), not from files.")
     if args.file == "-":
         text = sys.stdin.buffer.read().decode("utf-8-sig") if hasattr(sys.stdin, "buffer") else sys.stdin.read()
     else:
         text = open(args.file, encoding="utf-8-sig").read()
     conn = db.connect()
+    if args.chat is not None:
+        if args.kind != "ask":
+            sys.exit("error: --chat is for --kind ask")
+        try:
+            chats.add_reply(conn, args.chat, text)
+        except (LookupError, ValueError) as exc:
+            sys.exit(f"error: {exc}")
+        print(f"Saved Samuel's reply in chat #{args.chat}")
+        return
     try:
         report_id = reports.add_report(conn, args.kind, text, args.date)
     except ValueError as exc:
@@ -187,6 +212,17 @@ def seed_demo(conn, days: int, end: date | None = None) -> None:
     if not routines.list_routines(conn):
         routines.add_suggested(conn, end.isoformat())
     seed_demo_tasks(conn, end)
+    seed_demo_energy(conn, end)
+
+
+def seed_demo_energy(conn, end: date) -> None:
+    """Jordan's energy taps: strong mornings, a dip after lunch. Its own random stream, so other demo data stays the same."""
+    rng = random.Random(11)
+    for i in range(20, 0, -1):
+        day = (end - timedelta(days=i)).isoformat()
+        for slot, base, at in (("morning", 7, "08:40"), ("midday", 6, "12:20"), ("afternoon", 4, "15:10"), ("evening", 5, "20:30")):
+            if rng.random() < 0.75:
+                energy.save_tap(conn, day, slot, max(1, min(10, base + rng.randint(-1, 2))), at)
 
 
 def seed_demo_tasks(conn, end: date) -> None:
@@ -298,6 +334,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--sensitive", action="store_true",
                    help="include the health and mental health profile answers (onboarding insights only)")
     p.add_argument("--month", action="store_true", help="include this month compared with last month")
+    p.add_argument("--chat", type=int, help="include this chat's conversation (for the ask skill)")
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("import", help="restore an export made with export --all into an empty database")
@@ -310,6 +347,7 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--kind", required=True, choices=reports.KINDS)
     r.add_argument("--file", default="-", help="markdown file, or - for stdin (default)")
     r.add_argument("--date", type=_date, help="the day the report is about (default today)")
+    r.add_argument("--chat", type=int, help="with --kind ask: save the text as Samuel's reply in this chat")
     r.set_defaults(func=cmd_report_add)
     r = rsub.add_parser("list", help="list recent reports")
     r.add_argument("--kind", choices=reports.KINDS)

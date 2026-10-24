@@ -13,9 +13,12 @@ import threading
 from datetime import date, timedelta
 from pathlib import Path
 
-from . import db
+from . import chats, db
 
-SKILLS = {"daily-report": "daily", "onboard-insights": "onboarding", "weekly-review": "weekly", "monthly-evolution": "monthly"}
+SKILLS = {
+    "daily-report": "daily", "onboard-insights": "onboarding", "weekly-review": "weekly",
+    "monthly-evolution": "monthly", "ask": "ask",
+}
 NEEDS_CHECKIN = {"daily-report", "weekly-review", "monthly-evolution"}
 TIMEOUT_SECONDS = 600
 REPO_ROOT = Path(os.environ.get("SAMUEL_REPO", Path(__file__).resolve().parents[2]))
@@ -46,40 +49,46 @@ def _env() -> dict:
     env["PATH"] = os.pathsep.join([str(scripts), str(scripts / "Scripts"), env.get("PATH", "")])
     env["SAMUEL_DATA_DIR"] = str(db.data_dir())
     env["PYTHONIOENCODING"] = "utf-8"
+    env["SAMUEL_COACH"] = "1"  # the CLI then refuses full exports and reading report files
     return env
 
 
-def command(skill: str) -> list[str]:
+def command(skill: str, chat_id: int | None = None) -> list[str]:
     # Only the two commands the skills need: read data, and save a report. Nothing that edits data.
+    # Bash is the only tool, and the user's own settings and MCP servers aren't loaded, so a run
+    # can't inherit wider permissions (or connected services) from the person's Claude Code setup.
     return [
-        claude_path() or "claude", "-p", f"/{skill}",
+        claude_path() or "claude", "-p", f"/{skill}" if chat_id is None else f"/{skill} {int(chat_id)}",
+        "--tools", "Bash", "--setting-sources", "project", "--strict-mcp-config",
         "--allowedTools", "Bash(samuel export *)", "Bash(samuel report add *)",
     ]
 
 
-def start(conn: sqlite3.Connection, skill: str) -> int:
-    """Start a coach run in the background and return its job id."""
+def start(conn: sqlite3.Connection, skill: str, chat_id: int | None = None) -> int:
+    """Start a coach run in the background and return its job id. `ask` answers a chat."""
     if skill not in SKILLS:
         raise ValueError(f"unknown skill {skill}")
+    if (skill == "ask") != (chat_id is not None):
+        raise ValueError("ask runs answer a chat: use the chat endpoints")
     if claude_path() is None:
         raise RuntimeError("Claude Code is not installed")
     if skill in NEEDS_CHECKIN and not has_recent_checkin(conn):
         raise NothingToReport("Save a check-in first. Samuel needs at least one from the last 7 days to write a report.")
     with conn:
         job_id = conn.execute(
-            "INSERT INTO coach_jobs (skill, status) VALUES (?, 'running')", (skill,)
+            "INSERT INTO coach_jobs (skill, status, chat_id) VALUES (?, 'running', ?)", (skill, chat_id)
         ).lastrowid
-    threading.Thread(target=_run, args=(job_id, skill), daemon=True).start()
+    threading.Thread(target=_run, args=(job_id, skill, chat_id), daemon=True).start()
     return job_id
 
 
-def _run(job_id: int, skill: str) -> None:
+def _run(job_id: int, skill: str, chat_id: int | None = None) -> None:
     conn = db.connect()
     started = conn.execute("SELECT started_at FROM coach_jobs WHERE id = ?", (job_id,)).fetchone()[0]
     error = None
     try:
         proc = subprocess.run(
-            command(skill), cwd=REPO_ROOT, env=_env(), capture_output=True, text=True,
+            command(skill, chat_id) if chat_id is not None else command(skill), cwd=REPO_ROOT, env=_env(), capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=TIMEOUT_SECONDS,
         )
         if proc.returncode != 0:
@@ -89,12 +98,17 @@ def _run(job_id: int, skill: str) -> None:
     except OSError as exc:
         error = str(exc)
 
-    report = conn.execute(
-        "SELECT id FROM reports WHERE kind = ? AND created_at >= ? ORDER BY id DESC LIMIT 1",
-        (SKILLS[skill], started),
-    ).fetchone()
-    if error is None and report is None:
-        error = "Claude Code finished without saving a report"
+    if chat_id is not None:
+        report = None
+        if error is None and chats.awaiting_reply(conn, chat_id):
+            error = "Claude Code finished without replying"
+    else:
+        report = conn.execute(
+            "SELECT id FROM reports WHERE kind = ? AND created_at >= ? ORDER BY id DESC LIMIT 1",
+            (SKILLS[skill], started),
+        ).fetchone()
+        if error is None and report is None:
+            error = "Claude Code finished without saving a report"
     with conn:
         conn.execute(
             """UPDATE coach_jobs SET status = ?, error = ?, report_id = ?,

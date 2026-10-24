@@ -117,6 +117,68 @@ button, input, textarea, select { font: inherit; color: inherit; }
   box-shadow: 0 0 8px var(--green);
 }
 
+/* Meters stacked in a card (Health → Lifestyle and balance) */
+.meter-stack { display: flex; flex-direction: column; gap: 18px; }
+.meter-stack .meter { flex: 0 0 auto; }
+
+/* What moves your energy and mood */
+.link-row { gap: 16px; }
+.link-what { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.list .link-title { font-family: var(--font-body); font-weight: 600; color: var(--text); }
+.link-nums { white-space: nowrap; }
+.link-diff { flex: 0 0 64px; text-align: right; font-weight: 600; }
+.link-diff.up { color: var(--green); }
+.link-diff.down { color: var(--amber); }
+
+/* Today at a glance */
+.digest-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: 12px; }
+.digest-cell {
+  display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; min-width: 0;
+  background: var(--inset); border: 1px solid var(--border); border-radius: var(--radius-small);
+}
+.digest-cell .meter-label { flex: 0 0 auto; }
+.digest-focus { border-left: 2px solid var(--accent); }
+.digest-text { color: var(--text); font-weight: 600; line-height: 1.35; }
+.digest-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.digest-list li { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+.digest-list .mono { flex: 0 0 40px; font-size: 11px; }
+.digest-item { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-body); }
+@media (max-width: 900px) { .digest-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
+/* Ctrl+K palette */
+kbd {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); background: var(--inset);
+  border: 1px solid var(--border); border-radius: var(--radius-small); padding: 1px 6px;
+}
+.search-btn {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 34px; margin: 0 0 12px;
+  padding: 0 10px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-small);
+  color: var(--text-faint); cursor: pointer; text-align: left;
+}
+.search-btn:hover { border-color: var(--accent-line); color: var(--text-muted); }
+.palette-backdrop {
+  position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, 0.6);
+  display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 16px;
+}
+.palette {
+  width: min(640px, 100%); background: var(--card); border: 1px solid var(--accent-line);
+  border-radius: var(--radius-small); box-shadow: var(--glow); overflow: hidden;
+}
+.palette-search { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.palette-input { flex: 1; min-width: 0; background: none; border: 0; outline: none; font-size: 16px; color: var(--text); }
+.palette-input::placeholder { color: var(--text-faint); }
+.palette-list { max-height: calc(52vh / var(--ui-scale, 1)); overflow-y: auto; padding: 6px; }
+.palette-group { padding: 10px 10px 4px; }
+.palette-item {
+  display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: var(--radius-small);
+  cursor: pointer; border-left: 2px solid transparent;
+}
+.palette-item[aria-selected='true'] { background: var(--accent-soft); border-left-color: var(--accent); }
+.palette-title { color: var(--text); font-weight: 500; }
+.palette-meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.palette-empty { padding: 12px 10px; margin: 0; }
+.palette-foot { display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 14px; border-top: 1px solid var(--border); }
+
 main { flex: 1; min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 48px; }
 .page { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 /* Home sits in the middle of the window: a narrower column, centred both ways, with a centred greeting. */
@@ -310,6 +372,17 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
 .report-item:hover { background: var(--inset); }
 .report-item[aria-current='true'] { background: var(--accent-soft); color: var(--text); border-left-color: var(--accent); }
 
+/* Chat with Samuel */
+.chat-thread { display: flex; flex-direction: column; gap: 12px; max-height: calc(60vh / var(--ui-scale, 1)); overflow-y: auto; padding-right: 4px; }
+.chat-msg { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: var(--radius-small); border: 1px solid var(--border); }
+.chat-msg p { margin: 0; white-space: pre-wrap; color: var(--text-body); }
+.chat-msg.user { align-self: flex-end; max-width: 80%; background: var(--inset); }
+.chat-msg.samuel { border-left: 2px solid var(--accent); }
+.chat-composer { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.chat-composer .input { flex: 1; min-width: 0; }
+.chat-composer .notice { flex-basis: 100%; }
+.chat-starters { display: flex; flex-direction: column; gap: 12px; }
+
 /* Habits */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .table-scroll { overflow-x: auto; }
@@ -455,6 +528,8 @@ textarea.input { height: auto; min-height: 68px; padding: 9px 12px; resize: vert
   border: 1px solid var(--accent-line); box-shadow: var(--glow);
 }
 .toast-head { display: flex; align-items: center; justify-content: space-between; }
+.undo-toasts { right: auto; left: 50%; transform: translateX(-50%); }
+.undo-toasts .toast-head { gap: 16px; }
 
 /* Health */
 .mini-chart { margin: 0; display: flex; flex-direction: column; gap: 6px; }
