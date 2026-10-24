@@ -5,7 +5,9 @@ import sqlite3
 from datetime import date, datetime, timedelta
 
 PRIORITIES = ("high", "normal", "low")
-FIELDS = ("title", "notes", "list", "priority", "due_date", "due_time", "remind_at", "goal_id", "routine_id")
+FIELDS = ("title", "notes", "list", "priority", "due_date", "due_time", "remind_at", "goal_id", "routine_id", "type")
+# Same types as routine blocks (routines.KINDS); kept here so tasks doesn't import routines.
+TYPES = ("focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure")
 HHMM = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 VIEWS = ("today", "upcoming", "overdue", "all", "done")
 
@@ -46,6 +48,9 @@ def validate(conn: sqlite3.Connection, changes: dict) -> dict:
         elif key == "goal_id":
             if value is not None and conn.execute("SELECT 1 FROM goals WHERE id = ?", (value,)).fetchone() is None:
                 raise ValueError("no such goal")
+        elif key == "type":
+            if value is not None and value not in TYPES:
+                raise ValueError(f"type must be one of {', '.join(TYPES)}")
         elif key == "routine_id":
             if value is not None and conn.execute("SELECT 1 FROM routines WHERE id = ?", (value,)).fetchone() is None:
                 raise ValueError("no such routine block")
@@ -200,7 +205,7 @@ def for_coach(conn: sqlite3.Connection, today: str) -> dict:
     open_.sort(key=lambda t: (t["due_date"], t["due_time"] or ""))
     return {
         "open_due_soon": [
-            {"title": t["title"], "list": t["list"], "priority": t["priority"], "due": t["due_date"],
+            {"title": t["title"], "type": t["type"], "priority": t["priority"], "due": t["due_date"],
              "time": t["due_time"], "overdue": t["due_date"] < today, "goal": t["goal_title"]}
             for t in open_
         ],

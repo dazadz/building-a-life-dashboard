@@ -4,6 +4,12 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Changed
+- **Type, for routine blocks and tasks:** the block's "Kind" is now **Type**, with Focus, Fixed, Work, Spiritual, Habit, Recovery and Leisure. Tasks use the same types in place of their list (Work tasks become Type: Work), with a type filter on the Tasks page.
+- **Create and edit tasks with a form:** a **New task** button replaces quick add. The form sets the task, type, goal it achieves, due date, time, reminder, routine block, priority and notes, and **Edit** on any task opens the same form. Ctrl+K "Create task" opens it with your text as the title.
+- **Edit habits** on the Habits page: rename any habit, turn tracking on or off (history is kept), and add your own.
+- **Edit milestones in place:** a goal's milestones have editable names and dates.
+
 ### Fixed
 - **Plan builder saves its plan:** Claude Code blocks shell commands that contain JSON braces, so coach runs couldn't send their suggestions. `samuel suggest add` now also reads plain `key: value` lines, which the plan builder, chat and weekly review use. A routine suggestion's reminder settings no longer fail when you accept it.
 

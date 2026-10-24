@@ -5,8 +5,9 @@ import type { BlockKind, PlanBlock, Routine } from './api'
 export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 export const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
+/** "Type" in the app, for routine blocks and tasks, in the order the pickers show them. */
 export const KIND_LABEL: Record<BlockKind, string> = {
-  focus: 'Focus', fixed: 'Fixed', habit: 'Habit', recovery: 'Recovery', leisure: 'Leisure',
+  focus: 'Focus', fixed: 'Fixed', work: 'Work', spiritual: 'Spiritual', habit: 'Habit', recovery: 'Recovery', leisure: 'Leisure',
 }
 
 export function minutes(hhmm: string): number {

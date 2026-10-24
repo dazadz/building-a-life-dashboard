@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
-import { api, type Task, type TasksSummary } from '../api'
+import { api, type Task, type TasksSummary, type BlockKind } from '../api'
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, isoDate, localStamp, shortDate } from '../format'
-import { useLoad, useNow } from '../hooks'
-import { parseQuickAdd } from '../quickadd'
+import { useLoad, useNow, useQuery } from '../hooks'
+import { TaskEditor } from '../components/TaskEditor'
+import { KIND_LABEL } from '../blocks'
 
 type View = 'today' | 'upcoming' | 'overdue' | 'all' | 'done'
 type Sort = 'due' | 'priority' | 'title'
@@ -32,7 +33,12 @@ export function TasksPage() {
   const today = isoDate(now)
   const loaded = useLoad(() => api.tasks(localStamp(new Date())), [today])
   const [view, setView] = useState<View>('today')
-  const [list, setList] = useState<string>('all')
+  const [type, setType] = useState<string>('all')
+  const query = useQuery()
+  const [editing, setEditing] = useState<number | 'new' | null>(() => (query.get('new') !== null ? 'new' : null))
+  const [newTitle] = useState(() => query.get('new') ?? '')
+  // Goals and routine blocks for the editor's pickers.
+  const pickers = useLoad(() => Promise.all([api.goals(today), api.routines()]), [today])
   const [filter, setFilter] = useState('')
   const [sort, setSort] = useState<Sort>('due')
   const [open, setOpen] = useState<number | null>(null)
@@ -59,7 +65,7 @@ export function TasksPage() {
         : view === 'upcoming' ? t.view === 'upcoming' || t.view === 'someday'
         : t.view === view)
     const needle = filter.trim().toLowerCase()
-    const shown = inView.filter((t) => (list === 'all' || t.list === list)
+    const shown = inView.filter((t) => (type === 'all' || (type === 'none' ? !t.type : t.type === type))
       && (!needle || t.title.toLowerCase().includes(needle) || (t.notes ?? '').toLowerCase().includes(needle)))
     const due = (t: Task) => `${t.due_date ?? '9999'}T${t.due_time ?? '99'}`
     return shown.sort((a, b) =>
@@ -67,20 +73,39 @@ export function TasksPage() {
         : sort === 'priority' ? PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority] || due(a).localeCompare(due(b))
         : view === 'done' ? (b.done_at ?? '').localeCompare(a.done_at ?? '')
         : due(a).localeCompare(due(b)))
-  }, [s, view, list, filter, sort])
+  }, [s, view, type, filter, sort])
 
-  const lists = s ? s.lists.map((l) => [l, s.tasks.filter((t) => t.view !== 'done' && t.list === l).length] as const) : []
+  const types = s ? (Object.keys(KIND_LABEL) as BlockKind[]).map((k) => [k, s.tasks.filter((t) => t.view !== 'done' && t.type === k).length] as const).filter(([, n]) => n > 0) : []
+  const editTask = typeof editing === 'number' ? s?.tasks.find((t) => t.id === editing) : undefined
+  const [goals, routines] = pickers.data ?? [null, []]
 
   return (
     <div className="page">
       <header className="page-head">
         <div className="eyebrow">{new Date(`${today}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-        <h1>Tasks</h1>
+        <div className="about-head">
+          <h1 style={{ flex: 1 }}>Tasks</h1>
+          <button type="button" className="btn btn-primary" onClick={() => setEditing('new')}>+ New task</button>
+        </div>
         <p>{s ? `${s.counts.today} open today · ${s.counts.overdue} overdue · ${s.this_week} more this week` : 'Loading your tasks…'}</p>
       </header>
 
       {loaded.error && <ErrorLine message={loaded.error} onRetry={loaded.reload} />}
       {error && <ErrorLine message={error} />}
+
+      {editing !== null && (editing === 'new' || editTask) && (
+        <TaskEditor
+          key={editing}
+          task={editTask}
+          title={newTitle}
+          goals={(goals?.goals ?? []).filter((g) => !g.done_date || g.id === editTask?.goal_id)}
+          routines={routines}
+          onClose={() => setEditing(null)}
+          onSave={(fields) => write(() => editing === 'new'
+            ? api.addTask(localStamp(new Date()), fields)
+            : api.updateTask(localStamp(new Date()), editing, fields))}
+        />
+      )}
 
       <div className="row">
         <Card
@@ -103,9 +128,10 @@ export function TasksPage() {
           </div>
           <div className="task-filters">
             <input className="input" aria-label="Filter tasks" placeholder="Filter tasks" value={filter} onChange={(e) => setFilter(e.target.value)} />
-            <select className="input" aria-label="List" value={list} onChange={(e) => setList(e.target.value)}>
-              <option value="all">All lists</option>
-              {lists.map(([l, n]) => <option key={l} value={l}>{l} · {n}</option>)}
+            <select className="input" aria-label="Filter by type" value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="all">All types</option>
+              {types.map(([k, n]) => <option key={k} value={k}>{KIND_LABEL[k]} · {n}</option>)}
+              <option value="none">No type</option>
             </select>
             <select className="input" aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
               <option value="due">Sort: due date</option>
@@ -114,19 +140,21 @@ export function TasksPage() {
             </select>
           </div>
           {!s ? <Loading lines={6} /> : rows.length === 0 ? (
-            <NeedsSetup>{view === 'today' ? 'Nothing due today. Add a task on the right.' : 'No tasks here.'}</NeedsSetup>
+            <NeedsSetup>
+              <span style={{ flex: 1 }}>{view === 'today' ? 'Nothing due today.' : 'No tasks here.'}</span>
+              <button type="button" className="link-btn accent" onClick={() => setEditing('new')}>New task →</button>
+            </NeedsSetup>
           ) : (
             <ul className="list tasks">
               {(showAll ? rows : rows.slice(0, VISIBLE)).map((t) => (
                 <TaskRow key={t.id} task={t} today={today} open={open === t.id} stamp={stamp}
-                  onToggle={() => setOpen(open === t.id ? null : t.id)} write={write} />
+                  onToggle={() => setOpen(open === t.id ? null : t.id)} onEdit={() => setEditing(t.id)} write={write} />
               ))}
             </ul>
           )}
         </Card>
 
         <div className="side-col">
-          <QuickAdd today={today} lists={s?.lists ?? ['Personal', 'Work']} onAdd={(task) => write(() => api.addTask(localStamp(new Date()), task))} />
           <Card title="Reminders" meta={s ? `${s.reminders.length} this week` : undefined} action={<a href="#/settings">Settings →</a>}>
             <NotificationsSwitch />
             {!s ? <Loading /> : s.reminders.length === 0 ? <NeedsSetup>No reminders this week. Add a time to a task to get one.</NeedsSetup> : (
@@ -148,8 +176,8 @@ export function TasksPage() {
   )
 }
 
-function TaskRow({ task: t, today, open, stamp, onToggle, write }: {
-  task: Task; today: string; open: boolean; stamp: string; onToggle: () => void
+function TaskRow({ task: t, today, open, stamp, onToggle, onEdit, write }: {
+  task: Task; today: string; open: boolean; stamp: string; onToggle: () => void; onEdit: () => void
   write: (work: () => Promise<TasksSummary>) => Promise<boolean>
 }) {
   const [subtask, setSubtask] = useState('')
@@ -164,7 +192,7 @@ function TaskRow({ task: t, today, open, stamp, onToggle, write }: {
           onChange={() => void write(() => api.updateTask(now(), t.id, { done: !done }))} />
         <button type="button" className="row-link task-title" aria-expanded={open} onClick={onToggle} data-done={done}>{t.title}</button>
         {t.subtasks.length > 0 && <span className="faint mono">{t.subtasks.filter((x) => x.done).length}/{t.subtasks.length}</span>}
-        <span className="tag" style={{ marginLeft: 0 }}>{t.list}</span>
+        {t.type && <span className="tag kind-tag" data-kind={t.type}>{KIND_LABEL[t.type]}</span>}
         {t.priority === 'high' && <span className="tag priority-high" style={{ marginLeft: 0 }}>High</span>}
         <span className={`mono task-when ${t.view === 'overdue' ? 'warn-text' : 'faint'}`}>{when(t, today)}</span>
       </div>
@@ -205,6 +233,7 @@ function TaskRow({ task: t, today, open, stamp, onToggle, write }: {
               </>
             )}
             <span style={{ flex: 1 }} />
+            <button type="button" className="btn" onClick={onEdit}>Edit</button>
             <button type="button" className="link-btn" onClick={() => setConfirming(true)}>Delete</button>
           </div>
         </div>
@@ -215,33 +244,6 @@ function TaskRow({ task: t, today, open, stamp, onToggle, write }: {
         <p><strong>{t.title}</strong>{t.subtasks.length > 0 ? ' and its subtasks' : ''} will be deleted.</p>
       </ConfirmDialog>
     </li>
-  )
-}
-
-function QuickAdd({ today, lists, onAdd }: { today: string; lists: string[]; onAdd: (task: ReturnType<typeof parseQuickAdd>) => Promise<boolean> }) {
-  const [text, setText] = useState('')
-  const parsed = parseQuickAdd(text, today)
-  const add = async () => {
-    if (!parsed.title) return
-    if (await onAdd({ ...parsed, list: parsed.list ?? 'Personal' })) setText('')
-  }
-  return (
-    <Card title="Quick add" meta="Type naturally" action={<button type="button" className="link-btn accent" disabled={!parsed.title} onClick={() => void add()}>Add task →</button>}>
-      <input className="input" aria-label="Quick add" placeholder="Call Sarah tomorrow at 9 #work !high" maxLength={300} value={text}
-        onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void add() } }} />
-      <p className="hint" style={{ margin: 0 }}>
-        Dates (today, tomorrow, fri, 3 Nov, in 3 days), times (at 9, 13:45, 7pm), #list ({lists.slice(0, 3).join(', ')}) and !high or !low are picked up.
-      </p>
-      {text.trim() && (
-        <div className="quick-preview" aria-live="polite">
-          <strong>{parsed.title || 'Add a title'}</strong>
-          <span className="tag" style={{ marginLeft: 0 }}>{parsed.list ?? 'Personal'}</span>
-          {parsed.priority && <span className={`tag ${parsed.priority === 'high' ? 'priority-high' : ''}`} style={{ marginLeft: 0 }}>{parsed.priority}</span>}
-          {parsed.due_date && <span className="mono faint">{shortDate(parsed.due_date)}{parsed.due_time ? ` · ${parsed.due_time}` : ''}</span>}
-          {parsed.remind_at && <span className="faint">reminder</span>}
-        </div>
-      )}
-    </Card>
   )
 }
 

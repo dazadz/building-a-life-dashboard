@@ -313,7 +313,7 @@ def seed_demo_tasks(conn, end: date) -> None:
         {"title": "Call the bank about the savings rate", "list": "Personal", "priority": "low", "due_date": on(5)},
     ]
     for t in demo:
-        tasks.add(conn, t)
+        tasks.add(conn, {**t, "type": "work"} if t.get("list") == "Work" else t)
     done = tasks.add(conn, {"title": "Renew passport", "list": "Personal", "due_date": on(-3)})
     tasks.update(conn, done, {"done": True}, f"{on(-3)}T18:00")
 

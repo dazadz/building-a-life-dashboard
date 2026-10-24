@@ -14,7 +14,8 @@ from . import goals, settings
 
 FIELDS = ("name", "start", "end", "weekdays", "note", "kind", "goal_id", "habit_key", "steps",
           "remind_before", "remind_start", "day_type_id")
-KINDS = ("focus", "fixed", "habit", "recovery", "leisure")
+# The types shared by routine blocks and tasks ("Type" in the app; `kind` on a block).
+KINDS = ("focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure")
 HHMM = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 STEPS_MAX = 8
 STEP_MAX = 120
@@ -55,7 +56,7 @@ def validate(changes: dict, conn: sqlite3.Connection | None = None) -> dict:
             value = (value or "").strip() or None
         elif key == "kind":
             if value not in KINDS:
-                raise ValueError(f"kind must be one of {', '.join(KINDS)}")
+                raise ValueError(f"type must be one of {', '.join(KINDS)}")
         elif key == "steps":
             if (not isinstance(value, list) or len(value) > STEPS_MAX
                     or any(not isinstance(s, str) or not s.strip() or len(s.strip()) > STEP_MAX for s in value)):
