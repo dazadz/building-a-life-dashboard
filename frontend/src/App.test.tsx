@@ -192,7 +192,7 @@ function mockServer(installed: boolean, hasCheckin = true, onboarded = true, sug
     else if (url.startsWith('/api/links/')) body = linksBody
     else if (url.startsWith('/api/days/')) body = emptyDay(url.slice('/api/days/'.length))
     else if (url.startsWith('/api/settings')) body = settingsBody
-    else if (url.startsWith('/api/habit-settings/')) body = settingsBody.habits
+    else if (url.startsWith('/api/habit-settings')) body = settingsBody.habits
     else if (url.startsWith('/api/habits?')) body = habitHistory
     else if (url.startsWith('/api/habits/')) body = emptyDay('2026-10-24')
     else if (url.startsWith('/api/profile')) body = profileBody
@@ -396,22 +396,39 @@ describe('App', () => {
     blockReminders = []
   })
 
-  it('lists tasks, adds one with quick add, and snoozes from a task', async () => {
+  it('creates a task with a type and goal, edits it, and snoozes from a task', async () => {
     mockServer(true)
     window.location.hash = '#/tasks'
     render(<App />)
     expect(await screen.findByRole('button', { name: 'Add hiring costs' })).toBeInTheDocument()
     expect(screen.queryByText('Send expense report')).not.toBeInTheDocument() // overdue, not today
+    expect(screen.queryByRole('textbox', { name: 'Quick add' })).not.toBeInTheDocument()
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Quick add' }), { target: { value: 'Buy gels fri #personal' } })
-    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Quick add' }), { key: 'Enter' })
+    fireEvent.click(screen.getByRole('button', { name: '+ New task' }))
+    fireEvent.change(screen.getByLabelText('Task'), { target: { value: 'Draft the Q4 budget summary' } })
+    fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'work' } })
+    fireEvent.change(await screen.findByLabelText('Goal it achieves'), { target: { value: '1' } })
+    fireEvent.change(screen.getByLabelText('Due date'), { target: { value: '2026-10-26' } })
+    fireEvent.change(screen.getByLabelText('Time'), { target: { value: '21:00' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Create task' }))
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\?now=/), expect.objectContaining({ method: 'POST' })),
     )
     const post = vi.mocked(fetch).mock.calls.find(([u, i]) => String(u).startsWith('/api/tasks?') && i?.method === 'POST')!
-    expect(JSON.parse(String(post[1]!.body))).toMatchObject({ title: 'Buy gels', list: 'Personal' })
+    expect(JSON.parse(String(post[1]!.body))).toMatchObject({
+      title: 'Draft the Q4 budget summary', type: 'work', goal_id: 1, due_date: '2026-10-26', due_time: '21:00',
+    })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add hiring costs' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit' }))
+    fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'focus' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save task' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\/1\?now=/), expect.objectContaining({
+        method: 'PUT', body: expect.stringContaining('"type":"focus"'),
+      })),
+    )
+
     fireEvent.click(await screen.findByRole('button', { name: '+1 hour' }))
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\/1\/snooze/), expect.objectContaining({ body: '{"how":"hour"}' })),
@@ -523,6 +540,41 @@ describe('App', () => {
       expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/suggestions/7/accept'), expect.objectContaining({
         body: expect.stringContaining('"start":"15:00"'),
       })),
+    )
+  })
+
+  it('renames and turns off habits from the Habits page', async () => {
+    mockServer(true)
+    window.location.hash = '#/habits'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit habits' }))
+    const name = await screen.findByLabelText('Reading done name')
+    fireEvent.change(name, { target: { value: 'Read 20 pages' } })
+    fireEvent.blur(name)
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/habit-settings/reading', expect.objectContaining({ method: 'PUT', body: '{"name":"Read 20 pages"}' })),
+    )
+    fireEvent.change(screen.getByLabelText('New habit'), { target: { value: 'Stretch' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add habit' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/habit-settings', expect.objectContaining({ method: 'POST', body: '{"name":"Stretch"}' })),
+    )
+  })
+
+  it('edits a milestone name and date in place', async () => {
+    mockServer(true)
+    window.location.hash = '#/goals'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Half marathon in March' }))
+    const title = screen.getByLabelText('14 km long run name')
+    fireEvent.change(title, { target: { value: '15 km long run' } })
+    fireEvent.blur(title)
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/milestones\/11\?/), expect.objectContaining({ method: 'PUT', body: '{"title":"15 km long run"}' })),
+    )
+    fireEvent.change(screen.getByLabelText('14 km long run due date'), { target: { value: '2026-11-01' } })
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/milestones\/11\?/), expect.objectContaining({ body: '{"due_date":"2026-11-01"}' })),
     )
   })
 

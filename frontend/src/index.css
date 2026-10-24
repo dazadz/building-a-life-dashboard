@@ -746,3 +746,14 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 }
 .suggestion-list li.suggestion-group { display: flex; align-items: center; gap: 10px; padding-top: 14px; border-bottom: 1px solid var(--accent-line); }
 .suggestion-group .link-btn { margin-left: auto; }
+
+/* Task editor */
+.task-editor { border-color: var(--accent-line); }
+.page-head .about-head h1 { margin: 0; }
+
+/* Editing habits and milestones in place */
+.habit-edit-row .input { flex: 1; min-width: 0; height: 34px; }
+.habit-add { grid-template-columns: minmax(0, 1fr) auto; }
+.milestone-title { flex: 1; min-width: 0; height: 32px; }
+.milestone-title[data-done='true'] { color: var(--text-muted); text-decoration: line-through; }
+.milestone-date { width: 150px; height: 32px; }

@@ -153,3 +153,46 @@ def test_api_switches_the_day_logs_blocks_and_reminds(client, conn, week):
     types = client.post("/api/day-types", json={"name": "Weekend", "weekdays": [5, 6]}).json()
     assert [t["name"] for t in types] == ["Office day", "Home day", "Weekend"]
     assert client.put(f"/api/plan/{MON}/blocks/999", json={"status": "done"}).status_code == 404
+
+
+def test_types_migration_keeps_links_and_maps_work_tasks(tmp_path):
+    import sqlite3
+
+    from samuel import db
+
+    path = tmp_path / "v14.db"
+    old = sqlite3.connect(path)
+    for version, sql in db._migrations():
+        if version >= 15:
+            break
+        old.execute("PRAGMA foreign_keys = OFF")
+        old.executescript(f"BEGIN;\n{sql}\nPRAGMA user_version = {version};\nCOMMIT;")
+    old.execute("INSERT INTO routines (id, name, start, end, kind) VALUES (3, 'Gym', '17:00', '18:00', 'habit')")
+    old.execute("INSERT INTO routine_logs (routine_id, date, status) VALUES (3, ?, 'done')", (MON,))
+    old.execute("INSERT INTO tasks (id, title, list, routine_id) VALUES (8, 'Send the report', 'Work', 3)")
+    old.execute("INSERT INTO tasks (id, title, list) VALUES (9, 'Buy milk', 'Personal')")
+    old.commit()
+    old.close()
+
+    conn = db.connect(path)
+    assert tuple(conn.execute("SELECT routine_id, type FROM tasks WHERE id = 8").fetchone()) == (3, "work")
+    assert conn.execute("SELECT type FROM tasks WHERE id = 9").fetchone()[0] is None
+    assert conn.execute("SELECT status FROM routine_logs WHERE routine_id = 3").fetchone()[0] == "done"
+    routines.add(conn, {"name": "Meditation", "start": "06:30", "end": "06:45", "kind": "spiritual"})
+    with pytest.raises(sqlite3.IntegrityError):
+        conn.execute("INSERT INTO routines (name, start, end, kind) VALUES ('x', '01:00', '02:00', 'nap')")
+
+
+def test_tasks_take_a_type(conn):
+    tid = tasks.add(conn, {"title": "Apply to three roles", "type": "work"})
+    tasks.update(conn, tid, {"type": "spiritual"}, f"{MON}T09:00")
+    assert conn.execute("SELECT type FROM tasks WHERE id = ?", (tid,)).fetchone()[0] == "spiritual"
+    with pytest.raises(ValueError, match="type must be one of"):
+        tasks.add(conn, {"title": "x", "type": "chores"})
+
+
+def test_suggestions_set_a_type_with_type_lines(conn):
+    batch, items = suggestions.parse_text(
+        "kind: routine\nname: Meditation\nstart: 06:30\nend: 06:45\ntype: Spiritual\n---\nkind: task\ntitle: Budget report\ntype: work"
+    )
+    assert items[0]["payload"]["kind"] == "spiritual" and items[1]["payload"]["type"] == "work"

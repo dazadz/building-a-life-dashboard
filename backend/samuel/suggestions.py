@@ -304,8 +304,8 @@ def parse_text(text: str) -> tuple[str | None, list[dict]]:
             raise ValueError(f"line {n}: start each suggestion with 'kind:'")
         elif key == "reason":
             current["reason"] = value
-        elif key == "block_kind":  # a routine block's own kind; `kind:` starts a new suggestion
-            current["payload"]["kind"] = value
+        elif key in ("type", "block_kind"):  # `kind:` starts a new suggestion, so a block's type is `type:`
+            current["payload"]["kind" if current["kind"] == "routine" else "type"] = value.lower()
         elif key == "milestone":
             title, _, due = value.partition("|")
             milestone = {"title": title.strip()}

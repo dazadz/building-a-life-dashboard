@@ -338,8 +338,12 @@ function GoalEditor({ goal, today, write, breakdown, onCreated, onClose }: {
               <li key={m.id}>
                 <input type="checkbox" className="check" checked={!!m.done_date} aria-label={`${m.title} done`}
                   onChange={() => void write(() => api.updateMilestone(today, m.id, { done: !m.done_date }))} />
-                <span style={{ flex: 1, minWidth: 0 }} className={m.done_date ? 'muted' : 'item-name'}>{m.title}</span>
-                <span className="mono faint">{m.due_date ? shortDate(m.due_date) : 'No date'}</span>
+                <input className="input milestone-title" aria-label={`${m.title} name`} maxLength={120} defaultValue={m.title}
+                  key={`${m.id}-${m.title}`} data-done={!!m.done_date}
+                  onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== m.title) void write(() => api.updateMilestone(today, m.id, { title: v })) }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur() } }} />
+                <input type="date" className="input milestone-date" aria-label={`${m.title} due date`} value={m.due_date ?? ''}
+                  onChange={(e) => void write(() => api.updateMilestone(today, m.id, { due_date: e.target.value || null }))} />
                 <button type="button" className="link-btn" aria-label={`Remove ${m.title}`}
                   onClick={() => void write(() => api.deleteMilestone(today, m.id))}>Remove</button>
               </li>

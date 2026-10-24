@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api, type HabitHistory, type HabitStatus } from '../api'
+import { api, type HabitHistory, type HabitStatus, type Settings } from '../api'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { isoDate, scoreText, shortDate } from '../format'
@@ -23,6 +23,7 @@ export function HabitsPage() {
   const [days, setDays] = useState<number>(14)
   const history = useLoad(() => api.habits(today, days), [today, days])
   const [error, setError] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
   const h = history.data
 
   const log = async (key: string, date: string, current: HabitStatus | null) => {
@@ -39,7 +40,12 @@ export function HabitsPage() {
     <div className="page">
       <header className="page-head">
         <div className="eyebrow">Last {days} days</div>
-        <h1>Habits</h1>
+        <div className="about-head">
+          <h1 style={{ flex: 1 }}>Habits</h1>
+          <button type="button" className="btn" aria-expanded={editing} onClick={() => setEditing(!editing)}>
+            {editing ? 'Done editing' : 'Edit habits'}
+          </button>
+        </div>
         <p>
           {h ? `${h.habits.length} daily trackers. ` : ''}
           {h?.consistency != null ? `Consistency is ${h.consistency}% over this period.` : 'Log a few days to see your consistency.'}
@@ -56,6 +62,8 @@ export function HabitsPage() {
 
       {history.error && <ErrorLine message={history.error} onRetry={history.reload} />}
       {error && <ErrorLine message={error} />}
+
+      {editing && <EditHabits today={today} onChanged={history.reload} onClose={() => setEditing(false)} />}
 
       <Trackers history={h} onLog={log} />
 
@@ -215,6 +223,60 @@ function Weekly({ history }: { history: HabitHistory | null }) {
           ))}
         </div>
       )}
+    </Card>
+  )
+}
+
+/** Rename habits, turn tracking on or off (history is kept), and add your own. */
+function EditHabits({ today, onChanged, onClose }: { today: string; onChanged: () => void; onClose: () => void }) {
+  const loaded = useLoad(() => api.settings(today), [today])
+  const [name, setName] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const habits = loaded.data?.habits
+
+  const write = async (work: () => Promise<Settings['habits']>) => {
+    setError(null)
+    try {
+      const list = await work()
+      loaded.setData({ ...loaded.data!, habits: list })
+      onChanged()
+      return true
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+      return false
+    }
+  }
+  const add = async () => {
+    if (name.trim() && await write(() => api.addHabit(name.trim()))) setName('')
+  }
+
+  return (
+    <Card title="Edit habits" className="wide" meta={habits ? `${habits.filter((x) => x.active).length} of ${habits.length} tracked` : undefined}
+      secondary={<button type="button" className="link-btn" onClick={onClose}>Done editing</button>}
+      action={<a href="#/routine">Link a habit to a routine block →</a>}>
+      {!habits ? <Loading lines={5} /> : (
+        <ul className="list">
+          {habits.map((x) => (
+            <li key={`${x.key}-${x.name}`} className="habit-edit-row">
+              <input className="input" aria-label={`${x.name} name`} maxLength={60} defaultValue={x.name}
+                onBlur={(e) => { const v = e.target.value.trim(); if (v && v !== x.name) void write(() => api.renameHabit(x.key, v)) }}
+                onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }} />
+              {x.auto === 1 && <span className="tag" title="Ticked from the check-in">auto</span>}
+              <label className="check-label">
+                <input type="checkbox" className="check" checked={x.active}
+                  onChange={(e) => void write(() => api.setHabitActive(x.key, e.target.checked))} /> Tracking
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="routine-add habit-add" aria-label="Add your own habit">
+        <input className="input" aria-label="New habit" placeholder="Your own habit, e.g. 10 min stretch" maxLength={60}
+          value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') void add() }} />
+        <button type="button" className="btn" onClick={() => void add()}>Add habit</button>
+      </div>
+      <p className="faint" style={{ margin: 0 }}>Turning a habit off hides it from your days but keeps its history.</p>
+      {error && <ErrorLine message={error} />}
     </Card>
   )
 }

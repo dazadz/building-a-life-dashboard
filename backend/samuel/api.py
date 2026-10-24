@@ -114,7 +114,7 @@ class RoutineIn(BaseModel):
     end: str
     weekdays: list[int] = [0, 1, 2, 3, 4, 5, 6]
     note: str | None = Field(None, max_length=200)
-    kind: Literal["focus", "fixed", "habit", "recovery", "leisure"] = "focus"
+    kind: Literal["focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure"] = "focus"
     goal_id: int | None = None
     habit_key: str | None = None
     steps: list[str] = []
@@ -129,7 +129,7 @@ class RoutineChange(BaseModel):
     end: str | None = None
     weekdays: list[int] | None = None
     note: str | None = Field(None, max_length=200)
-    kind: Literal["focus", "fixed", "habit", "recovery", "leisure"] | None = None
+    kind: Literal["focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure"] | None = None
     goal_id: int | None = None
     habit_key: str | None = None
     steps: list[str] | None = None
@@ -173,6 +173,7 @@ class TaskIn(BaseModel):
     remind_at: str | None = None
     goal_id: int | None = None
     routine_id: int | None = None
+    type: Literal["focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure"] | None = None
 
 
 class TaskChange(BaseModel):
@@ -185,6 +186,7 @@ class TaskChange(BaseModel):
     remind_at: str | None = None
     goal_id: int | None = None
     routine_id: int | None = None
+    type: Literal["focus", "fixed", "work", "spiritual", "habit", "recovery", "leisure"] | None = None
     done: bool | None = None
 
 

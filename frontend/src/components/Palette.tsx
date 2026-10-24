@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { api, ApiError, type SearchResults } from '../api'
-import { isoDate, localStamp } from '../format'
-import { parseQuickAdd } from '../quickadd'
 
 interface Item {
   key: string
@@ -93,12 +91,8 @@ function PaletteDialog({ coachInstalled, onClose }: { coachInstalled: boolean; o
     if (q && mode !== 'commands') {
       if (mode === 'all') {
         actions.push({
-          key: 'add-task', title: `Create task “${q}”`, meta: 'Reads dates, times, #lists and !high, like quick add',
-          run: async () => {
-            const now = new Date()
-            await api.addTask(localStamp(now), parseQuickAdd(q, isoDate(now)))
-            window.location.hash = '#/tasks'
-          },
+          key: 'add-task', title: `Create task “${q}”`, meta: 'Opens the new task form to set its time, type and goal',
+          run: async () => { window.location.hash = `#/tasks?new=${encodeURIComponent(q)}` },
         })
       }
       if (coachInstalled) {

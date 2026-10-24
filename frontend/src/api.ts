@@ -310,7 +310,8 @@ export interface WeeklyChange {
   status: 'draft' | 'done'
 }
 
-export type BlockKind = 'focus' | 'fixed' | 'habit' | 'recovery' | 'leisure'
+// The types shared by routine blocks and tasks ("Type" in the app).
+export type BlockKind = 'focus' | 'fixed' | 'work' | 'spiritual' | 'habit' | 'recovery' | 'leisure'
 
 export interface Routine {
   id: number
@@ -391,6 +392,8 @@ export interface Task {
   remind_at: string | null
   goal_id: number | null
   goal_title: string | null
+  type: BlockKind | null
+  routine_id: number | null
   done_at: string | null
   view: 'today' | 'upcoming' | 'someday' | 'overdue' | 'done'
   subtasks: { id: number; title: string; done: boolean }[]
@@ -413,6 +416,8 @@ export interface NewTask {
   remind_at?: string | null
   notes?: string | null
   goal_id?: number | null
+  type?: BlockKind | null
+  routine_id?: number | null
   subtasks?: string[]
 }
 
@@ -583,6 +588,8 @@ export const api = {
     request<Settings>(`/api/settings?today=${today}`, { method: 'PUT', body: JSON.stringify(changes) }),
   setHabitActive: (key: string, active: boolean) =>
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ active }) }),
+  renameHabit: (key: string, name: string) =>
+    request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ name }) }),
   addHabit: (name: string) =>
     request<Settings['habits']>('/api/habit-settings', { method: 'POST', body: JSON.stringify({ name }) }),
   about: () => request<About>('/api/about'),

@@ -130,7 +130,7 @@ export function RoutinePage({ coach, status }: { coach: ReturnType<typeof useCoa
             <div className="table-scroll">
               <table className="data-table block-table">
                 <thead>
-                  <tr><th scope="col">Time</th><th scope="col">Block</th><th scope="col">Kind</th><th scope="col">Works on</th>
+                  <tr><th scope="col">Time</th><th scope="col">Block</th><th scope="col">Type</th><th scope="col">Works on</th>
                     <th scope="col">Days</th><th scope="col" className="num">Remind</th><th scope="col"><span className="sr-only">Edit</span></th></tr>
                 </thead>
                 <tbody>
@@ -216,7 +216,7 @@ function BlockEditor({ block, data, onSave, onClose, onRemove }: {
             {f.end < f.start && <span className="hint">Ends after midnight.</span>}
           </div>
           <div className="field">
-            <label htmlFor="block-kind">Kind</label>
+            <label htmlFor="block-kind">Type</label>
             <select id="block-kind" className="input" value={f.kind} onChange={(e) => set('kind', e.target.value as BlockKind)}>
               {KINDS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}
             </select>
