@@ -53,11 +53,13 @@ def window_app_id(browser: str) -> str:
     """The taskbar ID (AppUserModelID) the browser gives Samuel's app window.
 
     Chromium builds it from its own ID, the app's host and path (not the port) and the profile
-    folder's name. A shortcut with the same ID groups with the window, so pinning either one
-    pins the shortcut, with Samuel's icon, instead of a bare msedge.exe that opens a normal page.
+    folder's name with punctuation dropped ("app-window" becomes "appwindow"). A shortcut with
+    the same ID groups with the window, so pinning either one pins the shortcut, with Samuel's
+    icon, instead of a bare msedge.exe that opens a normal page.
     """
     prefix = "MSEdge" if "edge" in Path(browser).name.lower() else "Chrome"
-    return f"{prefix}.127.0.0.1_/.{(db.data_dir() / 'app-window').name}.Default"
+    profile = "".join(c for c in (db.data_dir() / "app-window").name if c.isalnum())
+    return f"{prefix}.127.0.0.1_/.{profile}.Default"
 
 
 def window_command(browser: str, port: int) -> list[str]:

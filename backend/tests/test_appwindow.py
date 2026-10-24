@@ -23,8 +23,9 @@ def test_window_command_uses_app_mode_and_its_own_profile(data_dir):
 
 
 def test_window_app_id_matches_the_browsers_taskbar_id():
-    # As read from a real Edge app window: browser ID, host and path, profile folder name.
-    assert appwindow.window_app_id(r"C:\Edge\msedge.exe") == "MSEdge.127.0.0.1_/.app-window.Default"
+    # As read from a real Edge app window: browser ID, host and path, profile folder name
+    # without its hyphen.
+    assert appwindow.window_app_id(r"C:\Edge\msedge.exe") == "MSEdge.127.0.0.1_/.appwindow.Default"
     assert appwindow.window_app_id("/usr/bin/google-chrome").startswith("Chrome.127.0.0.1_/.")
 
 
