@@ -10,6 +10,10 @@ Building a life dashboard using Claude Code.
 
 Screenshots use the made-up demo persona Jordan.
 
+### Your own Samuel
+
+This repo is the app, with every feature and none of anyone's data. Clone it and you get a Samuel that starts empty and becomes yours: the onboarding questions, your check-ins, pains and goals, routine, reports and chats are saved only in `~\.samuel` on your computer, never in this folder. The author uses the same code every day, and their data stays on their own PC the same way, so pulling this repo never gives you anyone's personal data. Screenshots, tests and demo data use the made-up persona Jordan.
+
 ![Home: the block on now or next, the score strip, today's plan, focus areas from your pains and goals, and goals](docs/screenshots/home.png)
 
 ![About me: pains and goals, Samuel's suggestions, your own words and the fixed parts of your week](docs/screenshots/about.png)
@@ -118,7 +122,7 @@ Reports need Claude Code installed and logged in on this computer (run `claude` 
 
 **Contributing:** turn on the privacy check once with `git config core.hooksPath scripts/hooks`. It stops a commit that contains database files, secrets, local paths or personal email addresses. To block your own name too, add it (one word per line) to `.git/info/private-words`, which is never committed.
 
-**Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask for a report.
+**Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask Samuel for a report, a chat reply or a plan.
 
 ## Design
 
