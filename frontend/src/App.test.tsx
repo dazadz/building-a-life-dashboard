@@ -360,9 +360,9 @@ describe('App', () => {
 
   it('previews a vibe live and saves the theme', async () => {
     mockServer(true)
-    window.location.hash = '#/settings'
+    window.location.hash = '#/settings?tab=appearance'
     render(<App />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Energise' }))
+    fireEvent.click(await screen.findByRole('radio', { name: /Energise/ }))
     expect(document.documentElement.style.getPropertyValue('--accent')).toBe('#ff9f43')
     fireEvent.click(screen.getByRole('button', { name: 'Save theme →' }))
     await waitFor(() =>
@@ -370,6 +370,28 @@ describe('App', () => {
         method: 'PUT', body: '{"theme":{"accent":"#ff9f43","darkness":"midnight","tint":0.3}}',
       })),
     )
+  })
+
+  it('switches Settings sections from the tabs', async () => {
+    mockServer(true)
+    window.location.hash = '#/settings'
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: 'Profile and targets' })).toBeInTheDocument()
+    window.location.hash = '#/settings?tab=data'
+    fireEvent(window, new HashChangeEvent('hashchange'))
+    expect(await screen.findByRole('heading', { name: 'Your data' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Data & privacy' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('turns the accent with the hue ring from the keyboard', async () => {
+    mockServer(true)
+    window.location.hash = '#/settings?tab=appearance'
+    render(<App />)
+    const ring = await screen.findByRole('slider', { name: 'Accent hue' })
+    const before = Number(ring.getAttribute('aria-valuenow'))
+    fireEvent.keyDown(ring, { key: 'ArrowRight', shiftKey: true })
+    expect(Number(ring.getAttribute('aria-valuenow'))).toBe((before + 10) % 360)
+    expect(document.documentElement.style.getPropertyValue('--accent')).not.toBe('#22e0e6')
   })
 
   it('shows today at a glance on Home', async () => {
