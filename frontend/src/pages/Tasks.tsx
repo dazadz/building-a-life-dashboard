@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { api, type Task, type TasksSummary } from '../api'
 import { Card } from '../components/Card'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, isoDate, localStamp, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
@@ -153,6 +154,7 @@ function TaskRow({ task: t, today, open, stamp, onToggle, write }: {
 }) {
   const [subtask, setSubtask] = useState('')
   const [notes, setNotes] = useState(t.notes ?? '')
+  const [confirming, setConfirming] = useState(false)
   const done = !!t.done_at
   const now = () => localStamp(new Date())
   return (
@@ -203,10 +205,15 @@ function TaskRow({ task: t, today, open, stamp, onToggle, write }: {
               </>
             )}
             <span style={{ flex: 1 }} />
-            <button type="button" className="link-btn" onClick={() => { if (window.confirm(`Delete "${t.title}"?`)) void write(() => api.deleteTask(now(), t.id)) }}>Delete</button>
+            <button type="button" className="link-btn" onClick={() => setConfirming(true)}>Delete</button>
           </div>
         </div>
       )}
+      <ConfirmDialog open={confirming} title="Delete task?" confirmLabel="Delete task"
+        onConfirm={() => { setConfirming(false); void write(() => api.deleteTask(now(), t.id)) }}
+        onCancel={() => setConfirming(false)}>
+        <p><strong>{t.title}</strong>{t.subtasks.length > 0 ? ' and its subtasks' : ''} will be deleted.</p>
+      </ConfirmDialog>
     </li>
   )
 }

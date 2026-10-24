@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { api, AREAS, type Area, type Goal, type GoalFields, type GoalsSummary } from '../api'
 import { Card } from '../components/Card'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, isoDate, scoreText, shortDate } from '../format'
 import { useLoad, useNow } from '../hooks'
@@ -253,6 +254,7 @@ function GoalEditor({ goal, today, write, onCreated, onClose }: {
   const [milestone, setMilestone] = useState({ title: '', due_date: '' })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [confirming, setConfirming] = useState(false)
   const set = <K extends keyof GoalFields>(key: K, value: GoalFields[K]) => setFields((f) => ({ ...f, [key]: value }))
 
   const save = async () => {
@@ -276,9 +278,12 @@ function GoalEditor({ goal, today, write, onCreated, onClose }: {
   }
 
   const remove = async () => {
-    if (goal && window.confirm(`Delete "${goal.title}" and its milestones?`)) {
-      if (await write(() => api.deleteGoal(today, goal.id))) onClose()
-    }
+    if (!goal) return
+    setSaving(true)
+    const ok = await write(() => api.deleteGoal(today, goal.id))
+    setSaving(false)
+    setConfirming(false)
+    if (ok) onClose()
   }
 
   return (
@@ -290,7 +295,7 @@ function GoalEditor({ goal, today, write, onCreated, onClose }: {
           <button type="button" className="link-btn" onClick={() => void write(() => api.updateGoal(today, goal.id, { done: !goal.done_date }))}>
             {goal.done_date ? 'Reopen goal' : 'Mark goal done'}
           </button>
-          <button type="button" className="link-btn" onClick={() => void remove()}>Delete</button>
+          <button type="button" className="link-btn" onClick={() => setConfirming(true)}>Delete</button>
         </span>
       )}
       action={<button type="button" className="link-btn accent" onClick={onClose}>Close →</button>}
@@ -347,6 +352,16 @@ function GoalEditor({ goal, today, write, onCreated, onClose }: {
             <button type="button" className="btn" onClick={() => void addMilestone()}>Add</button>
           </div>
         </fieldset>
+      )}
+
+      {goal && (
+        <ConfirmDialog open={confirming} title="Delete goal?" confirmLabel="Delete goal" busy={saving}
+          onConfirm={() => void remove()} onCancel={() => setConfirming(false)}>
+          <p><strong>{goal.title}</strong> will be removed from your goals and roadmap.</p>
+          {goal.milestones.length > 0 && (
+            <p>Its {goal.milestones.length} {goal.milestones.length === 1 ? 'milestone' : 'milestones'} will be deleted with it.</p>
+          )}
+        </ConfirmDialog>
       )}
     </Card>
   )
