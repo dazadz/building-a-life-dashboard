@@ -13,7 +13,7 @@ const DAY = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 // Where an accepted suggestion lands, for the note after accepting.
 const LANDS: Record<SuggestionKind, [string, string]> = {
   pain: ['About me', '#/about'], goal: ['Goals', '#/goals'], milestone: ['Goals', '#/goals'],
-  habit: ['Habits', '#/habits'], task: ['Tasks', '#/tasks'], routine: ['Routine', '#/settings?tab=profile'],
+  habit: ['Habits', '#/habits'], task: ['Tasks', '#/tasks'], routine: ['Routine', '#/routine'],
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '')

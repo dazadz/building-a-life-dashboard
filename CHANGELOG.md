@@ -11,6 +11,8 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 - **Your own habits:** add and rename habits next to the ten defaults.
 - **About me page:** what Samuel knows about you: your pains and goals (filter, sort, edit, resolve, remove with undo), your notes, your profile progress, and a button to have Samuel build your plan.
 - **Repeating routines by day type:** blocks run on day types such as Office day and Home day (switch one date with a tap) or on their own weekdays. Each block has a kind, an optional goal or habit, steps, and reminders 5 minutes before and at the start. Blocks can run past midnight. Done ticks the linked habit; skipped asks what got in the way, and Samuel sees the last 14 days.
+- **Routine page:** a week strip, tabs per day type, and a block editor (kind, days or day type, goal, habit, what to do, steps, reminders). Day types are managed on the same page; Settings links to it.
+- **Block reminders:** a corner card and Windows notification 5 minutes before a block ("Up next") and when it starts ("Now", with the task and steps), with Snooze 15 min and Skip, which asks what got in the way. Today's plan shows done and skipped marks and each block's task.
 - **Tasks queued for a block:** a task can belong to a routine block. It shows when the block runs and rolls on to the next run if it isn't done.
 - **Samuel suggests card:** on About me, and on Today whenever something is waiting, with Accept, Edit (then accept) and Dismiss, accept-selected, and a count badge in the sidebar. Settings → Profile can add your own habits.
 

@@ -310,22 +310,72 @@ export interface WeeklyChange {
   status: 'draft' | 'done'
 }
 
+export type BlockKind = 'focus' | 'fixed' | 'habit' | 'recovery' | 'leisure'
+
 export interface Routine {
   id: number
   name: string
   start: string
-  end: string
+  end: string // before the start when the block runs past midnight
   weekdays: number[]
   note: string | null
+  kind: BlockKind
+  goal_id: number | null
+  habit_key: string | null
+  steps: string[]
+  remind_before: boolean
+  remind_start: boolean
+  day_type_id: number | null // set: runs on that day type's days; null: runs on its own weekdays
+  goal_title?: string | null
+  habit_name?: string | null
+  day_type?: string | null
 }
 
-export type RoutineFields = Omit<Routine, 'id'>
+export type RoutineFields = Omit<Routine, 'id' | 'goal_title' | 'habit_name' | 'day_type'>
+
+export interface QueuedTask {
+  id: number
+  title: string
+  due_date: string | null
+  notes: string | null
+  rolled: number // how many runs of the block it has waited through
+}
+
+export interface PlanBlock extends Routine {
+  status: 'done' | 'skipped' | null
+  reason: string | null
+  tasks: QueuedTask[]
+}
+
+export interface DayType {
+  id: number
+  name: string
+  weekdays: number[]
+  position: number
+  blocks: number
+}
 
 export interface Plan {
   date: string
-  blocks: Routine[]
+  day_type: { id: number; name: string; overridden: boolean } | null
+  day_types: { id: number; name: string }[]
+  blocks: PlanBlock[]
   due_today: { id: number; title: string; goal_title: string }[]
   has_routine: boolean
+}
+
+export interface BlockReminder {
+  routine_id: number
+  date: string
+  which: 'heads_up' | 'start'
+  name: string
+  start: string
+  end: string
+  kind: BlockKind
+  goal_title: string | null
+  steps: string[]
+  note: string | null
+  task: string | null
 }
 
 export type Priority = 'high' | 'normal' | 'low'
@@ -579,6 +629,21 @@ export const api = {
     request<Routine[]>(`/api/routines/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
   deleteRoutine: (id: number) => request<Routine[]>(`/api/routines/${id}`, { method: 'DELETE', body: '{}' }),
   plan: (day: string) => request<Plan>(`/api/plan/${day}`),
+  setDayType: (day: string, dayTypeId: number | null) =>
+    request<Plan>(`/api/plan/${day}/day-type`, { method: 'PUT', body: JSON.stringify({ day_type_id: dayTypeId }) }),
+  logBlock: (day: string, id: number, status: PlanBlock['status'], reason?: string) =>
+    request<Plan>(`/api/plan/${day}/blocks/${id}`, { method: 'PUT', body: JSON.stringify({ status, reason: reason ?? null }) }),
+  snoozeBlock: (day: string, id: number, until: string) =>
+    request<Plan>(`/api/plan/${day}/blocks/${id}/snooze`, { method: 'POST', body: JSON.stringify({ until }) }),
+  blockReminders: (now: string) => request<BlockReminder[]>(`/api/block-reminders/due?now=${now}`),
+  blockShown: (now: string, id: number, which: BlockReminder['which']) =>
+    request<{ ok: boolean }>(`/api/block-reminders/${id}/shown?which=${which}&now=${now}`, { method: 'POST', body: '{}' }),
+  dayTypes: () => request<DayType[]>('/api/day-types'),
+  addDayType: (name: string, weekdays: number[]) =>
+    request<DayType[]>('/api/day-types', { method: 'POST', body: JSON.stringify({ name, weekdays }) }),
+  updateDayType: (id: number, changes: { name?: string; weekdays?: number[] }) =>
+    request<DayType[]>(`/api/day-types/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  deleteDayType: (id: number) => request<DayType[]>(`/api/day-types/${id}`, { method: 'DELETE', body: '{}' }),
   tasks: (now: string) => request<TasksSummary>(`/api/tasks?now=${now}`),
   addTask: (now: string, task: NewTask) =>
     request<TasksSummary>(`/api/tasks?now=${now}`, { method: 'POST', body: JSON.stringify(task) }),

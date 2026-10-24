@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { api, type DataInfo, type Settings, type Status as AppStatus, type TextSize } from '../api'
 import { Card } from '../components/Card'
-import { RoutineEditor } from '../components/Routine'
 import { AppearanceSection } from '../components/Appearance'
 import { TrashCard } from '../components/Undo'
 import { HabitToggles, NameField, TargetFields } from '../components/SetupFields'
@@ -134,7 +133,9 @@ function Forms({ today, initial, onSaved }: { today: string; initial: Settings; 
         <TargetFields value={targets} onChange={setTargets} />
         <Status message={goals.message} error={goals.error} />
       </Card>
-      <RoutineEditor />
+      <Card title="Routine" meta="Day types, steps and reminders" action={<a href="#/routine">Open routine →</a>}>
+        <p className="muted" style={{ margin: 0 }}>Your routine has its own page: blocks by day type, what each one works on, and reminders.</p>
+      </Card>
       <Card title="Habits" meta={`${habits.filter((h) => h.active).length} of ${habits.length} on`} action={<a href="#/habits">Habits →</a>}>
         <HabitToggles habits={habits} onToggle={toggle} />
         <AddHabit onAdded={(list) => { setHabits(list) }} />
