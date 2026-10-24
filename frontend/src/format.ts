@@ -63,3 +63,15 @@ export function answeredCount(c: Partial<Checkin> | null | undefined): number {
     return v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === '')
   }).length
 }
+
+export type ScoreTone = 'good' | 'mid' | 'low'
+
+/**
+ * Green, amber or red for a 0–100 score: 70 and up is good, 40–69 middling, under 40 low.
+ * Pass `inverse` for the stress index (1–10, higher is worse).
+ */
+export function scoreTone(value: number | null | undefined, inverse = false): ScoreTone | undefined {
+  if (value == null) return undefined
+  if (inverse) return value <= 3.5 ? 'good' : value <= 6.5 ? 'mid' : 'low'
+  return value >= 70 ? 'good' : value >= 40 ? 'mid' : 'low'
+}

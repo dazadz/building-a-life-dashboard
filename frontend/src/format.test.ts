@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, scoreText } from './format'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, scoreText, scoreTone } from './format'
 
 describe('format', () => {
   it('shows a dash for a missing score, never 0', () => {
@@ -38,5 +38,22 @@ describe('format', () => {
     expect(justAfterMidnight.toISOString().slice(0, 10)).toBe('2026-10-23')
     expect(isoDate(justAfterMidnight)).toBe('2026-10-24')
     expect(localTime(justAfterMidnight)).toBe('00:30')
+  })
+})
+
+describe('scoreTone', () => {
+  it('colours scores green, amber or red by range', () => {
+    expect(scoreTone(85)).toBe('good')
+    expect(scoreTone(70)).toBe('good')
+    expect(scoreTone(69)).toBe('mid')
+    expect(scoreTone(40)).toBe('mid')
+    expect(scoreTone(39)).toBe('low')
+    expect(scoreTone(null)).toBeUndefined()
+  })
+
+  it('reads stress the other way round', () => {
+    expect(scoreTone(2.5, true)).toBe('good')
+    expect(scoreTone(5, true)).toBe('mid')
+    expect(scoreTone(8, true)).toBe('low')
   })
 })

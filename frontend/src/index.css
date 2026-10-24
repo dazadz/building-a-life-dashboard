@@ -24,6 +24,12 @@
   --green: #5be38a;
   --amber: #ffc24d;
   --blue: #5cb8ff;
+  /* More colours to tell cards apart and to show score ranges (each passes AA on cards and insets). */
+  --violet: #b39cff;
+  --pink: #ff7ab6;
+  --orange: #ff9f5a;
+  --rose: #ff8197;
+  --red: #ff6b6b;
 
   --font-display: 'Michroma', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -210,8 +216,8 @@ main { flex: 1; min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 48px; }
 .card::before, .card::after, .scores::before, .scores::after {
   content: ''; position: absolute; width: 10px; height: 10px; pointer-events: none;
 }
-.card::before, .scores::before { top: -1px; left: -1px; border-top: 1px solid var(--bracket); border-left: 1px solid var(--bracket); }
-.card::after, .scores::after { bottom: -1px; right: -1px; border-bottom: 1px solid var(--bracket); border-right: 1px solid var(--bracket); }
+.card::before, .scores::before { top: -1px; left: -1px; border-top: 1px solid var(--tone, var(--bracket)); border-left: 1px solid var(--tone, var(--bracket)); }
+.card::after, .scores::after { bottom: -1px; right: -1px; border-bottom: 1px solid var(--tone, var(--bracket)); border-right: 1px solid var(--tone, var(--bracket)); }
 .card-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--divider); }
 .card-head h2 { font-size: 12px; font-weight: 400; flex: 1; text-transform: uppercase; letter-spacing: 0.06em; }
 .card-meta { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -778,3 +784,23 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .home-grid .list.plan .plan-range { display: none; }
 .home-grid .list.plan li > a { grid-column: 3; }
 .fixed-part { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* Card colours: one per kind of card, the same on every page (see Card.tsx). The title, its glow and
+   the corner brackets take the card's colour; body text stays neutral so it reads easily. */
+.card[data-tone='accent'] { --tone: var(--accent); }
+.card[data-tone='green'] { --tone: var(--green); }
+.card[data-tone='amber'] { --tone: var(--amber); }
+.card[data-tone='violet'] { --tone: var(--violet); }
+.card[data-tone='blue'] { --tone: var(--blue); }
+.card[data-tone='pink'] { --tone: var(--pink); }
+.card[data-tone='orange'] { --tone: var(--orange); }
+.card[data-tone='rose'] { --tone: var(--rose); }
+.card[data-tone] > .card-head h2 { color: var(--tone); text-shadow: 0 0 10px color-mix(in srgb, var(--tone) 55%, transparent); }
+.card[data-tone] > .card-head { border-bottom-color: color-mix(in srgb, var(--tone) 22%, var(--divider)); }
+
+/* Scores by range: green good (70+), amber middling (40–69), red low */
+[data-score='good'] { --score: var(--green); }
+[data-score='mid'] { --score: var(--amber); }
+[data-score='low'] { --score: var(--red); }
+.meter-value[data-score], .score-text[data-score] { color: var(--score); text-shadow: 0 0 10px color-mix(in srgb, var(--score) 50%, transparent); }
+.meter-track[data-score] .meter-seg[data-on='true'] { background: var(--score); box-shadow: 0 0 6px color-mix(in srgb, var(--score) 45%, transparent); }

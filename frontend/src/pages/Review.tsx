@@ -4,7 +4,7 @@ import { api, type Report, type Status, type WeeklyReview } from '../api'
 import { TimeLeaksCard } from '../components/Leaks'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, deltaText, isoDate, scoreText, shortDate } from '../format'
+import { addDays, deltaText, isoDate, scoreText, scoreTone, shortDate } from '../format'
 import { useLoad, useNow, type useCoachJob } from '../hooks'
 import { ReviewTabs } from './Monthly'
 
@@ -82,11 +82,11 @@ function ReviewBody({ review, today, coach, status, onSaved }: {
 
   const n = review.numbers
   const stats = [
-    { label: 'Day score', value: scoreText(n.day_score), note: deltaText(n.day_score_change) ? `${deltaText(n.day_score_change)} vs last week` : null },
+    { label: 'Day score', value: scoreText(n.day_score), tone: scoreTone(n.day_score), note: deltaText(n.day_score_change) ? `${deltaText(n.day_score_change)} vs last week` : null },
     { label: 'Check-ins', value: `${n.checkins} / 7`, note: null },
     { label: 'Sleep', value: n.sleep_avg == null ? '—' : `${n.sleep_avg} h`, note: 'average a night' },
     { label: 'Deep work', value: n.deep_work_total == null ? '—' : `${n.deep_work_total} h`, note: 'this week' },
-    { label: 'Habits', value: n.habit_rate == null ? '—' : `${n.habit_rate}%`, note: 'done when logged' },
+    { label: 'Habits', value: n.habit_rate == null ? '—' : `${n.habit_rate}%`, tone: scoreTone(n.habit_rate), note: 'done when logged' },
     { label: 'Workouts', value: String(n.workouts), note: null },
   ]
 
@@ -101,7 +101,7 @@ function ReviewBody({ review, today, coach, status, onSaved }: {
             {stats.map((s) => (
               <div key={s.label} className="snapshot-item">
                 <span className="meter-label">{s.label}</span>
-                <span className="meter-value">{s.value}</span>
+                <span className="meter-value" data-score={'tone' in s ? s.tone : undefined}>{s.value}</span>
                 {s.note && <span className="faint">{s.note}</span>}
               </div>
             ))}

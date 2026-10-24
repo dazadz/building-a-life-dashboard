@@ -2,7 +2,7 @@ import { useId, useState, type FormEvent } from 'react'
 import { api, type Checkin, type Day } from '../api'
 import { Card } from '../components/Card'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, answeredCount, isoDate, longDate, scoreText } from '../format'
+import { addDays, answeredCount, isoDate, longDate, scoreText, scoreTone } from '../format'
 import { useLoad, useQuery, type useCoachJob } from '../hooks'
 
 type Form = Record<keyof Checkin, string>
@@ -220,7 +220,7 @@ function CheckinForm({ coach, coachInstalled, today: initialToday, yesterday }: 
             <NeedsSetup>No check-in yesterday. Today's answers start your streak.</NeedsSetup>
           ) : (
             <ul className="list">
-              <li><span className="muted" style={{ flex: 1 }}>Day score</span><strong>{scoreText(yesterday.summary.scores.day)}</strong></li>
+              <li><span className="muted" style={{ flex: 1 }}>Day score</span><strong className="score-text" data-score={scoreTone(yesterday.summary.scores.day)}>{scoreText(yesterday.summary.scores.day)}</strong></li>
               <li><span className="muted" style={{ flex: 1 }}>Sleep</span><strong>{yesterday.checkin.sleep_hours ?? '—'} h</strong></li>
               <li><span className="muted" style={{ flex: 1 }}>Energy</span><strong>{yesterday.checkin.energy ?? '—'} / 10</strong></li>
               <li><span className="muted" style={{ flex: 1 }}>Deep work</span><strong>{yesterday.checkin.deep_work_hours ?? '—'} h</strong></li>

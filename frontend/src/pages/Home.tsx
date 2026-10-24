@@ -9,7 +9,7 @@ import { NowCard } from '../components/NowCard'
 import { FocusAreasCard, GoalsCard } from '../components/Focus'
 import { dayMode, nowAndNext, type DayMode } from '../blocks'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { addDays, answeredCount, deltaText, greeting, isoDate, localStamp, localTime, longDate, scoreText } from '../format'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localStamp, localTime, longDate, scoreText, scoreTone } from '../format'
 import { useLoad, useNow } from '../hooks'
 
 const STRIP = [
@@ -158,9 +158,9 @@ function ScoreStrip({ today, yesterday }: { today: Day | null; yesterday: Day | 
               {deltaText(delta) && (
                 <span className={delta! > 0 ? 'delta-up' : 'delta-down'}>{deltaText(delta)}</span>
               )}
-              <span className="meter-value">{scoreText(value)}</span>
+              <span className="meter-value" data-score={scoreTone(value)}>{scoreText(value)}</span>
             </div>
-            <div className="meter-track" role="img" aria-label={`${label} ${scoreText(value)} of 100`}>
+            <div className="meter-track" data-score={scoreTone(value)} role="img" aria-label={`${label} ${scoreText(value)} of 100`}>
               {SEGMENTS.map((i) => <span key={i} className="meter-seg" data-on={value != null && i < Math.round(value / 5)} />)}
             </div>
           </div>
@@ -197,7 +197,7 @@ function CheckinCard({ day, yesterday, loading }: { day: Day | null; yesterday: 
             </li>
             <li>
               <span className="muted" style={{ flex: 1 }}>Yesterday</span>
-              <strong>{scoreText(yesterday?.summary.scores.day)}</strong>
+              <strong className="score-text" data-score={scoreTone(yesterday?.summary.scores.day)}>{scoreText(yesterday?.summary.scores.day)}</strong>
               <span className="faint">day score</span>
             </li>
             <li>
