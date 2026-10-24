@@ -5,6 +5,7 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Dropdowns:** options are in alphabetical order (types, areas, goals, habits, routine blocks and day types), with "None" first and "Other" last; ordered lists like Priority and Sort keep their order. Dropdowns and their open lists use the same font as the rest of the text.
 - **Type colours:** each type has its own colour (Focus cyan, Fixed grey, Work blue, Faith violet, Health green, Habit red, Recovery amber, Leisure orange) on its tag in Tasks and Routine, on the Now card, and as a dot beside each block in Today's plan.
 - **Health** is a Type for routine blocks and tasks (Focus, Fixed, Work, Faith, Health, Habit, Recovery, Leisure).
 - **Reorder habits:** "Reorder ↕" on the Daily trackers card (or Edit habits) gives each habit up and down buttons. The order is used everywhere habits are listed.

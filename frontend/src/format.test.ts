@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, scoreText, scoreTone, dayDate, daysLeftText } from './format'
+import { addDays, answeredCount, deltaText, greeting, isoDate, localTime, scoreText, scoreTone, dayDate, daysLeftText, alphabetical } from './format'
 
 describe('format', () => {
   it('shows a dash for a missing score, never 0', () => {
@@ -68,5 +68,11 @@ describe('due dates and days left', () => {
     expect(daysLeftText('2026-10-27', '2026-10-26')).toBe('1 day left')
     expect(daysLeftText('2026-10-26', '2026-10-26')).toBe('Due today')
     expect(daysLeftText('2026-10-23', '2026-10-26')).toBe('3 days late')
+  })
+})
+
+describe('alphabetical', () => {
+  it('sorts dropdown options and keeps Other last', () => {
+    expect(alphabetical(['other', 'career', 'Faith', 'business'], (x) => x)).toEqual(['business', 'career', 'Faith', 'other'])
   })
 })

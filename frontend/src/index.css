@@ -878,3 +878,7 @@ select.input option { background: var(--card); color: var(--text); }
 [data-type='leisure'] { --type: var(--orange); }
 .type-tag { margin-left: 0; color: var(--type); border-color: color-mix(in srgb, var(--type) 45%, var(--border)); background: color-mix(in srgb, var(--type) 8%, transparent); }
 .type-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: var(--type); box-shadow: 0 0 6px color-mix(in srgb, var(--type) 60%, transparent); }
+
+/* Dropdowns and their open lists use the body font, like the rest of the text */
+select.input, select.input option { font-family: var(--font-body); font-size: 14px; font-weight: 400; }
+select.priority-select, select.priority-select option { font-size: 12px; }

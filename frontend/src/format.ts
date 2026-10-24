@@ -95,3 +95,14 @@ export function daysLeftText(iso: string, today: string): string {
   if (n < 0) return `${-n} ${n === -1 ? 'day' : 'days'} late`
   return `${n} ${n === 1 ? 'day' : 'days'} left`
 }
+
+/** Dropdown options in alphabetical order, with any "Other" kept last. */
+export function alphabetical<T>(items: readonly T[], label: (item: T) => string): T[] {
+  return [...items].sort((a, b) => {
+    const la = label(a)
+    const lb = label(b)
+    const oa = la.toLowerCase() === 'other'
+    const ob = lb.toLowerCase() === 'other'
+    return oa === ob ? la.localeCompare(lb, 'en', { sensitivity: 'base' }) : oa ? 1 : -1
+  })
+}

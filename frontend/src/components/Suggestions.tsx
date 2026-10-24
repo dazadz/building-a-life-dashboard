@@ -3,7 +3,7 @@ import { api, AREAS, type Suggestion, type SuggestionKind, type SuggestionPayloa
 import { Card } from './Card'
 import { Weekdays } from './Routine'
 import { ErrorLine, Loading, NeedsSetup } from './States'
-import { isoDate } from '../format'
+import { alphabetical, isoDate } from '../format'
 import { useLoad } from '../hooks'
 
 const KIND_LABEL: Record<SuggestionKind, string> = {
@@ -251,7 +251,7 @@ function SuggestionEditor({ suggestion, busy, onCancel, onAccept }: {
             <div className="field">
               <label htmlFor={id('area')}>Area</label>
               <select id={id('area')} className="input" value={str(p.area)} onChange={set('area')}>
-                {AREAS.map((a) => <option key={a} value={a}>{a[0].toUpperCase() + a.slice(1)}</option>)}
+                {alphabetical(AREAS, (a) => a).map((a) => <option key={a} value={a}>{a[0].toUpperCase() + a.slice(1)}</option>)}
               </select>
             </div>
             {when('target_date', 'Target date', 'date')}

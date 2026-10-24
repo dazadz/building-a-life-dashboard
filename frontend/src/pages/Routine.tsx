@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { api, type BlockKind, type DayType, type Goal, type Routine, type RoutineFields, type Settings, type Status } from '../api'
 import { Card } from '../components/Card'
-import { DAY_SHORT, KIND_LABEL, remindText, worksOn } from '../blocks'
+import { DAY_SHORT, KIND_LABEL, TYPE_OPTIONS, remindText, worksOn } from '../blocks'
 import { Weekdays } from '../components/Routine'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
-import { isoDate } from '../format'
+import { alphabetical, isoDate } from '../format'
 import { useCoachJob, useLoad } from '../hooks'
 
 interface Data {
@@ -16,7 +16,6 @@ interface Data {
 
 type Tab = number | 'days' // a day type's id, or the blocks that run on their own weekdays
 
-const KINDS = Object.keys(KIND_LABEL) as BlockKind[]
 const EMPTY: RoutineFields = {
   name: '', start: '09:00', end: '10:00', weekdays: [0, 1, 2, 3, 4], note: null, kind: 'focus', goal_id: null,
   habit_key: null, steps: [], remind_before: true, remind_start: true, day_type_id: null,
@@ -218,14 +217,14 @@ function BlockEditor({ block, data, onSave, onClose, onRemove }: {
           <div className="field">
             <label htmlFor="block-kind">Type</label>
             <select id="block-kind" className="input" value={f.kind} onChange={(e) => set('kind', e.target.value as BlockKind)}>
-              {KINDS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}
+              {TYPE_OPTIONS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}
             </select>
           </div>
           <div className="field">
             <label htmlFor="block-type">Runs on</label>
             <select id="block-type" className="input" value={f.day_type_id ?? ''}
               onChange={(e) => set('day_type_id', e.target.value ? Number(e.target.value) : null)}>
-              {data.types.map((t) => <option key={t.id} value={t.id}>{t.name}s</option>)}
+              {alphabetical(data.types, (t) => t.name).map((t) => <option key={t.id} value={t.id}>{t.name}s</option>)}
               <option value="">Days I pick</option>
             </select>
           </div>
@@ -236,14 +235,14 @@ function BlockEditor({ block, data, onSave, onClose, onRemove }: {
             <label htmlFor="block-goal">Works on goal</label>
             <select id="block-goal" className="input" value={f.goal_id ?? ''} onChange={(e) => set('goal_id', e.target.value ? Number(e.target.value) : null)}>
               <option value="">None</option>
-              {data.goals.map((g) => <option key={g.id} value={g.id}>{g.title}</option>)}
+              {alphabetical(data.goals, (g) => g.title).map((g) => <option key={g.id} value={g.id}>{g.title}</option>)}
             </select>
           </div>
           <div className="field">
             <label htmlFor="block-habit">Ticks habit when done</label>
             <select id="block-habit" className="input" value={f.habit_key ?? ''} onChange={(e) => set('habit_key', e.target.value || null)}>
               <option value="">None</option>
-              {data.habits.map((h) => <option key={h.key} value={h.key}>{h.name}</option>)}
+              {alphabetical(data.habits, (h) => h.name).map((h) => <option key={h.key} value={h.key}>{h.name}</option>)}
             </select>
           </div>
         </div>
