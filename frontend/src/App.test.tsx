@@ -543,6 +543,24 @@ describe('App', () => {
     )
   })
 
+  it('adds a fixed part of the week from About me', async () => {
+    mockServer(true)
+    window.location.hash = '#/about'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: '+ Add a fixed block' }))
+    fireEvent.change(screen.getByLabelText('What'), { target: { value: 'Office hours' } })
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '08:30' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add fixed block' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/routines', expect.objectContaining({
+        method: 'POST', body: expect.stringContaining('"name":"Office hours","start":"08:30","end":"17:00","weekdays":[0,1,2,3,4]'),
+      })),
+    )
+    const post = vi.mocked(fetch).mock.calls.find(([u, i]) => u === '/api/routines' && i?.method === 'POST')!
+    expect(JSON.parse(String(post[1]!.body))).toMatchObject({ kind: 'fixed', remind_before: false, remind_start: false })
+    expect(screen.getByText('Your day types')).toBeInTheDocument()
+  })
+
   it('renames and turns off habits from the Habits page', async () => {
     mockServer(true)
     window.location.hash = '#/habits'
@@ -619,13 +637,12 @@ describe('App', () => {
     )
   })
 
-  it('shows today at a glance on Home', async () => {
+  it('shows the focus and what is due on Home', async () => {
     mockServer(true)
     render(<App />)
     expect(await screen.findByText('Phone out of the bedroom')).toBeInTheDocument()
     expect(screen.getByText('Send invoice')).toBeInTheDocument()
     expect(screen.getByText(/1 overdue/)).toBeInTheDocument()
-    expect(screen.getByText('Deep work')).toBeInTheDocument()
   })
 
   it('reminds the user to finish the profile on Home', async () => {

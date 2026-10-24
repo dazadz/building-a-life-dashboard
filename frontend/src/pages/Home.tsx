@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import Markdown from 'react-markdown'
-import { api, type Day, type HabitStatus, type Plan, type Report, type Status } from '../api'
+import { api, type Day, type HabitStatus, type Plan, type Status } from '../api'
 import { Card } from '../components/Card'
 import { TodaysPlan } from '../components/Routine'
 import { EnergyTapCard } from '../components/Energy'
-import { DigestCard } from '../components/Digest'
+import { DueCard } from '../components/Digest'
 import { SuggestionsCard } from '../components/Suggestions'
 import { NowCard } from '../components/NowCard'
 import { FocusAreasCard, GoalsCard } from '../components/Focus'
@@ -26,10 +25,10 @@ const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
 const SCORES_DOC = 'https://github.com/dazadz/building-a-life-dashboard/blob/main/docs/scores.md'
 
 // Home follows the time of day: what matters now is always at the top (see dayMode in blocks.ts).
-const ORDER: Record<DayMode, string[]> = {
-  morning: ['now', 'glance', 'scores', 'energy', 'plan', 'focus', 'goals', 'suggest', 'habits', 'checkin', 'report'],
-  day: ['now', 'scores', 'plan', 'focus', 'goals', 'suggest', 'glance', 'habits', 'energy', 'checkin', 'report'],
-  evening: ['checkin', 'now', 'scores', 'plan', 'habits', 'focus', 'goals', 'suggest', 'report', 'energy', 'glance'],
+const ORDER: Record<DayMode, { top: string[]; bottom: string[] }> = {
+  morning: { top: ['energy', 'plan', 'focus'], bottom: ['goals', 'due', 'habits', 'checkin'] },
+  day: { top: ['plan', 'focus', 'goals'], bottom: ['due', 'habits', 'energy', 'checkin'] },
+  evening: { top: ['checkin', 'plan', 'habits'], bottom: ['focus', 'goals', 'due', 'energy'] },
 }
 const MODE_LABEL: Record<DayMode, string> = { morning: 'Morning mode', day: 'Day mode', evening: 'Evening mode' }
 
@@ -38,7 +37,6 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
   const today = isoDate(now)
   const yesterday = addDays(today, -1)
   const days = useLoad(() => Promise.all([api.day(today), api.day(yesterday)]), [today])
-  const reports = useLoad(() => api.reports('daily'), [])
   const profile = useLoad(() => api.profile(), [])
   const settings = useLoad(() => api.settings(today), [today])
   const plan = useLoad(() => api.plan(today), [today])
@@ -55,17 +53,16 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
 
   const cards: Record<string, ReactNode> = {
     now: <NowCard key="now" now={now} plan={plan.data} onPlan={plan.setData} />,
-    glance: <DigestCard key="glance" stamp={localStamp(now)} />,
-    scores: <ScoreStrip key="scores" today={todayData} yesterday={yesterdayData} />,
+    due: <DueCard key="due" stamp={localStamp(now)} />,
     plan: <TodaysPlan key="plan" now={now} plan={plan.data} />,
     focus: <FocusAreasCard key="focus" today={today} />,
     goals: <GoalsCard key="goals" today={today} />,
-    suggest: <SuggestionsCard key="suggest" limit={5} hideWhenEmpty onChanged={onChanged} action={<a href="#/about">Review all →</a>} />,
+    suggest: <SuggestionsCard key="suggest" limit={3} hideWhenEmpty onChanged={onChanged} action={<a href="#/about">Review all →</a>} />,
     checkin: <CheckinCard key="checkin" day={todayData} yesterday={yesterdayData} loading={!days.data && !days.error} />,
     habits: <HabitsCard key="habits" day={todayData} onChange={(d) => days.setData([d, yesterdayData!])} />,
     energy: <EnergyTapCard key="energy" today={today} hhmm={localTime(now)} />,
-    report: <LatestReport key="report" reports={reports} />,
   }
+  const order = ORDER[mode]
 
   return (
     <div className="page home">
@@ -94,7 +91,13 @@ export function HomePage({ status, onChanged }: { status: Status | null; onChang
         </NeedsSetup>
       )}
 
-      <div className="row home-cards">{ORDER[mode].map((key) => cards[key])}</div>
+      <div className="home-top">
+        {cards.now}
+        <ScoreStrip today={todayData} yesterday={yesterdayData} />
+      </div>
+      <div className="home-grid">{order.top.map((key) => cards[key])}</div>
+      {cards.suggest}
+      <div className="home-grid home-grid-4">{order.bottom.map((key) => cards[key])}</div>
     </div>
   )
 }
@@ -203,35 +206,6 @@ function CheckinCard({ day, yesterday, loading }: { day: Day | null; yesterday: 
             </li>
           </ul>
         </>
-      )}
-    </Card>
-  )
-}
-
-interface Loaded<T> {
-  data: T | null
-  error: string | null
-  reload: () => void
-}
-
-function LatestReport({ reports }: { reports: Loaded<Report[]> }) {
-  const latest = reports.data?.[0]
-  return (
-    <Card
-      title="Samuel's latest report"
-      meta={latest ? latest.date : undefined}
-      action={<a href="#/coach">{latest ? 'Full report →' : 'Coach →'}</a>}
-    >
-      {reports.error ? (
-        <ErrorLine message={reports.error} onRetry={reports.reload} />
-      ) : !reports.data ? (
-        <Loading />
-      ) : latest ? (
-        <div className="report" style={{ maxHeight: 220, overflow: 'hidden' }}>
-          <Markdown>{latest.markdown.split('\n## ')[0]}</Markdown>
-        </div>
-      ) : (
-        <NeedsSetup>No reports yet. Save a check-in, then ask Samuel for a daily report.</NeedsSetup>
       )}
     </Card>
   )

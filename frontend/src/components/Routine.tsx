@@ -35,13 +35,13 @@ export function TodaysPlan({ now, plan }: { now: Date; plan: Plan | null }) {
                 <span className="mono plan-time">{b.start}</span>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span className="item-name">{b.name}</span>
-                  {detail && <span className="faint"> · {detail}</span>}
+                  {detail && <span className="faint plan-detail">{detail}</span>}
                 </span>
                 {state && (
                   <span className={b.status === 'done' ? 'tag status-done' : b.status === 'skipped' ? 'tag status-skipped'
                     : b === current ? 'tag now-tag' : 'faint mono'}>{state}</span>
                 )}
-                <span className="mono faint">{b.start}–{b.end}</span>
+                <span className="mono faint plan-range">{b.start}–{b.end}</span>
               </li>
             )
           })}

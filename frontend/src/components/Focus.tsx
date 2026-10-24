@@ -4,7 +4,7 @@ import { ErrorLine, Loading, NeedsSetup } from './States'
 import { useLoad } from '../hooks'
 
 const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
-const AREAS_SHOWN = 6
+const AREAS_SHOWN = 4
 
 interface Metric {
   value: string

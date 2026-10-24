@@ -28,6 +28,8 @@ describe('format', () => {
     expect(greeting(8)).toBe('Good morning')
     expect(greeting(13)).toBe('Good afternoon')
     expect(greeting(21)).toBe('Good evening')
+    expect(greeting(0)).toBe('Good evening')
+    expect(greeting(4)).toBe('Good morning')
   })
 
   it('uses the local date, not the UTC date', () => {

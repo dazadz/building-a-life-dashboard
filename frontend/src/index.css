@@ -50,7 +50,13 @@ html { zoom: var(--ui-scale); }
 
 body {
   margin: 0;
-  background: var(--page);
+  /* A black gradient (the user's choice, 2026-10-25): a faint accent glow at the top, then black,
+     lifting a touch towards the bottom. Built from the theme, so it follows the chosen accent. */
+  background-color: var(--page);
+  background-image:
+    radial-gradient(1100px 520px at 72% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--page) 0%, color-mix(in srgb, var(--card) 70%, var(--page)) 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 14px;
@@ -82,7 +88,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 /* Layout */
 .shell { display: flex; min-height: calc(100vh / var(--ui-scale)); }
 .sidebar {
-  flex: 0 0 220px; background: var(--sidebar); border-right: 1px solid var(--border);
+  flex: 0 0 220px; background: color-mix(in srgb, var(--sidebar) 82%, transparent); border-right: 1px solid var(--border);
   padding: 18px 12px; display: flex; flex-direction: column; gap: 2px;
   /* Pinned to the window, so Settings stays in the bottom-left corner on long pages. */
   position: sticky; top: 0; height: calc(100vh / var(--ui-scale)); overflow-y: auto;
@@ -757,3 +763,18 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
 .milestone-title { flex: 1; min-width: 0; height: 32px; }
 .milestone-title[data-done='true'] { color: var(--text-muted); text-decoration: line-through; }
 .milestone-date { width: 150px; height: 32px; }
+
+/* Today: the v0.5 design's compact layout */
+.home-top { display: flex; flex-direction: column; gap: 16px; }
+.home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: stretch; }
+.home-grid-4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.home-grid > .card { min-width: 0; }
+.home-grid .list.plan li { min-height: 34px; }
+.fixed-add { padding: 12px; background: var(--inset); border: 1px solid var(--border); }
+.due-focus { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; background: var(--accent-soft); border: 1px solid var(--accent-line); }
+/* Today's plan rows: the time, the block with its note underneath, then its status */
+.plan .plan-detail { display: block; font-size: 12px; }
+.home-grid .list.plan li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: start; gap: 10px; }
+.home-grid .list.plan .plan-range { display: none; }
+.home-grid .list.plan li > a { grid-column: 3; }
+.fixed-part { flex: 1; min-width: 0; display: flex; flex-direction: column; }
