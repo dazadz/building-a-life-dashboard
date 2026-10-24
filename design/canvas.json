@@ -104,6 +104,45 @@
    "h": 1200,
    "title": "Settings — Appearance",
    "expand": "fill"
+  },
+  "Plan-Home.dc.html": {
+   "x": 0,
+   "y": 6040,
+   "w": 1440,
+   "h": 1560,
+   "title": "v0.5 Home — your plan (day)",
+   "expand": "fill"
+  },
+  "Plan-About.dc.html": {
+   "x": 1520,
+   "y": 6040,
+   "w": 1440,
+   "h": 1380,
+   "title": "v0.5 About me — what Samuel knows",
+   "expand": "fill"
+  },
+  "Plan-Routine.dc.html": {
+   "x": 3040,
+   "y": 6040,
+   "w": 1440,
+   "h": 1240,
+   "title": "v0.5 Routine — day types and blocks",
+   "expand": "fill"
+  },
+  "Plan-Breakdown.dc.html": {
+   "x": 0,
+   "y": 7720,
+   "w": 1440,
+   "h": 1560,
+   "title": "v0.5 Samuel's plan — project breakdown",
+   "expand": "fill"
+  },
+  "Plan-Reminders.dc.html": {
+   "x": 1520,
+   "y": 7720,
+   "w": 1440,
+   "h": 960,
+   "title": "v0.5 Block reminders and Home through the day"
   }
  },
  "order": [
@@ -118,8 +157,21 @@
   "Coach.dc.html",
   "Tasks.dc.html",
   "Palette.dc.html",
-  "Settings.dc.html"
+  "Settings.dc.html",
+  "Plan-Home.dc.html",
+  "Plan-About.dc.html",
+  "Plan-Routine.dc.html",
+  "Plan-Breakdown.dc.html",
+  "Plan-Reminders.dc.html"
  ],
- "notes": {},
+ "notes": {
+  "v05": {
+   "x": 0,
+   "y": 5780,
+   "text": "v0.5 · Your plan",
+   "kind": "title1",
+   "maxW": 4480
+  }
+ },
  "designSystems": []
 }
