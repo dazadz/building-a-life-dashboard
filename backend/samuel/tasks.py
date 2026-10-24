@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 PRIORITIES = ("high", "normal", "low")
 FIELDS = ("title", "notes", "list", "priority", "due_date", "due_time", "remind_at", "goal_id", "routine_id", "type")
 # Same types as routine blocks (routines.KINDS); kept here so tasks doesn't import routines.
-TYPES = ("focus", "fixed", "work", "faith", "habit", "recovery", "leisure")
+TYPES = ("focus", "fixed", "work", "faith", "health", "habit", "recovery", "leisure")
 HHMM = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 VIEWS = ("today", "upcoming", "overdue", "all", "done")
 

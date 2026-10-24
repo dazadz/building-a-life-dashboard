@@ -311,7 +311,7 @@ export interface WeeklyChange {
 }
 
 // The types shared by routine blocks and tasks ("Type" in the app).
-export type BlockKind = 'focus' | 'fixed' | 'work' | 'faith' | 'habit' | 'recovery' | 'leisure'
+export type BlockKind = 'focus' | 'fixed' | 'work' | 'faith' | 'health' | 'habit' | 'recovery' | 'leisure'
 
 export interface Routine {
   id: number
