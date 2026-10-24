@@ -176,7 +176,7 @@ design/    canvas source (kept in sync)
    - **Time leaks:** a rule-based table from the "biggest distraction" answers (how often, and deep work lost on those days), with Samuel adding context in reports.
    - **What predicts your mood and energy:** same-day and next-day links between sleep, workouts, deep work, mood and energy.
    - **Lifestyle score** from the prompt's first onboarding section, a refresh action on cards with live data, and undo for deletes.
-8. **v0.5 "Your plan":** Samuel turns what it knows into a plan you approve.
+8. **v0.5 "Your plan" (released):** Samuel turns what it knows into a plan you approve.
    - **Pains and goals** from the onboarding answers, on an About me page with your own notes and the fixed parts of your week.
    - **Samuel suggests:** goals, milestones, habits, tasks and routine blocks arrive in an inbox. The coach only proposes (`samuel suggest add`); nothing changes until you accept (ADR 0004).
    - **Repeating routines** by day type (e.g. office day and home day), with steps, a linked goal or habit, and reminders 5 minutes before and at the start of each block.

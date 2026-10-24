@@ -6,11 +6,21 @@ Building a life dashboard using Claude Code.
 
 ## Status
 
-**v0.4.0.** Chat with Samuel about your own data, see today at a glance, search everything with Ctrl+K, tap your energy through the day for an energy curve, find your time leaks and what moves your energy and mood, and undo deletes. Before that: tell Samuel about your life in a 45-question profile, check in each evening, track 10 daily habits, keep a to-do list with reminders, set goals with milestones, follow today's plan from your routine, watch your sleep, energy, recovery and burnout risk, run weekly and monthly reviews, theme the app from any accent, and have Samuel (Claude Code) write your daily, weekly and monthly reports. It runs on a PC; phone access comes later. See [CHANGELOG.md](CHANGELOG.md) for what's in each release, [docs/PLAN.md](docs/PLAN.md) for the full build plan, [docs/scores.md](docs/scores.md) for how scores work, and [docs/adr/](docs/adr/) for the key decisions.
+**v0.5.0, "Your plan".** Samuel turns what it knows about you into pains and goals, then proposes a plan (goals, habits, tasks and a weekly routine, or one goal broken into session-sized tasks) that you accept, edit or dismiss. Your routine repeats by day type (e.g. office day and home day), tells you what to work on in each block, and reminds you 5 minutes before and when it starts. Home leads with what's on now and reorders itself for morning, day and evening. Before that, in v0.4: chat with Samuel about your own data, see today at a glance, search everything with Ctrl+K, tap your energy through the day for an energy curve, find your time leaks and what moves your energy and mood, and undo deletes. Before that: tell Samuel about your life in a 45-question profile, check in each evening, track 10 daily habits, keep a to-do list with reminders, set goals with milestones, follow today's plan from your routine, watch your sleep, energy, recovery and burnout risk, run weekly and monthly reviews, theme the app from any accent, and have Samuel (Claude Code) write your daily, weekly and monthly reports. It runs on a PC; phone access comes later. See [CHANGELOG.md](CHANGELOG.md) for what's in each release, [docs/PLAN.md](docs/PLAN.md) for the full build plan, [docs/scores.md](docs/scores.md) for how scores work, and [docs/adr/](docs/adr/) for the key decisions.
 
 Screenshots use the made-up demo persona Jordan.
 
-![Home: today at a glance (focus, due, next up, yesterday), the score strip and today's plan](docs/screenshots/home.png)
+### Your own Samuel
+
+This repo is the app, with every feature and none of anyone's data. Clone it and you get a Samuel that starts empty and becomes yours: the onboarding questions, your check-ins, pains and goals, routine, reports and chats are saved only in `~\.samuel` on your computer, never in this folder. The author uses the same code every day, and their data stays on their own PC the same way, so pulling this repo never gives you anyone's personal data. Screenshots, tests and demo data use the made-up persona Jordan.
+
+![Home: the block on now or next, the score strip, today's plan, focus areas from your pains and goals, and goals](docs/screenshots/home.png)
+
+![About me: pains and goals, Samuel's suggestions, your own words and the fixed parts of your week](docs/screenshots/about.png)
+
+![Routine: the week by day type and each day's blocks with what they work on and their reminders](docs/screenshots/routine.png)
+
+![Settings, Appearance: the accent ring, vibes, live preview and theme](docs/screenshots/settings.png)
 
 ![Coach: a chat with Samuel, answered from Jordan's own data](docs/screenshots/coach.png)
 
@@ -88,7 +98,7 @@ npm install
 npm run build
 ```
 
-Then start Samuel again.
+Then open Samuel again. The desktop shortcut and `samuel app` replace a server they started before the update, so the window gets the new version. If you started `samuel serve` yourself, stop it with Ctrl+C and start it again.
 
 ### Samuel's reports
 
@@ -112,7 +122,7 @@ Reports need Claude Code installed and logged in on this computer (run `claude` 
 
 **Contributing:** turn on the privacy check once with `git config core.hooksPath scripts/hooks`. It stops a commit that contains database files, secrets, local paths or personal email addresses. To block your own name too, add it (one word per line) to `.git/info/private-words`, which is never committed.
 
-**Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask for a report.
+**Privacy:** the app only listens on this computer and makes no outside requests. The only data that leaves your machine is what Claude Code sends to Anthropic, under your own account, when you ask Samuel for a report, a chat reply or a plan.
 
 ## Design
 
