@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react'
-import { api, AREAS, type Area, type Goal, type GoalFields, type GoalsSummary } from '../api'
+import { useRef, useState, type ReactNode } from 'react'
+import { api, AREAS, type Area, type Goal, type GoalFields, type GoalsSummary, type Status } from '../api'
 import { Card } from '../components/Card'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, isoDate, scoreText, shortDate } from '../format'
-import { useLoad, useNow } from '../hooks'
+import { useCoachJob, useLoad, useNow } from '../hooks'
 
 const VISIBLE = 8
 const ROADMAP_MONTHS = 6
@@ -23,7 +23,7 @@ function dueLabel(iso: string, today: string): string {
   return shortDate(iso)
 }
 
-export function GoalsPage() {
+export function GoalsPage({ coach, status }: { coach: ReturnType<typeof useCoachJob>; status: Status | null }) {
   const today = isoDate(useNow())
   const loaded = useLoad(() => api.goals(today), [today])
   const [editing, setEditing] = useState<number | 'new' | null>(null)
@@ -71,6 +71,7 @@ export function GoalsPage() {
           goal={editGoal}
           today={today}
           write={write}
+          breakdown={editGoal && !editGoal.done_date ? <Breakdown goal={editGoal} coach={coach} installed={status?.coach.installed ?? false} /> : null}
           onCreated={(summary) => setEditing(Math.max(...summary.goals.map((g) => g.id)))}
           onClose={() => setEditing(null)}
         />
@@ -244,8 +245,8 @@ function ThisWeek({ data, today, write, onRoadmap }: {
   )
 }
 
-function GoalEditor({ goal, today, write, onCreated, onClose }: {
-  goal?: Goal; today: string; write: Write; onCreated: (s: GoalsSummary) => void; onClose: () => void
+function GoalEditor({ goal, today, write, breakdown, onCreated, onClose }: {
+  goal?: Goal; today: string; write: Write; breakdown?: ReactNode; onCreated: (s: GoalsSummary) => void; onClose: () => void
 }) {
   const [fields, setFields] = useState<GoalFields>(() => ({
     title: goal?.title ?? '', area: goal?.area ?? 'fitness', impact: goal?.impact ?? 3,
@@ -327,6 +328,7 @@ function GoalEditor({ goal, today, write, onCreated, onClose }: {
         </div>
       </form>
 
+      {breakdown}
       {goal && (
         <fieldset className="form" style={{ border: 0, padding: 0, margin: 0 }}>
           <legend>Milestones</legend>
@@ -515,5 +517,28 @@ function Vision({ data, today, write }: { data: GoalsSummary | null; today: stri
         <NeedsSetup>Write where you want to be in a few years. Samuel uses it to weigh your goals.</NeedsSetup>
       )}
     </Card>
+  )
+}
+
+/** Samuel breaks a goal into milestones and session-sized tasks placed in your routine, as suggestions to review. */
+function Breakdown({ goal, coach, installed }: { goal: Goal; coach: ReturnType<typeof useCoachJob>; installed: boolean }) {
+  const [asked, setAsked] = useState(false)
+  const job = asked && coach.job?.skill === 'plan-builder' ? coach.job : null
+  return (
+    <div className="breakdown-bar">
+      <span style={{ flex: 1, minWidth: 0 }}>
+        {job?.status === 'done' ? <><strong>Samuel's breakdown is ready.</strong> Review the milestones and tasks before anything changes.</>
+          : job?.status === 'failed' ? <span className="warn-text">{job.error ?? 'The breakdown failed. Try again.'}</span>
+          : job?.status === 'running' ? 'Samuel is breaking it down into milestones and tasks for your routine blocks…'
+          : <>Samuel can break <strong>{goal.title}</strong> into milestones and tasks the size of one work session, placed in your routine blocks.</>}
+        {coach.error && asked && <span className="warn-text"> {coach.error}</span>}
+      </span>
+      {job?.status === 'done' ? <a href="#/about">Review the breakdown →</a> : (
+        <button type="button" className="link-btn accent" disabled={!installed || coach.running}
+          onClick={() => { setAsked(true); void coach.start('plan-builder', goal.id) }}>
+          {job?.status === 'running' ? 'Working…' : installed ? 'Break this down with Samuel →' : 'Needs Claude Code'}
+        </button>
+      )}
+    </div>
   )
 }

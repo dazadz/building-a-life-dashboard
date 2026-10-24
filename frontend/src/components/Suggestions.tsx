@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type ReactNode } from 'react'
+import { Fragment, useState, type ChangeEvent, type ReactNode } from 'react'
 import { api, AREAS, type Suggestion, type SuggestionKind, type SuggestionPayload, type Suggestions } from '../api'
 import { Card } from './Card'
 import { Weekdays } from './Routine'
@@ -17,6 +17,18 @@ const LANDS: Record<SuggestionKind, [string, string]> = {
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '')
+// Read the date when you click, so a page left open overnight accepts for the right day.
+const today = () => isoDate(new Date())
+
+/** A heading for each group Samuel sent: a plan, one goal's breakdown, or a chat. */
+function batchLabel(batch: string | null): string {
+  if (!batch) return 'Other ideas'
+  if (batch === 'plan') return 'Your plan'
+  if (batch === 'chat') return 'From chat'
+  if (batch === 'weekly review') return 'From your weekly review'
+  if (batch.startsWith('breakdown:')) return `Break down · ${batch.slice('breakdown:'.length).trim()}`
+  return batch
+}
 
 function shortDate(iso: string): string {
   return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -66,7 +78,9 @@ export function SuggestionsCard({ limit, hideWhenEmpty, refresh, onChanged, acti
   if (hideWhenEmpty && (!data || data.total === 0) && !landed) return null
 
   const pending = data?.pending ?? []
-  const filtered = filter === 'all' ? pending : pending.filter((s) => s.kind === filter)
+  const order = [...new Set([...pending].reverse().map((s) => s.batch))]
+  const grouped = [...pending].sort((a, b) => order.indexOf(a.batch) - order.indexOf(b.batch) || a.id - b.id)
+  const filtered = filter === 'all' ? grouped : grouped.filter((s) => s.kind === filter)
   const shown = showAll ? filtered : filtered.slice(0, limit)
   const kinds = (Object.keys(KIND_LABEL) as SuggestionKind[]).filter((k) => (data?.counts[k] ?? 0) > 0)
 
@@ -86,14 +100,17 @@ export function SuggestionsCard({ limit, hideWhenEmpty, refresh, onChanged, acti
       setBusy(false)
     }
   }
-  // Read the date when you click, so a page left open overnight accepts for the right day.
-  const today = () => isoDate(new Date())
   const accept = (s: Suggestion, payload?: SuggestionPayload) => act(() => api.acceptSuggestion(today(), s.id, payload), s)
   const dismiss = (s: Suggestion) => act(() => api.dismissSuggestion(s.id))
   // Accept in the order Samuel sent them, so habits and goals exist before the pains that link to them.
   const acceptSelected = () => act(async () => {
     let last = data!
     for (const s of pending.filter((p) => selected.has(p.id))) last = await api.acceptSuggestion(today(), s.id)
+    return last
+  })
+  const acceptBatch = (batch: string | null) => act(async () => {
+    let last = data!
+    for (const s of pending.filter((p) => p.batch === batch)) last = await api.acceptSuggestion(today(), s.id)
     return last
   })
   const toggle = (id: number) => setSelected((sel) => {
@@ -140,8 +157,17 @@ export function SuggestionsCard({ limit, hideWhenEmpty, refresh, onChanged, acti
             ))}
           </div>
           <ul className="list suggestion-list">
-            {shown.map((s) => (
-              <li key={s.id} className="suggestion">
+            {shown.map((s, i) => (
+              <Fragment key={s.id}>
+              {(i === 0 || shown[i - 1].batch !== s.batch) && new Set(pending.map((p) => p.batch)).size > 1 && (
+                <li className="suggestion-group">
+                  <span className="meter-label">{batchLabel(s.batch)}</span>
+                  <span className="faint mono">{pending.filter((p) => p.batch === s.batch).length}</span>
+                  <button type="button" className="link-btn accent" disabled={busy}
+                    onClick={() => void acceptBatch(s.batch)}>Accept all {pending.filter((p) => p.batch === s.batch).length}</button>
+                </li>
+              )}
+              <li className="suggestion">
                 <div className="suggestion-row">
                   <input type="checkbox" className="check" aria-label={`Select ${s.title}`} checked={selected.has(s.id)} onChange={() => toggle(s.id)} />
                   <span className="tag kind-tag" data-kind={s.kind}>{KIND_LABEL[s.kind]}</span>
@@ -161,6 +187,7 @@ export function SuggestionsCard({ limit, hideWhenEmpty, refresh, onChanged, acti
                   <SuggestionEditor suggestion={s} busy={busy} onCancel={() => setEditing(null)} onAccept={(p) => void accept(s, p)} />
                 )}
               </li>
+              </Fragment>
             ))}
           </ul>
         </>
