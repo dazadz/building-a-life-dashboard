@@ -332,3 +332,20 @@ def test_suggest_add_takes_the_text_format(conn, capsys, monkeypatch):
     assert (walk["kind"], json.loads(walk["steps"]), walk["remind_before"]) == ("recovery", ["Leave the phone", "Walk ten minutes"], 0)
     task = conn.execute("SELECT goal_id FROM tasks WHERE title = 'Shortlist three datasets'").fetchone()
     assert task["goal_id"] is not None
+
+
+
+def test_deleting_a_habit_removes_its_history_and_unlinks_it(conn):
+    from samuel import routines
+
+    key = settings.add_habit(conn, "Walk after lunch")
+    log_habit(conn, TODAY, key, "done")
+    block = routines.add(conn, {"name": "Walk", "start": "12:30", "end": "12:45", "habit_key": key})
+    about.add(conn, {"kind": "pain", "text": "Afternoon slump", "habit_key": key})
+    settings.delete_habit(conn, key)
+    assert settings.habit_key_by_name(conn, "Walk after lunch") is None
+    assert conn.execute("SELECT COUNT(*) FROM habit_logs l JOIN habits h ON h.id = l.habit_id WHERE h.key = ?", (key,)).fetchone()[0] == 0
+    assert conn.execute("SELECT habit_key FROM routines WHERE id = ?", (block,)).fetchone()[0] is None
+    assert about.list_items(conn)[0]["habit_key"] is None
+    with pytest.raises(KeyError):
+        settings.delete_habit(conn, key)

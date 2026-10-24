@@ -202,7 +202,7 @@ export interface DataInfo {
   keep_daily: number
 }
 
-export const AREAS = ['fitness', 'financial', 'career', 'learning', 'business', 'social', 'relationships', 'health', 'spiritual', 'other'] as const
+export const AREAS = ['fitness', 'financial', 'career', 'learning', 'business', 'social', 'relationships', 'health', 'faith', 'other'] as const
 export type Area = (typeof AREAS)[number]
 
 export interface Milestone {
@@ -311,7 +311,7 @@ export interface WeeklyChange {
 }
 
 // The types shared by routine blocks and tasks ("Type" in the app).
-export type BlockKind = 'focus' | 'fixed' | 'work' | 'spiritual' | 'habit' | 'recovery' | 'leisure'
+export type BlockKind = 'focus' | 'fixed' | 'work' | 'faith' | 'habit' | 'recovery' | 'leisure'
 
 export interface Routine {
   id: number
@@ -595,6 +595,7 @@ export const api = {
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ active }) }),
   renameHabit: (key: string, name: string) =>
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ name }) }),
+  deleteHabit: (key: string) => request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'DELETE', body: '{}' }),
   addHabit: (name: string) =>
     request<Settings['habits']>('/api/habit-settings', { method: 'POST', body: JSON.stringify({ name }) }),
   about: () => request<About>('/api/about'),

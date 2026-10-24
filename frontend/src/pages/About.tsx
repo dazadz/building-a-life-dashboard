@@ -73,7 +73,7 @@ export function AboutPage({ coach, status, onChanged }: Props) {
 }
 
 type Filter = 'all' | 'pain' | 'goal' | 'resolved'
-const AREA_OPTIONS = ['Career', 'Spiritual', 'Sleep', 'Energy', 'Focus', 'Fitness', 'Health', 'Money', 'Relationships', 'Learning', 'Other']
+const AREA_OPTIONS = ['Career', 'Faith', 'Sleep', 'Energy', 'Focus', 'Fitness', 'Health', 'Money', 'Relationships', 'Learning', 'Other']
 
 /** The life areas a pain or goal belongs to. A value Samuel wrote that isn't in the list stays selectable. */
 function AreaSelect({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {

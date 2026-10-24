@@ -131,18 +131,18 @@ export function RoutinePage({ coach, status }: { coach: ReturnType<typeof useCoa
               <table className="data-table block-table">
                 <thead>
                   <tr><th scope="col">Time</th><th scope="col">Block</th><th scope="col">Type</th><th scope="col">Works on</th>
-                    <th scope="col">Days</th><th scope="col" className="num">Remind</th><th scope="col"><span className="sr-only">Edit</span></th></tr>
+                    <th scope="col">Days</th><th scope="col">Remind</th><th scope="col" className="edit-col"><span className="sr-only">Edit</span></th></tr>
                 </thead>
                 <tbody>
                   {shown.map((r) => (
                     <tr key={r.id} data-selected={editing !== 'new' && editing?.id === r.id}>
                       <td className="mono">{r.start}–{r.end}</td>
-                      <th scope="row" className="item-name">{r.name}</th>
+                      <th scope="row"><button type="button" className="row-link item-name" onClick={() => setEditing(r)}>{r.name}</button></th>
                       <td><span className="tag kind-tag" data-kind={r.kind}>{KIND_LABEL[r.kind]}</span></td>
                       <td className="muted">{worksOn(r) ?? '—'}</td>
                       <td className="mono faint">{r.day_type ?? (r.weekdays.length === 7 ? 'Every day' : r.weekdays.map((x) => DAY_SHORT[x]).join(' '))}</td>
-                      <td className="num mono faint">{remindText(r)}</td>
-                      <td className="num"><button type="button" className="link-btn" aria-label={`Edit ${r.name}`} onClick={() => setEditing(r)}>Edit</button></td>
+                      <td className="mono faint remind-col">{remindText(r)}</td>
+                      <td className="edit-col"><button type="button" className="btn btn-small" aria-label={`Edit ${r.name}`} onClick={() => setEditing(r)}>Edit</button></td>
                     </tr>
                   ))}
                 </tbody>

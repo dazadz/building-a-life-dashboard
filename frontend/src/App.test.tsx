@@ -579,6 +579,19 @@ describe('App', () => {
     )
   })
 
+  it('deletes a habit after confirming', async () => {
+    mockServer(true)
+    window.location.hash = '#/habits'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit habits' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete Reading done' }))
+    expect(screen.getByText(/can't be restored/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete habit' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/habit-settings/reading', expect.objectContaining({ method: 'DELETE' })),
+    )
+  })
+
   it('edits a milestone name and date in place', async () => {
     mockServer(true)
     window.location.hash = '#/goals'
