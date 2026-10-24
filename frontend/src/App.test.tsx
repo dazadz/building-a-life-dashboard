@@ -613,6 +613,7 @@ describe('App', () => {
     window.location.hash = '#/tasks?new=Plan%20the%20trip'
     render(<App />)
     fireEvent.change(await screen.findByLabelText('New subtask'), { target: { value: 'Book flights' } })
+    fireEvent.change(screen.getByLabelText('New subtask due date'), { target: { value: '2026-11-02' } })
     fireEvent.keyDown(screen.getByLabelText('New subtask'), { key: 'Enter' })
     fireEvent.change(screen.getByLabelText('New subtask'), { target: { value: 'Pack' } })
     fireEvent.click(screen.getByRole('button', { name: 'Create task' }))
@@ -620,7 +621,10 @@ describe('App', () => {
       expect(fetch).toHaveBeenCalledWith(expect.stringMatching(/^\/api\/tasks\?now=/), expect.objectContaining({ method: 'POST' })),
     )
     const post = vi.mocked(fetch).mock.calls.find(([u, i]) => String(u).startsWith('/api/tasks?') && i?.method === 'POST')!
-    expect(JSON.parse(String(post[1]!.body))).toMatchObject({ title: 'Plan the trip', subtasks: ['Book flights', 'Pack'] })
+    expect(JSON.parse(String(post[1]!.body))).toMatchObject({
+      title: 'Plan the trip',
+      subtasks: [{ title: 'Book flights', due_date: '2026-11-02' }, { title: 'Pack', due_date: null }],
+    })
   })
 
   it('asks Samuel to break a goal down', async () => {

@@ -73,6 +73,18 @@ export function AboutPage({ coach, status, onChanged }: Props) {
 }
 
 type Filter = 'all' | 'pain' | 'goal' | 'resolved'
+const AREA_OPTIONS = ['Career', 'Spiritual', 'Sleep', 'Energy', 'Focus', 'Fitness', 'Health', 'Money', 'Relationships', 'Learning', 'Other']
+
+/** The life areas a pain or goal belongs to. A value Samuel wrote that isn't in the list stays selectable. */
+function AreaSelect({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {
+  const options = value && !AREA_OPTIONS.includes(value) ? [value, ...AREA_OPTIONS] : AREA_OPTIONS
+  return (
+    <select className="input" aria-label="Area" value={value ?? ''} onChange={(e) => onChange(e.target.value || null)}>
+      <option value="">Area…</option>
+      {options.map((a) => <option key={a} value={a}>{a}</option>)}
+    </select>
+  )
+}
 const EMPTY: PainGoalFields = { kind: 'pain', text: '', area: null, evidence: null }
 
 function PainsGoalsCard({ about, onChange }: { about: About; onChange: (a: About) => void }) {
@@ -133,8 +145,7 @@ function PainsGoalsCard({ about, onChange }: { about: About; onChange: (a: About
           </select>
           <input className="input" aria-label="What it is" placeholder="e.g. Late to bed on weeknights" maxLength={160}
             value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} />
-          <input className="input" aria-label="Area" placeholder="Area, e.g. Sleep" maxLength={40}
-            value={draft.area ?? ''} onChange={(e) => setDraft({ ...draft, area: e.target.value || null })} />
+          <AreaSelect value={draft.area} onChange={(area) => setDraft({ ...draft, area })} />
           <button type="button" className="btn btn-primary" onClick={() => void add()}>Add</button>
         </div>
       )}
@@ -208,7 +219,7 @@ function EditRow({ item, onSave, onCancel }: {
       <td><span className="tag kind-tag" data-kind={item.kind}>{item.kind === 'pain' ? 'Pain' : 'Goal'}</span></td>
       <th scope="row">
         <input className="input" aria-label="What it is" maxLength={160} value={text} onChange={(e) => setText(e.target.value)} />
-        <input className="input" aria-label="Area" maxLength={40} value={area} placeholder="Area" onChange={(e) => setArea(e.target.value)} />
+        <AreaSelect value={area || null} onChange={(v) => setArea(v ?? '')} />
       </th>
       <td colSpan={2}>
         <input className="input" aria-label="What shows it" maxLength={300} value={evidence} onChange={(e) => setEvidence(e.target.value)} />

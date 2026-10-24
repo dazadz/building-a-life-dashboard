@@ -101,3 +101,22 @@ def test_tasks_reach_the_coach_and_backups(conn):
     out = export(conn, 7, TODAY)["tasks"]["open_due_soon"]
     assert [t["title"] for t in out] == ["Late one"] and out[0]["overdue"] is True
     assert {t["title"] for t in backups.export_all(conn)["tables"]["tasks"]} == {"Late one", "Far away"}
+
+
+
+def test_subtasks_can_have_due_dates(conn):
+    from samuel import tasks as t
+
+    tid = t.add(conn, {"title": "Plan the trip", "subtasks": ["Pack", {"title": "Book flights", "due_date": "2026-11-02"}]})
+    subs = {s["title"]: s for s in t._all(conn)[0]["subtasks"]}
+    assert subs["Pack"]["due_date"] is None and subs["Book flights"]["due_date"] == "2026-11-02"
+    t.add_subtask(conn, tid, "Get euros", "2026-11-05")
+    sid = next(s["id"] for s in t._all(conn)[0]["subtasks"] if s["title"] == "Pack")
+    t.set_subtask(conn, sid, None, due_date="2026-11-04")
+    t.set_subtask(conn, sid, True)
+    pack = next(s for s in t._all(conn)[0]["subtasks"] if s["title"] == "Pack")
+    assert (pack["due_date"], pack["done"]) == ("2026-11-04", True)
+    t.set_subtask(conn, sid, None, due_date=None)
+    assert next(s for s in t._all(conn)[0]["subtasks"] if s["title"] == "Pack")["due_date"] is None
+    with pytest.raises(ValueError):
+        t.add_subtask(conn, tid, "Bad date", "next week")

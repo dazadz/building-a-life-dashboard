@@ -164,7 +164,7 @@ class BlockSnoozeIn(BaseModel):
 class TaskIn(BaseModel):
     # `subtasks` comes before `list`: once a field is called `list`, list[...] means that field.
     title: str = Field(max_length=200)
-    subtasks: list[str] = []
+    subtasks: list[str | dict] = []
     notes: str | None = Field(None, max_length=4000)
     list: str = Field("Personal", max_length=40)
     priority: Literal["high", "normal", "low"] = "normal"
@@ -196,10 +196,12 @@ class SnoozeIn(BaseModel):
 
 class SubtaskIn(BaseModel):
     title: str = Field(max_length=200)
+    due_date: str | None = None
 
 
 class SubtaskChange(BaseModel):
-    done: bool
+    done: bool | None = None
+    due_date: str | None = None
 
 
 class HealthLogIn(BaseModel):
@@ -638,12 +640,14 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS, started_by: str =
 
     @app.post("/api/tasks/{task_id}/subtasks")
     def post_subtask(task_id: int, body: SubtaskIn, now: str | None = None, conn=Depends(get_conn)):
-        task_write(lambda: tasks.add_subtask(conn, task_id, body.title))
+        task_write(lambda: tasks.add_subtask(conn, task_id, body.title, body.due_date))
         return tasks.summary(conn, _now(now))
 
     @app.put("/api/subtasks/{subtask_id}")
     def put_subtask(subtask_id: int, body: SubtaskChange, now: str | None = None, conn=Depends(get_conn)):
-        task_write(lambda: tasks.set_subtask(conn, subtask_id, body.done))
+        # Only the fields sent change, so sending "due_date": null clears the date.
+        changes = body.model_dump(exclude_unset=True)
+        task_write(lambda: tasks.set_subtask(conn, subtask_id, changes.get("done"), **({"due_date": changes["due_date"]} if "due_date" in changes else {})))
         return tasks.summary(conn, _now(now))
 
     @app.delete("/api/subtasks/{subtask_id}")

@@ -65,19 +65,29 @@ def _exists(conn: sqlite3.Connection, table: str, row_id: int) -> None:
         raise KeyError(row_id)
 
 
+def _subtask(item) -> tuple[str, str | None]:
+    """A subtask's title and due date, from a title or {"title", "due_date"}."""
+    title, due = (item, None) if isinstance(item, str) else (item.get("title"), item.get("due_date")) if isinstance(item, dict) else (None, None)
+    if not isinstance(title, str) or not title.strip() or len(title) > 200:
+        raise ValueError("subtasks are titles of 1 to 200 characters")
+    validate(None, {"due_date": due})
+    return title.strip(), due
+
+
 def add(conn: sqlite3.Connection, fields: dict) -> int:
     subtasks = fields.get("subtasks") or []
     clean = validate(conn, {k: v for k, v in fields.items() if k in FIELDS})
     if "title" not in clean:
         raise ValueError("a task needs a title")
-    if not isinstance(subtasks, list) or any(not isinstance(s, str) or not s.strip() or len(s) > 200 for s in subtasks):
-        raise ValueError("subtasks are titles of 1 to 200 characters")
+    if not isinstance(subtasks, list):
+        raise ValueError("subtasks are a list")
+    subtasks = [_subtask(s) for s in subtasks]
     with conn:
         cur = conn.execute(
             f"INSERT INTO tasks ({', '.join(clean)}) VALUES ({', '.join('?' * len(clean))})", list(clean.values()),
         )
-        for s in subtasks:
-            conn.execute("INSERT INTO subtasks (task_id, title) VALUES (?, ?)", (cur.lastrowid, s.strip()))
+        for title, due in subtasks:
+            conn.execute("INSERT INTO subtasks (task_id, title, due_date) VALUES (?, ?, ?)", (cur.lastrowid, title, due))
     return cur.lastrowid
 
 
@@ -116,21 +126,29 @@ def snooze(conn: sqlite3.Connection, task_id: int, how: str, now: str) -> None:
     update(conn, task_id, changes, now)
 
 
-def add_subtask(conn: sqlite3.Connection, task_id: int, title: str) -> None:
+def add_subtask(conn: sqlite3.Connection, task_id: int, title: str, due_date: str | None = None) -> None:
     _exists(conn, "tasks", task_id)
-    if not isinstance(title, str) or not title.strip() or len(title) > 200:
-        raise ValueError("subtask title must be 1 to 200 characters")
+    title, due = _subtask({"title": title, "due_date": due_date})
     with conn:
-        conn.execute("INSERT INTO subtasks (task_id, title) VALUES (?, ?)", (task_id, title.strip()))
+        conn.execute("INSERT INTO subtasks (task_id, title, due_date) VALUES (?, ?, ?)", (task_id, title, due))
 
 
-def set_subtask(conn: sqlite3.Connection, subtask_id: int, done: bool | None, delete_it: bool = False) -> None:
+_UNSET = object()
+
+
+def set_subtask(conn: sqlite3.Connection, subtask_id: int, done: bool | None, delete_it: bool = False, due_date=_UNSET) -> None:
+    """Tick or untick a subtask, change its due date (None clears it), or delete it."""
     _exists(conn, "subtasks", subtask_id)
+    if due_date is not _UNSET:
+        validate(None, {"due_date": due_date})
     with conn:
         if delete_it:
             conn.execute("DELETE FROM subtasks WHERE id = ?", (subtask_id,))
-        elif done is not None:
+            return
+        if done is not None:
             conn.execute("UPDATE subtasks SET done = ? WHERE id = ?", (1 if done else 0, subtask_id))
+        if due_date is not _UNSET:
+            conn.execute("UPDATE subtasks SET due_date = ? WHERE id = ?", (due_date, subtask_id))
 
 
 def _all(conn: sqlite3.Connection) -> list[dict]:

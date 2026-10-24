@@ -5,6 +5,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Rounder and tidier:** cards have 10px corners and fields, dropdowns, buttons and pills 6px; corner brackets follow the curve. Dropdowns now have the app's dark style with a matching arrow. Samuel's suggestions sit under the other cards on Today.
+- **Subtasks have due dates:** set one when adding a subtask (in the task form or under a task), or change it later; a late one shows in red.
+- **Pains and goals:** Area is a dropdown (Career, Spiritual, Sleep, Energy, Focus, Fitness, Health, Money, Relationships, Learning, Other).
 - **Tasks:** add subtasks while creating a task (and more while editing). Due dates read like "Mon 26/10/2026" (today still says Today).
 - **Goals:** a Days left column (amber within two weeks, red when late), dates like "Sun 14/03/2027", and a Priority you can change right in the list (it's the goal's impact, as on the priority matrix). Both columns sort. Goals can have the area **Spiritual**.
 - **Colours that mean something:** scores are green from 70, amber from 40 and red below that (stress the other way round), on Today, Health, the monthly scorecard, the weekly numbers and the check-in. Each kind of card has its own colour on every page (routine cyan, goals green, pains and risks amber, habits violet, check-in and reviews blue, suggestions pink, tasks orange, health rose), shown on its title and corner brackets.
