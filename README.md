@@ -59,7 +59,7 @@ cd building-a-life-dashboard\backend
 
 It starts the server if it isn't already running and opens Samuel in a Microsoft Edge app window (Chrome or Chromium if Edge isn't installed). A server it started stops by itself a few minutes after you close the window. You don't need a PowerShell window open. The window keeps its own small browser profile in `~\.samuel\app-window`, separate from your normal browser.
 
-To get a **desktop shortcut** that does this with a double-click and no console window, run `.\.venv\Scripts\samuel app --shortcut` once. You can pin the shortcut to the taskbar.
+To get a **desktop shortcut** that does this with a double-click and no console window, run `.\.venv\Scripts\samuel app --shortcut` once. It also adds Samuel to the Start menu. To pin it to the taskbar, right-click the shortcut, or the open Samuel window, and choose **Pin to taskbar**.
 
 Samuel uses plain HTTP on `127.0.0.1`. That address never leaves your computer, so there is no network for HTTPS to protect. HTTPS comes with phone access later.
 

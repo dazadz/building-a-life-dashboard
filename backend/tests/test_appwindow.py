@@ -22,6 +22,13 @@ def test_window_command_uses_app_mode_and_its_own_profile(data_dir):
     assert f"--user-data-dir={data_dir / 'app-window'}" in cmd
 
 
+def test_window_app_id_matches_the_browsers_taskbar_id():
+    # As read from a real Edge app window: browser ID, host and path, profile folder name
+    # without its hyphen.
+    assert appwindow.window_app_id(r"C:\Edge\msedge.exe") == "MSEdge.127.0.0.1_/.appwindow.Default"
+    assert appwindow.window_app_id("/usr/bin/google-chrome").startswith("Chrome.127.0.0.1_/.")
+
+
 def test_app_serves_while_the_page_checks_in_then_stops(monkeypatch):
     port = free_port()
     opened = []

@@ -49,6 +49,19 @@ def find_browser() -> str | None:
     return found[0] if found else None
 
 
+def window_app_id(browser: str) -> str:
+    """The taskbar ID (AppUserModelID) the browser gives Samuel's app window.
+
+    Chromium builds it from its own ID, the app's host and path (not the port) and the profile
+    folder's name with punctuation dropped ("app-window" becomes "appwindow"). A shortcut with
+    the same ID groups with the window, so pinning either one pins the shortcut, with Samuel's
+    icon, instead of a bare msedge.exe that opens a normal page.
+    """
+    prefix = "MSEdge" if "edge" in Path(browser).name.lower() else "Chrome"
+    profile = "".join(c for c in (db.data_dir() / "app-window").name if c.isalnum())
+    return f"{prefix}.127.0.0.1_/.{profile}.Default"
+
+
 def window_command(browser: str, port: int) -> list[str]:
     profile = db.data_dir() / "app-window"
     return [
@@ -114,8 +127,35 @@ def quiet_output_to_log() -> None:
         sys.stderr = sys.stderr or log
 
 
+# Sets System.AppUserModel.ID on a saved shortcut, which WScript.Shell can't do.
+_SET_APP_ID = r"""
+using System; using System.Runtime.InteropServices;
+public static class SamuelLnk {
+  [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+  interface IPropertyStore { int GetCount(out uint c); int GetAt(uint i, out Key k); int GetValue(ref Key k, out Value v);
+    int SetValue(ref Key k, ref Value v); int Commit(); }
+  [StructLayout(LayoutKind.Sequential)] struct Key { public Guid f; public uint p; }
+  [StructLayout(LayoutKind.Sequential)] struct Value { public ushort vt; ushort a, b, c; public IntPtr p; IntPtr q; }
+  [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+  static extern int SHGetPropertyStoreFromParsingName(string path, IntPtr bc, int flags, ref Guid iid, out IPropertyStore ps);
+  public static void SetAppId(string path, string id) {
+    Guid iid = typeof(IPropertyStore).GUID; IPropertyStore ps;
+    Marshal.ThrowExceptionForHR(SHGetPropertyStoreFromParsingName(path, IntPtr.Zero, 2, ref iid, out ps));
+    var k = new Key { f = new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), p = 5 };
+    var v = new Value { vt = 31, p = Marshal.StringToCoTaskMemUni(id) };
+    try { Marshal.ThrowExceptionForHR(ps.SetValue(ref k, ref v)); Marshal.ThrowExceptionForHR(ps.Commit()); }
+    finally { Marshal.FreeCoTaskMem(v.p); Marshal.ReleaseComObject(ps); }
+  }
+}
+"""
+
+
 def create_shortcut(port: int) -> Path:
-    """A Windows desktop shortcut that opens Samuel without a console window."""
+    """Desktop and Start menu shortcuts that open Samuel without a console window.
+
+    Both carry the app window's taskbar ID, so Samuel can be pinned to the taskbar from either
+    shortcut or from the open window. Windows looks up a pinned window's ID in the Start menu.
+    """
     if os.name != "nt":
         raise RuntimeError("Desktop shortcuts are only made on Windows for now. Run `samuel app` instead.")
     pythonw = Path(sys.executable).with_name("pythonw.exe")
@@ -123,16 +163,23 @@ def create_shortcut(port: int) -> Path:
         raise RuntimeError(f"Couldn't find pythonw.exe next to {sys.executable}.")
     args = "-m samuel app" + (f" --port {port}" if port != 8765 else "")
     icon = str(Path(__file__).with_name("assets") / "samuel.ico")
+    app_id = window_app_id(find_browser() or "msedge.exe")
     # Values go to PowerShell as environment variables, never pasted into the script text.
     script = (
+        "Add-Type -TypeDefinition $env:SAMUEL_LNK_CODE;"
         "$desktop = [Environment]::GetFolderPath('Desktop');"
-        "$s = (New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path $desktop 'Samuel.lnk'));"
-        "$s.TargetPath = $env:SAMUEL_LNK_TARGET; $s.Arguments = $env:SAMUEL_LNK_ARGS;"
-        "$s.WorkingDirectory = $env:USERPROFILE; $s.IconLocation = $env:SAMUEL_LNK_ICON;"
-        "$s.Description = 'Samuel, your local performance coach'; $s.Save();"
+        "$start = [Environment]::GetFolderPath('Programs');"
+        "foreach ($dir in $desktop, $start) {"
+        " $path = Join-Path $dir 'Samuel.lnk';"
+        " $s = (New-Object -ComObject WScript.Shell).CreateShortcut($path);"
+        " $s.TargetPath = $env:SAMUEL_LNK_TARGET; $s.Arguments = $env:SAMUEL_LNK_ARGS;"
+        " $s.WorkingDirectory = $env:USERPROFILE; $s.IconLocation = $env:SAMUEL_LNK_ICON;"
+        " $s.Description = 'Samuel, your local performance coach'; $s.Save();"
+        " [SamuelLnk]::SetAppId($path, $env:SAMUEL_LNK_APPID) };"
         "Write-Output (Join-Path $desktop 'Samuel.lnk')"
     )
-    env = {**os.environ, "SAMUEL_LNK_TARGET": str(pythonw), "SAMUEL_LNK_ARGS": args, "SAMUEL_LNK_ICON": icon}
+    env = {**os.environ, "SAMUEL_LNK_TARGET": str(pythonw), "SAMUEL_LNK_ARGS": args, "SAMUEL_LNK_ICON": icon,
+           "SAMUEL_LNK_APPID": app_id, "SAMUEL_LNK_CODE": _SET_APP_ID}
     out = subprocess.run(
         ["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
         env=env, capture_output=True, text=True, check=True,

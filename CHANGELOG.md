@@ -4,6 +4,9 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 
 ## [Unreleased]
 
+### Fixed
+- **Taskbar pinning:** `samuel app --shortcut` now gives the shortcut the same taskbar ID as Samuel's window and adds a Start menu entry. A pinned Samuel keeps its icon and opens Samuel, instead of opening a plain Edge page. Run `samuel app --shortcut` again, then re-pin.
+
 ## [0.4.0] - 2026-10-24
 
 Chat with Samuel, today at a glance, energy taps, time leaks and what moves your energy and mood.

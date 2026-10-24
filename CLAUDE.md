@@ -19,7 +19,7 @@ Privacy is a hard requirement. This repo is public and the author uses the app d
 Backend (`backend/`, Python 3.11+, virtualenv in `backend/.venv`):
 - Set up: `python -m venv .venv` then `.venv/Scripts/python -m pip install -e ".[dev]"` (Windows path; `.venv/bin` elsewhere)
 - Test: `.venv/Scripts/python -m pytest -q`
-- Run the app: `samuel serve` (http://127.0.0.1:8765, serves `frontend/dist` once built), or `samuel app` to open it in an Edge app window (starts the server if needed and stops it a few minutes after the window stops checking in; `--shortcut` makes a desktop shortcut)
+- Run the app: `samuel serve` (http://127.0.0.1:8765, serves `frontend/dist` once built), or `samuel app` to open it in an Edge app window (starts the server if needed and stops it a few minutes after the window stops checking in; `--shortcut` makes desktop and Start menu shortcuts that carry the window's taskbar ID, so pinning works)
 - Demo data: `SAMUEL_DATA_DIR=<some temp folder> samuel demo`. Always use a temp data dir for demos and screenshots, never `~/.samuel`.
 - Coach CLI: `samuel export --since 7d`, `samuel report add --kind daily --file -`, `samuel scores`, `samuel backup`
 
