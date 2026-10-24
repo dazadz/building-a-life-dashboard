@@ -73,7 +73,7 @@ export function useCoachJob() {
 
   useEffect(() => () => window.clearTimeout(timer.current), [])
 
-  const start = useCallback(async (skill = 'daily-report') => {
+  const start = useCallback(async (skill = 'daily-report', goalId?: number) => {
     setError(null)
     window.clearTimeout(timer.current)
     const poll = (id: number) => {
@@ -88,7 +88,7 @@ export function useCoachJob() {
       }, 2000)
     }
     try {
-      const { job_id } = await api.runCoach(skill)
+      const { job_id } = await api.runCoach(skill, goalId)
       setJob(await api.job(job_id))
       poll(job_id)
     } catch (e) {

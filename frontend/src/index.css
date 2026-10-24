@@ -637,3 +637,34 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
   .coach-layout { grid-template-columns: 1fr; }
   .appearance-grid { grid-template-columns: 1fr; }
 }
+
+/* About me and Samuel's suggestions */
+.about-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
+.about-build { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.count-badge {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--on-accent); background: var(--accent);
+  border-radius: var(--radius-small); padding: 0 6px; box-shadow: var(--glow);
+}
+.kind-tag { margin-left: 0; color: var(--blue); }
+.kind-tag[data-kind='pain'] { color: var(--amber); }
+.kind-tag[data-kind='goal'] { color: var(--green); }
+.suggestion-list li.suggestion { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.suggestion-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; }
+.suggestion-row .kind-tag { margin-top: 2px; }
+.suggestion-text { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.suggestion-detail { font-family: var(--font-mono); font-size: 11px; }
+.suggestion-why { font-size: 13px; }
+.suggestion-actions { display: flex; align-items: center; gap: 6px; }
+.suggestion-editor { display: flex; flex-direction: column; gap: 12px; padding: 12px; background: var(--inset); border: 1px solid var(--border); }
+.btn-small { height: 30px; padding: 0 10px; font-size: 12px; }
+.pain-add { display: grid; grid-template-columns: 110px minmax(0, 2fr) minmax(0, 1fr) auto; gap: 8px; }
+.pain-table .pain-what { display: flex; flex-direction: column; font-weight: 400; }
+.pain-actions { white-space: nowrap; }
+.pain-actions .link-btn + .link-btn { margin-left: 10px; }
+.pain-table input + input { margin-top: 6px; }
+.sort-btn { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; cursor: pointer; }
+.sort-btn:hover { color: var(--text); }
+@media (max-width: 900px) {
+  .pain-add { grid-template-columns: 1fr; }
+  .about-build { align-items: flex-start; }
+}

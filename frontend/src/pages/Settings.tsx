@@ -137,6 +137,7 @@ function Forms({ today, initial, onSaved }: { today: string; initial: Settings; 
       <RoutineEditor />
       <Card title="Habits" meta={`${habits.filter((h) => h.active).length} of ${habits.length} on`} action={<a href="#/habits">Habits →</a>}>
         <HabitToggles habits={habits} onToggle={toggle} />
+        <AddHabit onAdded={(list) => { setHabits(list) }} />
         <Status message={tracking.message} error={tracking.error} />
       </Card>
     </div>
@@ -238,5 +239,25 @@ function PrivacyCard() {
         <li><span style={{ flex: 1 }}>Health and mental health answers</span><span className="muted">Only for onboarding insights</span></li>
       </ul>
     </Card>
+  )
+}
+
+function AddHabit({ onAdded }: { onAdded: (habits: Settings['habits']) => void }) {
+  const [name, setName] = useState('')
+  const state = useSave()
+  const add = () => state.save(async () => {
+    if (!name.trim()) throw new Error('Name the habit.')
+    onAdded(await api.addHabit(name.trim()))
+    setName('')
+  }, 'Habit added. Tick it on Today or the Habits page.')
+  return (
+    <>
+      <div className="routine-add" aria-label="Add your own habit">
+        <input className="input" aria-label="New habit" placeholder="Your own habit, e.g. 10 min stretch" maxLength={60}
+          value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') void add() }} />
+        <button type="button" className="btn" disabled={state.saving} onClick={() => void add()}>Add habit</button>
+      </div>
+      <Status message={state.message} error={state.error} />
+    </>
   )
 }

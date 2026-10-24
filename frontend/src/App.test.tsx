@@ -150,10 +150,33 @@ const digestBody = {
   yesterday: { date: '2026-10-23', score: 65, change: 4 },
 }
 
-function mockServer(installed: boolean, hasCheckin = true, onboarded = true) {
+const noSuggestions = { pending: [], counts: { pain: 0, goal: 0, milestone: 0, habit: 0, task: 0, routine: 0 }, total: 0 }
+const suggestionsBody = {
+  pending: [
+    { id: 7, kind: 'routine', title: 'Walk and coffee outside', reason: 'Your energy taps drop after 14:00.', batch: 'plan', status: 'pending', created_at: '',
+      payload: { name: 'Walk and coffee outside', start: '15:30', end: '15:45', weekdays: [0, 1, 2], note: null } },
+    { id: 8, kind: 'task', title: 'Book a physio check', reason: 'Knee soreness after long runs.', batch: 'plan', status: 'pending', created_at: '',
+      payload: { title: 'Book a physio check', due_date: '2026-10-28' } },
+  ],
+  counts: { pain: 0, goal: 0, milestone: 0, habit: 0, task: 1, routine: 1 },
+  total: 2,
+}
+const aboutBody = {
+  notes: 'Office Mon–Wed.', notes_max: 4000, counts: { pain: 1, goal: 1 },
+  items: [
+    { id: 1, kind: 'pain', text: 'Late to bed on weeknights', area: 'Sleep', evidence: 'Under 6.5 h on 4 of 7 nights', goal_id: null,
+      habit_key: 'c_lights', status: 'active', position: 1, goal_title: null, goal_done: null, habit_name: 'Lights out by 23:00' },
+    { id: 2, kind: 'goal', text: 'Half marathon in March', area: 'Fitness', evidence: null, goal_id: 1,
+      habit_key: null, status: 'active', position: 2, goal_title: 'Half marathon in March', goal_done: null, habit_name: null },
+  ],
+}
+
+function mockServer(installed: boolean, hasCheckin = true, onboarded = true, suggestions: unknown = noSuggestions) {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     let body: unknown = []
-    if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded }
+    if (url === '/api/status') body = { coach: { installed, skills: ['daily-report'], has_recent_checkin: hasCheckin }, today: '2026-10-24', name: onboarded ? 'Jordan' : null, onboarded, suggestions: (suggestions as { total: number }).total }
+    else if (url.startsWith('/api/suggestions')) body = url.includes('/accept') || url.includes('/dismiss') ? noSuggestions : suggestions
+    else if (url.startsWith('/api/about') || url.startsWith('/api/pains-goals')) body = aboutBody
     else if (url.startsWith('/api/digest')) body = digestBody
     else if (url.startsWith('/api/leaks/')) body = leaksBody
     else if (url.startsWith('/api/links/')) body = linksBody
@@ -392,6 +415,53 @@ describe('App', () => {
     fireEvent.keyDown(ring, { key: 'ArrowRight', shiftKey: true })
     expect(Number(ring.getAttribute('aria-valuenow'))).toBe((before + 10) % 360)
     expect(document.documentElement.style.getPropertyValue('--accent')).not.toBe('#22e0e6')
+  })
+
+  it('shows waiting suggestions on Home and accepts one', async () => {
+    mockServer(true, true, true, suggestionsBody)
+    render(<App />)
+    expect(await screen.findByText('Walk and coffee outside')).toBeInTheDocument()
+    expect(screen.getByText('Mon Tue Wed · 15:30–15:45')).toBeInTheDocument()
+    expect(screen.getByLabelText('2 suggestions waiting')).toHaveTextContent('2')
+    fireEvent.click(screen.getAllByRole('button', { name: 'Accept' })[0])
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/suggestions/7/accept?today='), expect.objectContaining({
+        method: 'POST', body: '{"payload":null}',
+      })),
+    )
+    expect(await screen.findByText(/See it in Routine/)).toBeInTheDocument()
+  })
+
+  it('edits a suggestion before accepting it', async () => {
+    mockServer(true, true, true, suggestionsBody)
+    window.location.hash = '#/about'
+    render(<App />)
+    const edit = await screen.findAllByRole('button', { name: 'Edit' })
+    fireEvent.click(edit.find((b) => b.getAttribute('aria-expanded') === 'false')!)
+    fireEvent.change(screen.getByLabelText('Start'), { target: { value: '15:00' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save and accept' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/suggestions/7/accept'), expect.objectContaining({
+        body: expect.stringContaining('"start":"15:00"'),
+      })),
+    )
+  })
+
+  it('shows what Samuel knows on About me and resolves a pain', async () => {
+    mockServer(true)
+    window.location.hash = '#/about'
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: 'What Samuel knows' })).toBeInTheDocument()
+    expect(await screen.findByText('Late to bed on weeknights')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Habit · Lights out by 23:00' })).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('button', { name: 'Resolve' })[0])
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/pains-goals/1', expect.objectContaining({ method: 'PUT', body: '{"status":"resolved"}' })),
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Ask Samuel to build my plan →' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/coach/run', expect.objectContaining({ body: '{"skill":"plan-builder","goal_id":null}' })),
+    )
   })
 
   it('shows today at a glance on Home', async () => {

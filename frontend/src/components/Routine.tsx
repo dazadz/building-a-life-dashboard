@@ -153,7 +153,7 @@ function RoutineRow({ routine, write }: { routine: Routine; write: (w: () => Pro
   )
 }
 
-function Weekdays({ value, onChange, label }: { value: number[]; onChange: (w: number[]) => void; label: string }) {
+export function Weekdays({ value, onChange, label }: { value: number[]; onChange: (w: number[]) => void; label: string }) {
   const toggle = (d: number) => {
     const next = value.includes(d) ? value.filter((x) => x !== d) : [...value, d].sort()
     if (next.length) onChange(next)
