@@ -5,6 +5,7 @@ import { Card } from '../components/Card'
 import { TodaysPlan } from '../components/Routine'
 import { EnergyTapCard } from '../components/Energy'
 import { DigestCard } from '../components/Digest'
+import { SuggestionsCard } from '../components/Suggestions'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { addDays, answeredCount, deltaText, greeting, isoDate, localStamp, localTime, longDate, scoreText } from '../format'
 import { useLoad, useNow } from '../hooks'
@@ -21,7 +22,7 @@ const SEGMENTS = Array.from({ length: 20 }, (_, i) => i)
 
 const SCORES_DOC = 'https://github.com/dazadz/building-a-life-dashboard/blob/main/docs/scores.md'
 
-export function HomePage({ status }: { status: Status | null }) {
+export function HomePage({ status, onChanged }: { status: Status | null; onChanged: () => void }) {
   const now = useNow()
   const today = isoDate(now)
   const yesterday = addDays(today, -1)
@@ -52,6 +53,7 @@ export function HomePage({ status }: { status: Status | null }) {
       </header>
 
       <DigestCard stamp={localStamp(now)} />
+      <SuggestionsCard limit={5} hideWhenEmpty onChanged={onChanged} action={<a href="#/about">Review all →</a>} />
 
       {days.error && <ErrorLine message={days.error} onRetry={days.reload} />}
       {profile.data && profile.data.answered < profile.data.total && (

@@ -9,6 +9,8 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 - **Samuel suggests, you decide:** coach runs can propose goals, milestones, habits, tasks, routine blocks and pains with `samuel suggest add`. They wait for you to accept, edit or dismiss them, and are checked again when accepted (ADR 0004).
 - **Plan builder:** a new coach skill that turns your profile and notes into a plan, or breaks one goal into milestones and session-sized tasks (`/plan-builder goal <id>`). Chat replies can propose suggestions too.
 - **Your own habits:** add and rename habits next to the ten defaults.
+- **About me page:** what Samuel knows about you: your pains and goals (filter, sort, edit, resolve, remove with undo), your notes, your profile progress, and a button to have Samuel build your plan.
+- **Samuel suggests card:** on About me, and on Today whenever something is waiting, with Accept, Edit (then accept) and Dismiss, accept-selected, and a count badge in the sidebar. Settings → Profile can add your own habits.
 
 ### Changed
 - **Settings matches its design:** section tabs (Profile, Appearance, Coach, Data & privacy). Appearance has an accent ring you can drag or move with the arrow keys, vibe tiles, a live preview of Samuel, and a Theme card for darkness and surface tint.

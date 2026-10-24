@@ -16,11 +16,13 @@ import { Palette } from './components/Palette'
 import { Reminders } from './components/Reminders'
 import { UndoToast } from './components/Undo'
 import { HomePage } from './pages/Home'
+import { AboutPage } from './pages/About'
 import { OnboardingPage } from './pages/Onboarding'
 import { SettingsPage } from './pages/Settings'
 
 const NAV = [
   { href: '#/', route: '/', label: 'Today' },
+  { href: '#/about', route: '/about', label: 'About me' },
   { href: '#/checkin', route: '/checkin', label: 'Check-in' },
   { href: '#/tasks', route: '/tasks', label: 'Tasks' },
   { href: '#/habits', route: '/habits', label: 'Habits' },
@@ -81,6 +83,9 @@ export default function App() {
           >
             {item.label}
             {item.route === '/coach' && coach.running && <span className="badge faint">Writing…</span>}
+            {item.route === '/about' && (status.data?.suggestions ?? 0) > 0 && (
+              <span className="badge count-badge" aria-label={`${status.data!.suggestions} suggestions waiting`}>{status.data!.suggestions}</span>
+            )}
           </a>
         ))}
         <div className="sidebar-bottom">
@@ -109,10 +114,12 @@ export default function App() {
           <ProfilePage coach={coach} status={status.data} />
         ) : route === '/settings' ? (
           <SettingsPage status={status.data} onSaved={status.reload} onRestored={() => setEpoch((e) => e + 1)} />
+        ) : route === '/about' ? (
+          <AboutPage coach={coach} status={status.data} onChanged={status.reload} />
         ) : route === '/coach' ? (
           <CoachPage coach={coach} status={status.data} />
         ) : (
-          <HomePage status={status.data} />
+          <HomePage status={status.data} onChanged={status.reload} />
         )}
       </main>
       <Reminders />

@@ -51,6 +51,7 @@ export interface Status {
   onboarded: boolean
   text_size: TextSize
   theme: Theme | null
+  suggestions: number
 }
 
 export type TextSize = 'small' | 'medium' | 'large' | 'xlarge'
@@ -443,6 +444,50 @@ export interface Monthly {
   trend: { date: string; discipline: number | null; average: number | null }[]
 }
 
+export interface PainGoal {
+  id: number
+  kind: 'pain' | 'goal'
+  text: string
+  area: string | null
+  evidence: string | null
+  goal_id: number | null
+  habit_key: string | null
+  status: 'active' | 'resolved'
+  position: number
+  goal_title: string | null
+  goal_done: string | null
+  habit_name: string | null
+}
+
+export type PainGoalFields = Pick<PainGoal, 'kind' | 'text' | 'area' | 'evidence'>
+
+export interface About {
+  notes: string | null
+  notes_max: number
+  items: PainGoal[]
+  counts: { pain: number; goal: number }
+}
+
+export type SuggestionKind = 'pain' | 'goal' | 'milestone' | 'habit' | 'task' | 'routine'
+export type SuggestionPayload = Record<string, unknown>
+
+export interface Suggestion {
+  id: number
+  kind: SuggestionKind
+  title: string
+  payload: SuggestionPayload
+  reason: string | null
+  batch: string | null
+  status: 'pending' | 'accepted' | 'dismissed'
+  created_at: string
+}
+
+export interface Suggestions {
+  pending: Suggestion[]
+  counts: Record<SuggestionKind, number>
+  total: number
+}
+
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -488,11 +533,23 @@ export const api = {
     request<Settings>(`/api/settings?today=${today}`, { method: 'PUT', body: JSON.stringify(changes) }),
   setHabitActive: (key: string, active: boolean) =>
     request<Settings['habits']>(`/api/habit-settings/${key}`, { method: 'PUT', body: JSON.stringify({ active }) }),
+  addHabit: (name: string) =>
+    request<Settings['habits']>('/api/habit-settings', { method: 'POST', body: JSON.stringify({ name }) }),
+  about: () => request<About>('/api/about'),
+  saveAboutNotes: (notes: string) => request<About>('/api/about', { method: 'PUT', body: JSON.stringify({ notes }) }),
+  addPainGoal: (fields: PainGoalFields) => request<About>('/api/pains-goals', { method: 'POST', body: JSON.stringify(fields) }),
+  updatePainGoal: (id: number, changes: Partial<PainGoalFields> & { status?: PainGoal['status'] }) =>
+    request<About>(`/api/pains-goals/${id}`, { method: 'PUT', body: JSON.stringify(changes) }),
+  deletePainGoal: (id: number) => request<About>(`/api/pains-goals/${id}`, { method: 'DELETE', body: '{}' }),
+  suggestions: () => request<Suggestions>('/api/suggestions'),
+  acceptSuggestion: (today: string, id: number, payload?: SuggestionPayload) =>
+    request<Suggestions>(`/api/suggestions/${id}/accept?today=${today}`, { method: 'POST', body: JSON.stringify({ payload: payload ?? null }) }),
+  dismissSuggestion: (id: number) => request<Suggestions>(`/api/suggestions/${id}/dismiss`, { method: 'POST', body: '{}' }),
   data: () => request<DataInfo>('/api/data'),
   backupNow: () => request<DataInfo>('/api/backup', { method: 'POST', body: '{}' }),
   reports: (kind?: string) => request<Report[]>(`/api/reports${kind ? `?kind=${kind}` : ''}`),
-  runCoach: (skill = 'daily-report') =>
-    request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill }) }),
+  runCoach: (skill = 'daily-report', goalId?: number) =>
+    request<{ job_id: number }>('/api/coach/run', { method: 'POST', body: JSON.stringify({ skill, goal_id: goalId ?? null }) }),
   job: (id: number) => request<CoachJob>(`/api/coach/jobs/${id}`),
   trash: () => request<TrashItem[]>('/api/trash'),
   restore: (id: number) => request<{ kind: string; id: number; title: string }>(`/api/trash/${id}/restore`, { method: 'POST', body: '{}' }),

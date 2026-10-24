@@ -18,7 +18,7 @@ interface Group {
 const go = (href: string) => () => { window.location.hash = href }
 
 const SCREENS: [string, string][] = [
-  ['Today', '#/'], ['Check-in', '#/checkin'], ['Tasks', '#/tasks'], ['Habits', '#/habits'], ['Goals', '#/goals'],
+  ['Today', '#/'], ['About me', '#/about'], ['Check-in', '#/checkin'], ['Tasks', '#/tasks'], ['Habits', '#/habits'], ['Goals', '#/goals'],
   ['Health & energy', '#/health'], ['Weekly review', '#/review'], ['Monthly evolution', '#/monthly'],
   ['Coach', '#/coach'], ['Profile', '#/profile'], ['Settings', '#/settings'],
 ]

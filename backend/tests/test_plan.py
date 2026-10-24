@@ -230,6 +230,7 @@ def test_api_accepts_and_dismisses_suggestions(client, conn):
     r = client.post(f"/api/suggestions/{first}/accept?today={TODAY}", json={})
     assert r.status_code == 200 and r.json()["total"] == 1
     assert client.post(f"/api/suggestions/{first}/accept", json={}).status_code == 422
+    assert client.get("/api/status").json()["suggestions"] == 1
     assert client.post(f"/api/suggestions/{second}/dismiss", headers=JSON).json()["total"] == 0
     assert client.post("/api/suggestions/999/dismiss", headers=JSON).status_code == 404
     assert any(h["name"] == "Walk after lunch" for h in client.get(f"/api/settings?today={TODAY}").json()["habits"])

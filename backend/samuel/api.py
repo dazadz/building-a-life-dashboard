@@ -257,6 +257,7 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             "onboarded": bool(db.get_setting(conn, "onboarded", False)),
             "text_size": db.get_setting(conn, "text_size", settings.DEFAULT_TEXT_SIZE),
             "theme": db.get_setting(conn, "theme") or None,
+            "suggestions": conn.execute("SELECT COUNT(*) FROM suggestions WHERE status = 'pending'").fetchone()[0],
         }
 
     @app.get("/api/days/{day}")
