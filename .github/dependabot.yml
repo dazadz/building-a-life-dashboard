@@ -1,30 +1,20 @@
-# Monthly checks for outdated dependencies, bundled so there are only a few pull requests a month:
-# one per area for the small (minor and patch) updates, and one per area for the big (major) ones,
-# which need a closer look. Each arrives as a pull request that must pass CI like any other change.
+# Security fixes only. Routine version updates are off (open-pull-requests-limit: 0), so Dependabot
+# opens a pull request only when a dependency has a known vulnerability (Dependabot security
+# updates, switched on in the repo settings). Each one must pass CI like any other change.
 version: 2
 updates:
   - package-ecosystem: pip
     directory: /backend
     schedule:
       interval: monthly
-    groups:
-      backend-small:
-        update-types: [minor, patch]
-      backend-major:
-        update-types: [major]
+    open-pull-requests-limit: 0
   - package-ecosystem: npm
     directory: /frontend
     schedule:
       interval: monthly
-    groups:
-      frontend-small:
-        update-types: [minor, patch]
-      frontend-major:
-        update-types: [major]
+    open-pull-requests-limit: 0
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
-    groups:
-      actions:
-        patterns: ["*"]
+    open-pull-requests-limit: 0
