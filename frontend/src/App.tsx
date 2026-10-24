@@ -103,7 +103,7 @@ export default function App() {
         ) : route === '/habits' ? (
           <HabitsPage />
         ) : route === '/goals' ? (
-          <GoalsPage />
+          <GoalsPage coach={coach} status={status.data} />
         ) : route === '/health' ? (
           <HealthPage coachInstalled={status.data?.coach.installed ?? false} />
         ) : route === '/tasks' ? (

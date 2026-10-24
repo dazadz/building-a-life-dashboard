@@ -526,6 +526,30 @@ describe('App', () => {
     )
   })
 
+  it('asks Samuel to break a goal down', async () => {
+    mockServer(true)
+    window.location.hash = '#/goals'
+    render(<App />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Half marathon in March' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Break this down with Samuel →' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith('/api/coach/run', expect.objectContaining({ body: '{"skill":"plan-builder","goal_id":1}' })),
+    )
+  })
+
+  it('groups suggestions by plan and breakdown and accepts a whole group', async () => {
+    const breakdown = { ...suggestionsBody.pending[1], id: 9, title: 'Write the CSV loader', batch: 'breakdown: Side project' }
+    mockServer(true, true, true, { ...suggestionsBody, pending: [...suggestionsBody.pending, breakdown], total: 3 })
+    window.location.hash = '#/about'
+    render(<App />)
+    expect(await screen.findByText('Break down · Side project')).toBeInTheDocument()
+    expect(screen.getByText('Your plan')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Accept all 1' }))
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/suggestions/9/accept'), expect.anything()),
+    )
+  })
+
   it('shows what Samuel knows on About me and resolves a pain', async () => {
     mockServer(true)
     window.location.hash = '#/about'

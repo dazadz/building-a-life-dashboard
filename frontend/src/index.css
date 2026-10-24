@@ -738,3 +738,11 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
   .now-side { padding-left: 0; border-left: 0; }
   .day-switch { align-items: flex-start; }
 }
+
+/* Goal breakdown and suggestion groups */
+.breakdown-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--accent-soft); border: 1px solid var(--accent-line);
+}
+.suggestion-list li.suggestion-group { display: flex; align-items: center; gap: 10px; padding-top: 14px; border-bottom: 1px solid var(--accent-line); }
+.suggestion-group .link-btn { margin-left: auto; }
