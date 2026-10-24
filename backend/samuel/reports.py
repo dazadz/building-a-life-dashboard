@@ -58,7 +58,7 @@ def export(conn: sqlite3.Connection, days: int, until: str | None = None, sensit
         "summary": scores.summary(conn, end.isoformat()),
         "goals": goals.for_coach(conn, end.isoformat()),
         "weekly_review": weekly.for_coach(conn, end.isoformat()),
-        "routine": routines.for_coach(conn),
+        "routine": routines.for_coach(conn, end.isoformat()),
         "habits": [{"name": h["name"], "tracking": h["active"], "own": h["key"].startswith("c_")} for h in settings.habit_list(conn)],
         "suggestions": suggestions.for_coach(conn),
         "tasks": tasks.for_coach(conn, end.isoformat()),

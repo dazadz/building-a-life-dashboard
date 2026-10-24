@@ -5,7 +5,7 @@ import sqlite3
 from datetime import date, datetime, timedelta
 
 PRIORITIES = ("high", "normal", "low")
-FIELDS = ("title", "notes", "list", "priority", "due_date", "due_time", "remind_at", "goal_id")
+FIELDS = ("title", "notes", "list", "priority", "due_date", "due_time", "remind_at", "goal_id", "routine_id")
 HHMM = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 VIEWS = ("today", "upcoming", "overdue", "all", "done")
 
@@ -46,6 +46,9 @@ def validate(conn: sqlite3.Connection, changes: dict) -> dict:
         elif key == "goal_id":
             if value is not None and conn.execute("SELECT 1 FROM goals WHERE id = ?", (value,)).fetchone() is None:
                 raise ValueError("no such goal")
+        elif key == "routine_id":
+            if value is not None and conn.execute("SELECT 1 FROM routines WHERE id = ?", (value,)).fetchone() is None:
+                raise ValueError("no such routine block")
         else:
             raise ValueError(f"unknown field {key}")
         clean[key] = value

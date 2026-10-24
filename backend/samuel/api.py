@@ -113,6 +113,13 @@ class RoutineIn(BaseModel):
     end: str
     weekdays: list[int] = [0, 1, 2, 3, 4, 5, 6]
     note: str | None = Field(None, max_length=200)
+    kind: Literal["focus", "fixed", "habit", "recovery", "leisure"] = "focus"
+    goal_id: int | None = None
+    habit_key: str | None = None
+    steps: list[str] = []
+    remind_before: bool = True
+    remind_start: bool = True
+    day_type_id: int | None = None
 
 
 class RoutineChange(BaseModel):
@@ -121,6 +128,36 @@ class RoutineChange(BaseModel):
     end: str | None = None
     weekdays: list[int] | None = None
     note: str | None = Field(None, max_length=200)
+    kind: Literal["focus", "fixed", "habit", "recovery", "leisure"] | None = None
+    goal_id: int | None = None
+    habit_key: str | None = None
+    steps: list[str] | None = None
+    remind_before: bool | None = None
+    remind_start: bool | None = None
+    day_type_id: int | None = None
+
+
+class DayTypeIn(BaseModel):
+    name: str = Field(max_length=routines.DAY_TYPE_NAME_MAX)
+    weekdays: list[int] = []
+
+
+class DayTypeChange(BaseModel):
+    name: str | None = Field(None, max_length=routines.DAY_TYPE_NAME_MAX)
+    weekdays: list[int] | None = None
+
+
+class DayOverrideIn(BaseModel):
+    day_type_id: int | None  # None goes back to the usual day type
+
+
+class BlockLogIn(BaseModel):
+    status: Literal["done", "skipped"] | None
+    reason: str | None = Field(None, max_length=200)
+
+
+class BlockSnoozeIn(BaseModel):
+    until: str  # local HH:MM
 
 
 class TaskIn(BaseModel):
@@ -134,6 +171,7 @@ class TaskIn(BaseModel):
     due_time: str | None = None
     remind_at: str | None = None
     goal_id: int | None = None
+    routine_id: int | None = None
 
 
 class TaskChange(BaseModel):
@@ -145,6 +183,7 @@ class TaskChange(BaseModel):
     due_time: str | None = None
     remind_at: str | None = None
     goal_id: int | None = None
+    routine_id: int | None = None
     done: bool | None = None
 
 
@@ -501,6 +540,52 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
     @app.get("/api/plan/{day}")
     def get_plan(day: str, conn=Depends(get_conn)):
         return routines.plan(conn, _day(day))
+
+    # Day types: every write returns the list, with how many blocks each has.
+    @app.get("/api/day-types")
+    def get_day_types(conn=Depends(get_conn)):
+        return routines.list_day_types(conn)
+
+    @app.post("/api/day-types")
+    def post_day_type(body: DayTypeIn, conn=Depends(get_conn)):
+        routine_write(lambda: routines.add_day_type(conn, body.name, body.weekdays))
+        return routines.list_day_types(conn)
+
+    @app.put("/api/day-types/{day_type_id}")
+    def put_day_type(day_type_id: int, body: DayTypeChange, conn=Depends(get_conn)):
+        routine_write(lambda: routines.update_day_type(conn, day_type_id, body.model_dump(exclude_unset=True)))
+        return routines.list_day_types(conn)
+
+    @app.delete("/api/day-types/{day_type_id}")
+    def delete_day_type(day_type_id: int, conn=Depends(get_conn)):
+        routine_write(lambda: routines.delete_day_type(conn, day_type_id))
+        return routines.list_day_types(conn)
+
+    # The plan writes return the day's plan.
+    @app.put("/api/plan/{day}/day-type")
+    def put_day_type_override(day: str, body: DayOverrideIn, conn=Depends(get_conn)):
+        routine_write(lambda: routines.set_day_override(conn, _day(day), body.day_type_id))
+        return routines.plan(conn, _day(day))
+
+    @app.put("/api/plan/{day}/blocks/{routine_id}")
+    def put_block_log(day: str, routine_id: int, body: BlockLogIn, conn=Depends(get_conn)):
+        routine_write(lambda: routines.log_block(conn, routine_id, _day(day), body.status, body.reason))
+        return routines.plan(conn, _day(day))
+
+    @app.post("/api/plan/{day}/blocks/{routine_id}/snooze")
+    def snooze_block(day: str, routine_id: int, body: BlockSnoozeIn, conn=Depends(get_conn)):
+        routine_write(lambda: routines.snooze(conn, routine_id, _day(day), body.until))
+        return routines.plan(conn, _day(day))
+
+    @app.get("/api/block-reminders/due")
+    def get_block_reminders(now: str | None = None, conn=Depends(get_conn)):
+        return routines.due_reminders(conn, _now(now))
+
+    @app.post("/api/block-reminders/{routine_id}/shown")
+    def block_reminder_shown(routine_id: int, which: str, now: str | None = None, conn=Depends(get_conn)):
+        at = _now(now)
+        routine_write(lambda: routines.mark_shown(conn, routine_id, at[:10], which, at[11:16]))
+        return {"ok": True}
 
     def _now(now: str | None) -> str:
         """The user's local time from the app, YYYY-MM-DDTHH:MM."""

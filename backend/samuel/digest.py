@@ -31,7 +31,8 @@ def focus(conn: sqlite3.Connection, today: str) -> dict | None:
 
 def next_block(conn: sqlite3.Connection, today: str, hhmm: str) -> dict | None:
     for b in routines.plan(conn, today)["blocks"]:
-        if b["start"] <= hhmm < b["end"]:
+        crosses = b["end"] <= b["start"]  # e.g. 23:30–00:30 runs until after midnight
+        if b["start"] <= hhmm and (crosses or hhmm < b["end"]):
             return {"name": b["name"], "start": b["start"], "end": b["end"], "state": "now"}
         if b["start"] > hhmm:
             return {"name": b["name"], "start": b["start"], "end": b["end"], "state": "next"}
