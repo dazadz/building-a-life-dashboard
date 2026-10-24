@@ -1,5 +1,6 @@
 """HTTP API for the web app. Binds to localhost only (see cli.serve)."""
 
+import os
 import re
 import time
 from urllib.parse import quote
@@ -12,7 +13,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
-from . import about, backups, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, suggestions, tasks, trash, weekly
+from . import about, backups, build, chats, coach, db, digest, energy, goals, habits, health, leaks, links, monthly, profile, reports, routines, scores, search, security, settings, suggestions, tasks, trash, weekly
 from .checkins import habits_for, log_habit, save_checkin
 
 FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
@@ -267,7 +268,7 @@ def _day(day: str) -> str:
         raise HTTPException(422, "date must be YYYY-MM-DD")
 
 
-def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
+def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS, started_by: str = "serve") -> FastAPI:
     # No interactive API docs: they load scripts from a CDN.
     app = FastAPI(title="Samuel", docs_url=None, redoc_url=None, openapi_url=None)
     security.protect(app, allowed_hosts)
@@ -297,6 +298,8 @@ def create_app(allowed_hosts: set[str] = security.LOCAL_HOSTS) -> FastAPI:
             "text_size": db.get_setting(conn, "text_size", settings.DEFAULT_TEXT_SIZE),
             "theme": db.get_setting(conn, "theme") or None,
             "suggestions": conn.execute("SELECT COUNT(*) FROM suggestions WHERE status = 'pending'").fetchone()[0],
+            # So `samuel app` can replace a server it started before an update (see appwindow.run).
+            "server": {"build": build.build_id(), "pid": os.getpid(), "started_by": started_by},
         }
 
     @app.get("/api/days/{day}")

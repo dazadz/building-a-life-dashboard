@@ -10,6 +10,7 @@ IDLE_STOP seconds.
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -18,7 +19,7 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-from . import db
+from . import build, db
 
 BROWSER_NAMES = ("msedge", "chrome", "chromium", "google-chrome", "chromium-browser")
 IDLE_STOP = 180  # seconds without any request before a server started by `samuel app` stops
@@ -32,6 +33,43 @@ def is_running(port: int) -> bool:
             return "onboarded" in json.load(r)
     except (OSError, ValueError):
         return False
+
+
+def server_info(port: int) -> dict:
+    """What the running server reports about itself; empty for servers older than this check."""
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/status", timeout=2) as r:
+            return json.load(r).get("server") or {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
+def stop_server(pid: int, port: int) -> bool:
+    """Stop a server process and wait until the port is free. Its data is already saved."""
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except OSError:
+        return False
+    for _ in range(100):
+        if not is_running(port):
+            return True
+        time.sleep(0.1)
+    return False
+
+
+def replace_outdated(port: int) -> None:
+    """After an update, a server started by an earlier `samuel app` may still be running the old code,
+    kept alive by its open window. Stop it so a fresh one starts. A server started by `samuel serve`
+    is left alone: whoever started it stops it."""
+    info = server_info(port)
+    if info.get("build") == build.build_id():
+        return
+    pid = info.get("pid")
+    if info.get("started_by") == "app" and isinstance(pid, int) and pid != os.getpid() and stop_server(pid, port):
+        print("Restarted Samuel with the updated code.")
+    else:
+        print(f"An older Samuel is still running on port {port}. Stop it (Ctrl+C where `samuel serve` runs, "
+              "or end its process) and open Samuel again to use the update.")
 
 
 def find_browser() -> str | None:
@@ -78,7 +116,7 @@ def start_server(port: int):
     from .cli import start_background_tasks
 
     start_background_tasks()
-    server = uvicorn.Server(uvicorn.Config(create_app(), host="127.0.0.1", port=port, log_level="warning"))
+    server = uvicorn.Server(uvicorn.Config(create_app(started_by="app"), host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
     for _ in range(100):
@@ -92,6 +130,8 @@ def start_server(port: int):
 
 def run(port: int) -> None:
     started = None
+    if is_running(port):
+        replace_outdated(port)
     if not is_running(port):
         print(f"Starting Samuel at http://127.0.0.1:{port}  (data: {db.data_dir()})")
         started = start_server(port)
