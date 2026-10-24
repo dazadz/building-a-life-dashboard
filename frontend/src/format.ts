@@ -34,6 +34,7 @@ export function localTime(d: Date): string {
 }
 
 export function greeting(hour: number): string {
+  if (hour < 4) return 'Good evening' // still last night for anyone up late
   if (hour < 12) return 'Good morning'
   if (hour < 18) return 'Good afternoon'
   return 'Good evening'

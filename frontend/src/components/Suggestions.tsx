@@ -108,6 +108,17 @@ export function SuggestionsCard({ limit, hideWhenEmpty, refresh, onChanged, acti
     for (const s of pending.filter((p) => selected.has(p.id))) last = await api.acceptSuggestion(today(), s.id)
     return last
   })
+  // Accept what's ticked, then turn down everything else that's showing.
+  const dismissRest = () => act(async () => {
+    let last = await acceptSelectedNow()
+    for (const s of filtered.filter((p) => !selected.has(p.id))) last = await api.dismissSuggestion(s.id)
+    return last
+  })
+  const acceptSelectedNow = async () => {
+    let last = data!
+    for (const s of pending.filter((p) => selected.has(p.id))) last = await api.acceptSuggestion(today(), s.id)
+    return last
+  }
   const acceptBatch = (batch: string | null) => act(async () => {
     let last = data!
     for (const s of pending.filter((p) => p.batch === batch)) last = await api.acceptSuggestion(today(), s.id)
@@ -128,9 +139,14 @@ export function SuggestionsCard({ limit, hideWhenEmpty, refresh, onChanged, acti
       secondary={
         <span className="pills">
           {selected.size > 0 && (
-            <button type="button" className="link-btn accent" disabled={busy} onClick={() => void acceptSelected()}>
-              Accept {selected.size} selected
-            </button>
+            <>
+              <button type="button" className="link-btn accent" disabled={busy} onClick={() => void acceptSelected()}>
+                Accept {selected.size} selected
+              </button>
+              <button type="button" className="link-btn" disabled={busy} onClick={() => void dismissRest()}>
+                Dismiss the rest
+              </button>
+            </>
           )}
           {filtered.length > limit && (
             <button type="button" className="link-btn" onClick={() => setShowAll(!showAll)}>

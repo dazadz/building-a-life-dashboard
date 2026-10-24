@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api, type About, type PainGoal, type PainGoalFields, type Status } from '../api'
 import { Card } from '../components/Card'
 import { SuggestionsCard } from '../components/Suggestions'
-import { DAY_SHORT } from '../blocks'
+import { DayTypesCard, FixedPartsCard } from '../components/WeekParts'
 import { ErrorLine, Loading, NeedsSetup } from '../components/States'
 import { useCoachJob, useLoad } from '../hooks'
 
@@ -20,7 +20,7 @@ export function AboutPage({ coach, status, onChanged }: Props) {
   const about = useLoad(() => api.about(), [finished])
   const profile = useLoad(() => api.profile(), [])
   const routine = useLoad(() => api.routines(), [finished])
-  const fixed = (routine.data ?? []).filter((r) => r.kind === 'fixed')
+  const dayTypes = useLoad(() => api.dayTypes(), [finished])
   const installed = status?.coach.installed ?? false
   const counts = about.data?.counts
 
@@ -52,23 +52,8 @@ export function AboutPage({ coach, status, onChanged }: Props) {
       <div className="row">
         <SuggestionsCard limit={10} refresh={finished} onChanged={() => { about.reload(); onChanged() }} action={<a href="#/coach">Tell Samuel more in chat →</a>} />
         {about.data && <NotesCard about={about.data} onSaved={about.setData} />}
-        <Card title="Fixed parts of your week" meta="Samuel plans around these" action={<a href="#/routine">Routine →</a>}>
-          {!routine.data ? <Loading /> : fixed.length === 0 ? (
-            <NeedsSetup>
-              <span style={{ flex: 1 }}>Add work hours, classes or training as Fixed blocks on the Routine page, or write them in your own words here.</span>
-            </NeedsSetup>
-          ) : (
-            <ul className="list">
-              {fixed.map((r) => (
-                <li key={r.id}>
-                  <span className="item-name" style={{ flex: 1 }}>{r.name}</span>
-                  <span className="mono faint">{r.day_type ?? (r.weekdays.length === 7 ? 'Every day' : r.weekdays.map((d) => DAY_SHORT[d]).join(' '))}</span>
-                  <strong className="mono">{r.start}–{r.end}</strong>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+        <FixedPartsCard routines={routine.data} types={dayTypes.data ?? []} onChange={routine.setData} />
+        <DayTypesCard types={dayTypes.data} routines={routine.data} />
         <Card title="Your profile" meta={profile.data ? `${profile.data.answered} of ${profile.data.total}` : undefined} action={<a href="#/profile">Edit profile →</a>}>
           {!profile.data ? <Loading /> : (
             <ul className="list">

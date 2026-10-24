@@ -5,6 +5,10 @@ All notable changes to Samuel are listed here. Versions follow [semantic version
 ## [Unreleased]
 
 ### Changed
+- **Today is compact, like its design:** the Now card and scores, then a row of three cards, Samuel's suggestions (3, with Review all), and a row of four small cards. Which cards lead follows the time of day. "Today at a glance" and the latest report leave Today; your focus moves into a "Focus and due" card, and the report stays on the Coach page.
+- **Black gradient background:** a faint accent glow at the top of the page, deepening down. Cards stay flat.
+- **About me:** add fixed parts of your week (office hours, classes, training) right there, and see your day types.
+- **Samuel's plan:** "Dismiss the rest" next to "Accept N selected". Just after midnight Samuel says good evening, not good morning.
 - **Type, for routine blocks and tasks:** the block's "Kind" is now **Type**, with Focus, Fixed, Work, Spiritual, Habit, Recovery and Leisure. Tasks use the same types in place of their list (Work tasks become Type: Work), with a type filter on the Tasks page.
 - **Create and edit tasks with a form:** a **New task** button replaces quick add. The form sets the task, type, goal it achieves, due date, time, reminder, routine block, priority and notes, and **Edit** on any task opens the same form. Ctrl+K "Create task" opens it with your text as the title.
 - **Edit habits** on the Habits page: rename any habit, turn tracking on or off (history is kept), and add your own.
